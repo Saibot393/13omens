@@ -1,0 +1,43 @@
+{
+  "id": "13omens",
+  "title": "13 Omens",
+  "description": "A Foundry VTT system fpr Paizos horror P&P 13 Omens",
+  "version": "0.0.0",
+  "compatibility": {
+    "minimum": 14,
+    "verified": 14
+  },
+  "styles": [
+	"styles/13omens.css",
+	"styles/dice.css"
+  ],
+  "esmodules": ["13omens.js"],
+  "languages": [{
+    "lang": "en",
+    "name": "English",
+    "path": "lang/en.json"
+  }],
+  "documentTypes": {
+    "Actor": {
+	  "story": {},
+      "pc": {},
+	  "npc": {},
+	  "loot": {}
+    },
+    "Item": {
+	  "archetype": {},
+      "perk": {},
+      "gear": {}
+    }
+  },
+  "socket": true,
+  "grid": {
+    "distance": 3,
+    "units": "m"
+  },
+  "primaryTokenAttribute": "resources.health",
+  "secondaryTokenAttribute": "resources.power",
+  "url": "https://your/hosted/system/repo/",
+  "manifest": "https://your/hosted/system/repo/system.json",
+  "download": "https://your/packaged/download/archive.zip"
+}

@@ -1,0 +1,100 @@
+:root {
+	--o13-ink-black: #292229;
+	--o13-ink-grey: #20232a;
+	--o13-smoke-grey: #848884;
+}
+
+.o13-sheet {
+	font-family: "Cinzel", "Times New Roman", Georgia, serif;
+	background-image: url("/ui/parchment.jpg");
+}
+
+.o13-label {
+	background: transparent;
+	color: var(--o13-ink-black);
+}
+
+.o13-header-label{
+	background-color : var(--o13-ink-grey);
+	color : var(--o13-smoke-grey);
+	padding: 3px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.o13-input {
+	background: transparent;
+	border: none;
+	border-radius: 0;
+	border-bottom: 2px solid var(--o13-ink-black);
+	
+	color: var(--o13-ink-black);
+	
+	font-family: "Segoe Print";
+}
+
+.o13-input:hover{
+	background: rgba(255, 255, 255, 0.05);
+}
+
+.o13-input:focus{
+	background: rgba(255, 255, 255, 0.1);
+}
+
+.portrait-container{
+	padding: 5px;
+	max-height: 150px;
+	display: flex;
+}
+
+.portrait{
+	cursor: pointer;
+	max-height: 100%;
+	width: auto;
+}
+
+.o13-wound-dice{
+	width : 50px;
+	height : 50px;
+}
+
+.o13-checkbox{
+	--checkbox-checked-color: transparent;
+	--checkbox-background-color: transparent;
+	--checkbox-checkmark-color: var(--o13-ink-black);
+	
+	border-radius: 0px;
+	border: 2px solid var(--o13-ink-black);
+	width: 16px;
+	height: 16px;
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	margin : 0;
+	padding : 0;
+	vertical-align: middle;
+}
+
+.o13-table,
+.o13-table tr,
+.o13-table tbody tr,
+.o13-table tbody tr:nth-child(even),
+.o13-table tbody tr:nth-child(odd) {
+	background: transparent;
+	background-color: transparent;
+	background-image: none;
+}
+
+.o13-clickable{
+	cursor: pointer;
+}
+
+.o13-clickable:hover{
+	color: var(--o13-smoke-grey);
+}
+
+.o13-content-cenetered{
+	vertical-align: middle;
+	text-align: center;	
+}

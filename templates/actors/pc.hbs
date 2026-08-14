@@ -1,0 +1,43 @@
+<div class="actor-sheet-content o13-sheet">
+	<header class="sheet-header flexrow">
+		<div class="portrait-container">
+			<img class="portrait" name="img" src="{{actor.img}}" title="{{actor.name}}" alt="{{actor.name}}" data-action="choosePortrait" />
+		</div>
+		
+		<div class="flexcol">
+			<div class="form-group flexrow">
+				<label for="actor-name" class="o13-label"><b>{{localize "13omens.titles.name"}}:</b></label>
+				<input class="o13-input" type="text" name="name" value="{{actor.name}}" />
+			</div>
+			<div class="form-group flexrow">
+				<label for="actor-name" class="o13-label">{{localize "13omens.titles.traits"}}:</label>
+				<input class="o13-input" type="text" name="system.traits" value="{{actor.system.traits}}" />
+			</div>
+		</div>
+		
+		<div class="o13-wound-dice">
+		{{> "systems/13omens/templates/dice/dice.hbs" 
+			face = "1"
+			type = "omen"
+		}}
+		</div>
+	</header>
+	
+	<main>
+		{{> "systems/13omens/templates/actors/components/aspects.hbs" 
+			aspectsname=(localize "13omens.titles.coreAspects")
+			aspects=actor.system.aspects.core
+			availableRatings=actor.system.availableRatings.core
+			targetNumbers=actor.system.targetNumbers.core
+			namepath="system.aspects.core."
+		}}
+		
+		{{> "systems/13omens/templates/actors/components/aspects.hbs" 
+			aspectsname=(localize "13omens.titles.storyAspects")
+			aspects=actor.system.aspects.story
+			availableRatings=actor.system.availableRatings.story
+			targetNumbers=actor.system.targetNumbers.story
+			namepath="system.aspects.story."
+		}}
+	</main>
+</div>

@@ -1,0 +1,39 @@
+<div class="aspect-section">
+	<table class="o13-table">
+		<tr class="o13-table-header">
+			<th> <label class="o13-label o13-header-label">{{aspectsname}}</label> </th>
+			<th> <label class="o13-label o13-header-label">{{localize "13omens.titles.rating"}}</label> </th>
+			<th> <label class="o13-label o13-header-label">{{localize "13omens.titles.tn"}}</label> </th>
+			<th> <label class="o13-label o13-header-label">{{localize "13omens.titles.strain"}}</label> </th>
+		</tr>
+		{{#each aspects as |aspect|}}
+			<tr>
+			<td>
+			{{#if (ne aspect.name undefined)}}
+				<label class="o13-label o13-clickable" data-action="rollAspect" aspect-name="{{@key}}"><b>{{aspect.name}}</b></label>
+			{{else}}
+				<label class="o13-label o13-clickable" data-action="rollAspect" aspect-name="{{@key}}"><b>{{localize (concat "13omens.titles." @key)}}</b></label>
+			{{/if}}
+			</td>
+			
+			<td>
+			<select class="o13-input" name="{{concat ../namepath @key ".rating" }}">
+				{{#if (ne aspect.rating -1)}} <option value="{{aspect.rating}}" selected><b>{{localize (concat "13omens.titles." aspect.rating)}}</b></option> {{/if}}
+				{{#each ../availableRatings as |rating|}}
+					<option value="{{rating}}"><b>{{localize (concat "13omens.titles." rating)}}</b></option>
+				{{/each}}
+			</select>
+			</td>
+			
+			<td class="o13-content-cenetered">
+				<label class="o13-label"><b>{{lookup ../targetNumbers @key}}</b></label>
+			</td>
+			
+			<td class="o13-content-cenetered">
+				<input class="o13-checkbox" type="checkbox" name="{{concat ../namepath @key ".strain" }}" {{checked aspect.strain}} />
+			</td>
+			
+			</tr>
+		{{/each}}
+	</table>
+</div>
