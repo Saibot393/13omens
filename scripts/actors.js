@@ -2,7 +2,7 @@ const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDo
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
 
-import { o13Roll } from "./roll.js";
+import { o13Roll, o13rollConfig } from "./roll.js";
 
 const COREASPECTS_IDS = ["courage", "evade", "fight", "luck", "perception"];
 const ASPECTRATINGS = [-1, 0,1,2,3,4];
@@ -66,6 +66,9 @@ export class o13Actor extends Actor {
 		const cAspectData = this.system.getAspectData(aspectName, true);
 		
 		if (cAspectData) {
+			new o13rollConfig(this, {aspect : aspectName}).render(true);
+			
+			/*
 			const roll = new o13Roll(this, aspectName);
 			
 			await roll.roll();
@@ -75,6 +78,7 @@ export class o13Actor extends Actor {
 			}
 			
 			return roll;
+			*/
 		}
 	}
 }

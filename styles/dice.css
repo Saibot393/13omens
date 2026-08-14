@@ -1,7 +1,7 @@
 :root {
 	--o13-blank-die: #F1E9D2;
 	--o13-safe-die: #7e7e7e;
-	--o13-omen-die: #880808;
+	--o13-omen-die: var(--o13-omen-red);
 }
 
 .o13-die {

@@ -2,6 +2,7 @@
 	--o13-ink-black: #292229;
 	--o13-ink-grey: #20232a;
 	--o13-smoke-grey: #848884;
+	--o13-omen-red: #880808;
 }
 
 .o13-sheet {
@@ -18,6 +19,7 @@
 .o13-label {
 	background: transparent;
 	color: var(--o13-ink-black);
+	font-size: 18px;
 }
 
 .o13-header-label{
@@ -99,6 +101,11 @@
 	background-image: none;
 }
 
+.o13-table td {
+	padding-top: 1px;
+	padding-bottom: 1px;
+}
+
 .o13-clickable{
 	cursor: pointer;
 }
@@ -114,4 +121,36 @@
 
 .o13-bottom-align{
 	vertical-align: bottom;
+}
+
+.o13-omen {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  color: var(--o13-omen-red);
+}
+
+.o13-omen::before {
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900; 
+  content: "\f54c";
+  color: var(--o13-omen-red);
+}
+
+.o13-flexStart{
+	align-self: flex-start;
+}
+
+.o13-lowflex{
+	flex: 0.3;
+}
+
+.o13-padding{
+	padding: 1px;
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
+.o13-smalltext{
+	font-size: 12px;
 }

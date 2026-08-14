@@ -1,6 +1,6 @@
 import {o13Actor, o13ActorSheet, actorDMs} from "./scripts/actors.js";
 
-const templatePaths = ["actors/pc", "actors/components/aspects", "dice/dice", "dice/dicebar"].map((path) => `systems/13omens/templates/${path}.hbs`);
+const templatePaths = ["actors/pc", "actors/components/aspects", "dice/dice", "dice/dicebar", "rolls/rollConfig"].map((path) => `systems/13omens/templates/${path}.hbs`);
 
 Hooks.once("init", () => {
 	CONFIG.Actor.dataModels = {

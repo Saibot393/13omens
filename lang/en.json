@@ -13,6 +13,14 @@
 			"tn" : "TN",
 			"strain" : "Strain",
 			
+			"taskRisk" : "Task Risk",
+			"taskDifficulty" : "Task Difficulty",
+			
+			"flaws" : "Flaws",
+			"edges" : "Edges",
+			
+			"roll" : "Roll",
+			
 			"ratings" : {
 				"-1" : "-",
 				"0" : "Terrible",
@@ -20,6 +28,12 @@
 				"2" : "Average",
 				"3" : "Good",
 				"4" : "Great"
+			},
+			
+			"taskrisks" : {
+				"risky" : "Risky",
+				"normal" : "Normal",
+				"harmless" : "Harmless"
 			},
 			
 			"courage" : "Courage",
