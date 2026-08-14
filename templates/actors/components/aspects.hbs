@@ -17,19 +17,19 @@
 			</td>
 			
 			<td>
-			<select class="o13-input" name="{{concat ../namepath @key ".rating" }}">
-				{{#if (ne aspect.rating -1)}} <option value="{{aspect.rating}}" selected><b>{{localize (concat "13omens.titles." aspect.rating)}}</b></option> {{/if}}
+			<select class="o13-input o13-underline" name="{{concat ../namepath @key ".rating" }}">
+				{{#if (ne aspect.rating -1)}} <option value="{{aspect.rating}}" selected><b>{{localize (concat "13omens.titles.ratings." aspect.rating)}}</b></option> {{/if}}
 				{{#each ../availableRatings as |rating|}}
-					<option value="{{rating}}"><b>{{localize (concat "13omens.titles." rating)}}</b></option>
+					<option value="{{rating}}"><b>{{localize (concat "13omens.titles.ratings." rating)}}</b></option>
 				{{/each}}
 			</select>
 			</td>
 			
-			<td class="o13-content-cenetered">
-				<label class="o13-label"><b>{{lookup ../targetNumbers @key}}</b></label>
+			<td class="o13-content-centered o13-bottom-align">
+				<label class="o13-label o13-underline"><b>{{lookup ../targetNumbers @key}}</b></label>
 			</td>
 			
-			<td class="o13-content-cenetered">
+			<td class="o13-content-centered">
 				<input class="o13-checkbox" type="checkbox" name="{{concat ../namepath @key ".strain" }}" {{checked aspect.strain}} />
 			</td>
 			

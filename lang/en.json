@@ -1,3 +1,32 @@
 {
-	"13omens" : "13 Omens"
+	"13omens" : {
+		"13omens" : "13 Omens",
+		
+		"titles" : {
+			"name" : "Name",
+			"traits" : "Traits",
+			
+			"coreAspects" : "Core Aspects",
+			"storyAspects" : "Story Aspects",
+			
+			"rating" : "Rating",
+			"tn" : "TN",
+			"strain" : "Strain",
+			
+			"ratings" : {
+				"-1" : "-",
+				"0" : "Terrible",
+				"1" : "Bad",
+				"2" : "Average",
+				"3" : "Good",
+				"4" : "Great"
+			},
+			
+			"courage" : "Courage",
+			"evade" : "Evade",
+			"fight" : "Fight",
+			"luck"	: "Luck",
+			"perception" : "Perception"
+		}
+	}
 }

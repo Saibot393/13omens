@@ -9,28 +9,40 @@
 	background-image: url("/ui/parchment.jpg");
 }
 
+.o13-scrollable {
+	overflow-y: auto;
+	overflow-x: hidden;
+	scrollbar-color: var(--o13-ink-black) transparent !important;
+}
+
 .o13-label {
 	background: transparent;
 	color: var(--o13-ink-black);
 }
 
 .o13-header-label{
+	display: block;
+	width: 100%;
 	background-color : var(--o13-ink-grey);
 	color : var(--o13-smoke-grey);
 	padding: 3px;
 	padding-left: 10px;
 	padding-right: 10px;
+	text-transform: uppercase;
 }
 
 .o13-input {
 	background: transparent;
+	
+	font-family: "Segoe Print";
+	color: var(--o13-ink-black);
+}
+
+.o13-underline {
+	display: block;
 	border: none;
 	border-radius: 0;
 	border-bottom: 2px solid var(--o13-ink-black);
-	
-	color: var(--o13-ink-black);
-	
-	font-family: "Segoe Print";
 }
 
 .o13-input:hover{
@@ -51,6 +63,7 @@
 	cursor: pointer;
 	max-height: 100%;
 	width: auto;
+	object-fit: contain;
 }
 
 .o13-wound-dice{
@@ -94,7 +107,11 @@
 	color: var(--o13-smoke-grey);
 }
 
-.o13-content-cenetered{
+.o13-content-centered{
 	vertical-align: middle;
 	text-align: center;	
+}
+
+.o13-bottom-align{
+	vertical-align: bottom;
 }

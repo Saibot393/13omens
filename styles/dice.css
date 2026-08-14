@@ -73,3 +73,12 @@
 .o13-die[die-face="4"] .pip-bot-right,
 .o13-die[die-face="5"] .pip-bot-right,
 .o13-die[die-face="6"] .pip-bot-right {display : block}
+
+.o13-dice-bar{
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+	gap: 8px;
+	width: 100%;
+	height: 100%;
+	justify-items: center;
+}

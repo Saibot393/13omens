@@ -212,6 +212,31 @@ class pcDataModel extends foundry.abstract.TypeDataModel {
 			core : Object.fromEntries(Object.keys(this.aspects.core).map(key => [key, ASPECTTN[this.aspects.core[key].rating]])),
 			story : this.aspects.story.map(value => ASPECTTN[value.rating])
 		}
+		
+		this.wounddice = this.wounds.map((wound, index) => {
+			var die = {};
+			
+			if (!wound.omen.filled && !wound.safe.filled) {
+				die.face = (index+1 == this.wounds.length) ? 6 : index+1;
+				die.type = "blank";
+			}
+			else {
+				if (wound.omen.filled) {
+					die.face = wound.omen.side;
+					die.type = "omen";
+					die.act = wound.omen.act;
+				}
+				else {
+					if (wound.safe.filled) {
+						die.face = wound.safe.side;
+						die.type = "safe";
+						die.act = wound.safe.act;
+					}
+				}
+			}
+			
+			return die;
+		})
 	}
 	
 	getAspectData(aspectName, includeTN = false) {

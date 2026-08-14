@@ -1,4 +1,4 @@
-<div class="actor-sheet-content o13-sheet">
+<div class="actor-sheet-content o13-sheet o13-scrollable">
 	<header class="sheet-header flexrow">
 		<div class="portrait-container">
 			<img class="portrait" name="img" src="{{actor.img}}" title="{{actor.name}}" alt="{{actor.name}}" data-action="choosePortrait" />
@@ -16,9 +16,8 @@
 		</div>
 		
 		<div class="o13-wound-dice">
-		{{> "systems/13omens/templates/dice/dice.hbs" 
-			face = "1"
-			type = "omen"
+		{{> "systems/13omens/templates/dice/dicebar.hbs" 
+			dice=actor.system.wounddice
 		}}
 		</div>
 	</header>
