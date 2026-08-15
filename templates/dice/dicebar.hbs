@@ -1,8 +1,9 @@
 <div class="o13-dice-bar">
 	{{#each dice as |die|}}
 		{{> "systems/13omens/templates/dice/dice.hbs" 
-					face = die.face
-					type = die.type
+			face = die.face
+			type = die.type
+			crossed = die.crossed
 		}}
 	{{/each}}
 </div>

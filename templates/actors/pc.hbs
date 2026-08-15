@@ -1,16 +1,16 @@
 <div class="actor-sheet-content o13-sheet o13-scrollable">
 	<header class="sheet-header flexrow">
-		<div class="portrait-container">
-			<img class="portrait" name="img" src="{{actor.img}}" title="{{actor.name}}" alt="{{actor.name}}" data-action="choosePortrait" />
+		<div class="o13-portrait-container">
+			<img class="o13-portrait" name="img" src="{{actor.img}}" title="{{actor.name}}" alt="{{actor.name}}" data-action="choosePortrait" />
 		</div>
 		
 		<div class="flexcol">
 			<div class="form-group flexrow">
-				<label for="actor-name" class="o13-label"><b>{{localize "13omens.titles.name"}}:</b></label>
+				<label for="actor-name" class="o13-label" style="flex:0.5"><b>{{localize "13omens.titles.name"}}:</b></label>
 				<input class="o13-input o13-underline" type="text" name="name" value="{{actor.name}}" />
 			</div>
 			<div class="form-group flexrow">
-				<label for="actor-name" class="o13-label">{{localize "13omens.titles.traits"}}:</label>
+				<label for="actor-name" class="o13-label" style="flex:0.5">{{localize "13omens.titles.traits"}}:</label>
 				<input class="o13-input o13-underline" type="text" name="system.traits" value="{{actor.system.traits}}" />
 			</div>
 		</div>

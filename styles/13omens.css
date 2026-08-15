@@ -55,13 +55,13 @@
 	background: rgba(255, 255, 255, 0.1);
 }
 
-.portrait-container{
+.o13-portrait-container{
 	padding: 5px;
 	max-height: 150px;
 	display: flex;
 }
 
-.portrait{
+.o13-portrait{
 	cursor: pointer;
 	max-height: 100%;
 	width: auto;
@@ -153,4 +153,20 @@
 
 .o13-smalltext{
 	font-size: 12px;
+}
+
+.o13-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+    pointer-events: none; 
+    z-index: 2; 
+}
+
+.o13-bordered {
+	padding : 2px;
+	border: 2px solid var(--o13-ink-black);
 }

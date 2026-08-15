@@ -16,6 +16,8 @@
 			"taskRisk" : "Task Risk",
 			"taskDifficulty" : "Task Difficulty",
 			
+			"edge" : "Edge",
+			"flaw" : "Flaw",
 			"flaws" : "Flaws",
 			"edges" : "Edges",
 			
@@ -36,11 +38,25 @@
 				"harmless" : "Harmless"
 			},
 			
+			"outcomes" : {
+				"1" : "Success",
+				"0" : "Partial success",
+				"-1" : "Failure"
+			},
+			
 			"courage" : "Courage",
 			"evade" : "Evade",
 			"fight" : "Fight",
 			"luck"	: "Luck",
-			"perception" : "Perception"
+			"perception" : "Perception",
+			
+			"withFlaws" : "with {n} flaws ",
+			"withFlaw" : "with 1 flaw ",
+			"withEdges" : "with {n} edges ",
+			"withEdge" : "with 1 edge ",
+			
+			"actorRolled" : "{actor} rolled a <b>{aspect}</b> check {with}(TN:{tn})",
+			"rollResult" : "Outcome: {taskrisk} <b>{outcome}</b>"
 		}
 	}
 }

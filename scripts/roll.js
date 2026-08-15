@@ -8,10 +8,21 @@ const MINTD = -2;
 
 const TASKRISKS = ["risky", "normal", "harmless"]
 
-export class o13Roll {
+export const DEFAULTDICEBAG = ["safe", "safe", "safe", "safe", "safe", "safe", "safe", "safe", "omen"];
+
+export function randomPermut(array) {
+	for (let i = array.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		
+		[array[i], array[j]] = [array[j], array[i]];
+	}
+	
+	return array;
+}
+
+export class o13Roll extends Roll {
 	constructor(actor, aspect, options = DEFAULTROLLOPTIONS) {
-		console.log(this);
-		console.log(actor);
+		super("0");
 		
 		options = {...DEFAULTROLLOPTIONS, ...options};
 		
@@ -25,19 +36,12 @@ export class o13Roll {
 		this._taskDifficulty = options.taskDifficulty;
 		this._taskRisk = options.taskRisk;
 		
-		this._roll = new Roll(this.rollFormula);
-	}
-	
-	async roll(){
-		return await this._roll.roll();
-	}
-
-	get dice() {
-		return this._roll.dice;
-	}
-	
-	get total() {
-		return this._roll.roll;
+		if (!this._dicePermut || this._dicePermut.length == 0) this.drawDice();
+		
+		this._formula = this.formula;
+		this.terms = this.constructor.parse(this.formula, this.data);
+		
+		console.log(this);
 	}
 	
 	get outcome() {
@@ -52,10 +56,6 @@ export class o13Roll {
 		}
 	}
 	
-	async toMessage() {
-		return await this._roll.toMessage();
-	}
-	
 	get actor() {
 		return this._actor;
 	}
@@ -64,12 +64,18 @@ export class o13Roll {
 		return this._aspect;
 	}
 	
+	get aspectName() {
+		if (this.aspectData.name) return this.aspectData.name;
+		
+		return game.i18n.localize("13omens.titles." + this.aspect);
+	}
+	
 	get dicePermut() {
 		return this._dicePermut;
 	}
 	
 	get flaws() {
-		return this._flaws.length + this._omenflaws.length + this.aspectData.strain ? 1 : 0;
+		return this._flaws.length + this._omenflaws.length + (this.aspectData.strain ? 1 : 0);
 	}
 	
 	get omenflaws() {
@@ -92,6 +98,10 @@ export class o13Roll {
 		return this.FEDifference == 0 ? "" : this.FEDifference > 0 ? "kh2" : "kl2";
 	}	
 	
+	get FEDescription() {
+		return this.FEDifference == 0 ? "" : this.FEDifference > 0 ? this.FENumber == 1 ? game.i18n.format("13omens.titles.withEdge", {}) : game.i18n.format("13omens.titles.withEdges", {n : this.FENumber}) : this.FENumber == 1 ? game.i18n.format("13omens.titles.withFlaw", {}) : game.i18n.format("13omens.titles.withFlaws", {n : this.FENumber});
+	}	
+	
 	get taskDifficulty() {
 		return this._taskDifficulty;
 	}
@@ -112,9 +122,62 @@ export class o13Roll {
 		return 2 + this.FENumber;
 	}
 	
-	get rollFormula() {
+	get diceBag() {
+		return DEFAULTDICEBAG;
+	}
+	
+	drawDice() {
+		this._dicePermut = randomPermut(this.diceBag);
+	}
+	
+	get formula() {
 		return `${this.totalDice}d6${this.FERollMod}`
-	}	
+	}
+	
+	get diceResults() {
+		if (!this._evaluated) {
+			return [];
+		}
+		
+		return this._terms[0].results.map((result, index) => ({face : result.result, type : this.dicePermut[index], crossed : result.discarded}))
+	}
+	
+	async render() {
+		return foundry.applications.handlebars.renderTemplate("systems/13omens/templates/rolls/chatRoll.hbs", {roll : this});
+	}
+	
+	toJSON() {
+        const json = super.toJSON();
+        json.o13Data = {
+            actorId: this._actor?.id,
+            aspect: this._aspect,
+            options: {
+                dicePermut: this._dicePermut,
+                flaws: this._flaws,
+                omenflaws: this._omenflaws,
+                edges: this._edges,
+                taskDifficulty: this._taskDifficulty,
+                taskRisk: this._taskRisk
+            }
+        };
+        return json;
+    }
+	
+    static fromData(data) {
+        const o13Data = data.o13Data ?? {};
+        const actor = game.actors.get(o13Data.actorId);
+        
+        const roll = new this(actor, o13Data.aspect, o13Data.options);
+        
+        roll._formula = data.formula;
+        roll._evaluated = data.evaluated ?? true;
+        roll._total = data.total;
+        if (data.terms) {
+            roll._terms = data.terms.map(t => foundry.dice.terms.RollTerm.fromData(t));
+        }
+        
+        return roll;
+    }
 }
 
 export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
@@ -196,7 +259,7 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 		return this._data.edges;
 	}
 	
-	get gmView() {
+	get hostView() {
 		return game.user.isGM;
 	}
 	
@@ -228,7 +291,8 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 			addEmptyFlaw : o13rollConfig.addEmptyFlaw,
 			addEmptyEdge : o13rollConfig.addEmptyEdge,
 			removeFlaw : o13rollConfig.removeFlaw,
-			removeEdge : o13rollConfig.removeEdge
+			removeEdge : o13rollConfig.removeEdge,
+			roll : o13rollConfig.roll
 		}
 	};
 
@@ -273,7 +337,7 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 	
 	static async addEmptyFlaw(event, target) {
 		if (this.canAddFlaws) {
-			this._data.flaws = [...this._data.flaws, {name : "", isomen : false}];
+			this._data.flaws = [...this._data.flaws, {name : game.i18n.localize("13omens.titles.flaw"), isomen : false}];
 			
 			this._applyUpdate();
 		}
@@ -282,7 +346,7 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 	static async addEmptyEdge(event, target) {
 		console.log(event);
 		if (this.canAddEdges) {
-			this._data.edges = [...this._data.edges, {name : ""}];
+			this._data.edges = [...this._data.edges, {name : game.i18n.localize("13omens.titles.edge")}];
 			
 			this._applyUpdate();
 		}
@@ -300,5 +364,14 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 		this._data.edges.splice(index, 1);
 		
 		this._applyUpdate();
+	}
+	
+	static async roll(event, target) {
+		const roll = new o13Roll(this.actor, this.aspect, this._data);
+				console.log(roll);
+		await roll.evaluate();
+		roll.toMessage();
+		
+		return roll;
 	}
 }
