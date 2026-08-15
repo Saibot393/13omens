@@ -49,13 +49,18 @@ export class o13Roll extends Roll {
 		this._edges = options.edges;
 		this._taskDifficulty = options.taskDifficulty;
 		this._taskRisk = options.taskRisk;
-		this._targetNumber = this.aspectData.targetNumber;
-		this._strain = this.aspectData.strain;
+		this._targetNumber = options.targetNumber || this.aspectData?.targetNumber;
+		this._strain = options.strain || this.aspectData?.strain;
+		this._aspectName = options.aspectName || this.aspectName;
+		this._actorName = options.actorName || this.actorName;
+		this._act = options.act || this.act;
 		
 		if (!this._dicePermut || this._dicePermut.length == 0) this.drawDice();
 		
 		this._formula = this.formula;
 		this.terms = this.constructor.parse(this.formula, this.data);
+		
+		console.log(this);
 	}
 	
 	get outcome() {
@@ -74,11 +79,21 @@ export class o13Roll extends Roll {
 		return this._actor;
 	}
 	
+	get actorName() {
+		return this._actorName || this.actor.name;
+	}
+	
+	get act() {
+		return this._act || this.actor.activeAct;
+	}
+	
 	get aspect() {
 		return this._aspect;
 	}
 	
 	get aspectName() {
+		if (this._aspectName) return this._aspectName;
+		
 		if (this.aspectData.name) return this.aspectData.name;
 		
 		return game.i18n.localize("13omens.titles." + this.aspect);
@@ -125,15 +140,15 @@ export class o13Roll extends Roll {
 	}
 	
 	get targetNumber() {
-		return this._targetNumber || this.aspectData.targetNumber;
+		return this._targetNumber || this.aspectData?.targetNumber;
 	}
 	
 	get strain() {
-		return this._strain || this.aspectData.strain;
+		return this._strain || this.aspectData?.strain;
 	}
 	
 	get aspectData() {
-		return this.actor.system.getAspectData(this.aspect, true);
+		return this.actor?.getAspectData(this.aspect, true);
 	}
 	
 	get totalDifficulty() {
@@ -164,6 +179,18 @@ export class o13Roll extends Roll {
 		return this._terms[0].results.map((result, index) => ({face : result.result, type : this.dicePermut[index], crossed : result.discarded}))
 	}
 	
+	get hasWound() {
+		return this.actor ? this.diceResults.find(dice => dice.face <= this.act && dice.type == "omen") : false;
+	}
+	
+	get woundisStrain() {
+		return this.taskRisk == "harmless";
+	}
+	
+	get canCheatDeath() {
+		return this.actor?.canCheatDeath;
+	}
+	
 	async render() {
 		return foundry.applications.handlebars.renderTemplate("systems/13omens/templates/rolls/chatRoll.hbs", {roll : this});
 	}
@@ -181,7 +208,10 @@ export class o13Roll extends Roll {
                 taskDifficulty: this._taskDifficulty,
                 taskRisk: this._taskRisk,
 				targetNumber: this._targetNumber,
-				strain: this._strain
+				strain: this._strain,
+				aspectName: this._aspectName,
+				actorName: this._actorName,
+				act: this._act
             }
         };
         return json;
@@ -246,7 +276,7 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 	
 	get aspectData() {
-		return this.actor.system.getAspectData(this.aspect, true);		
+		return this.actor.getAspectData(this.aspect, true);		
 	}
 	
 	get actorName() {

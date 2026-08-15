@@ -13,11 +13,20 @@
 				<label for="actor-name" class="o13-label" style="flex:0.5">{{localize "13omens.titles.traits"}}:</label>
 				<input class="o13-input o13-underline" type="text" name="system.traits" value="{{actor.system.traits}}" />
 			</div>
+			<div class="form-group flexrow">
+				<label for="actor-name" class="o13-label" style="flex:0.5">{{localize "13omens.titles.archetype"}}:</label>
+				<select class="o13-input o13-underline" name="system.archetype">
+					<option value=""></option>
+					{{#each actor.availableArchetype as |archetype|}}
+						<option value="{{archetype.id}}" {{#if (eq archetype.id ../actor.system.archetype)}}selected{{/if}}>{{archetype.name}}</option>
+					{{/each}}
+				</select>
+			</div>
 		</div>
 		
 		<div class="o13-wound-dice" style="min-width: 265px">
 		{{> "systems/13omens/templates/dice/dicebar.hbs" 
-			dice=actor.system.wounddice
+			dice=actor.woundDice
 		}}
 		</div>
 	</header>
@@ -34,6 +43,7 @@
 		{{> "systems/13omens/templates/actors/components/aspects.hbs" 
 			aspectsname=(localize "13omens.titles.storyAspects")
 			aspects=actor.system.aspects.story
+			aspectsnames=actor.storyAspectNames
 			availableRatings=actor.system.availableRatings.story
 			targetNumbers=actor.system.targetNumbers.story
 			namepath="system.aspects.story."

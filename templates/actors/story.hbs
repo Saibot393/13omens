@@ -10,7 +10,7 @@
 		</div>
 		
 		<div class="flexrow">
-			<label class="o13-label" style="flex:0.5"><b>{{localize "13omens.titles.act"}}:</b></label>
+			<span class="o13-label" style="flex:0.5"><b>{{localize "13omens.titles.act"}}:</b></span>
 		</div>
 	</header>
 	
@@ -18,7 +18,7 @@
 		<div class="flexcol">
 			<div class="flexrow">
 				<div class="flexcol o13-flexStart">
-					<label class="o13-label o13-header-label o13-content-centered´">{{localize "13omens.titles.hostomendice"}}</label>
+					<span class="o13-label o13-header-label o13-content-centered´">{{localize "13omens.titles.hostomendice"}}</span>
 					<div>
 						{{> "systems/13omens/templates/dice/dicebag.hbs" 
 							dice=actor.hostOmenDice
@@ -26,7 +26,7 @@
 					</div>
 				</div>
 				<div class="flexcol o13-flexStart">
-					<label class="o13-label o13-header-label o13-content-centered">{{localize "13omens.titles.dicebag"}}</label>
+					<span class="o13-label o13-header-label o13-content-centered">{{localize "13omens.titles.dicebag"}}</span>
 					<div>
 						{{> "systems/13omens/templates/dice/dicebag.hbs" 
 							dice=actor.diceBagDice
@@ -36,27 +36,27 @@
 			</div>
 			<div class="flexrow" style="flex-wrap:nowrap">
 				<div class="flexcol o13-flexStart">
-					<label class="o13-label o13-header-label o13-content-centered">{{localize "13omens.titles.storyAspects"}}</label>
+					<span class="o13-label o13-header-label o13-content-centered">{{localize "13omens.titles.storyAspects"}}</span>
 					{{#each actor.system.storyaspects as |aspect|}}
 						<input class="o13-input o13-underline" type="text" name="{{concat "system.storyaspects." @key ".name"}}" value="{{aspect.name}}" />
 					{{/each}}
 				</div>
 				<div class="flexcol o13-flexStart">
-					<label class="o13-label o13-header-label o13-content-centered">{{localize "13omens.titles.archetypes"}} <i class="fa-solid fa-plus" data-action="createNewArchetype"></i></label>
+					<span class="o13-label o13-header-label o13-content-centered">{{localize "13omens.titles.archetypes"}} <i class="fa-solid fa-plus" data-action="createNewArchetype"></i></span>
 					{{#each actor.archetypes as |archetype|}}
 						<div class="flexrow o13-padding">
-							<label class="o13-label o13-clickable o13-content-centered" type="text" archetype-id="{{archetype.id}}" data-action="openArchetype">{{archetype.name}}</label>
+							<span class="o13-label o13-clickable o13-content-centered" type="text" archetype-id="{{archetype.id}}" data-action="openArchetype">{{archetype.name}}</span>
 							<i class="fa-solid fa-x o13-label o13-lowflex" archetype-id="{{archetype.id}}" data-action="deleteArchetype"></i>
 						</div>
 					{{/each}}
 				</div>
 			</div>
 			<div class="flexcol">
-				<label class="o13-label o13-header-label">{{localize "13omens.titles.players"}}</label>
+				<span class="o13-label o13-header-label">{{localize "13omens.titles.players"}}</span>
 				{{#each actor.pcActors as |pc|}}
 					<div class="flexrow">
-						<label class="o13-label o13-clickable o13-content-centered" type="text" pc-id="{{pc.id}}" data-action="openPC">{{pc.name}}</label>
-						<label class="o13-label o13-content-centered" type="text" pc-id="{{pc.id}}" >{{pc.archetypeName}}</label>
+						<span class="o13-label o13-clickable o13-content-centered" type="text" pc-id="{{pc.id}}" data-action="openPC">{{pc.name}}</span>
+						<span class="o13-label o13-content-centered" type="text" pc-id="{{pc.id}}" >{{pc.archetypeName}}</span>
 						{{> "systems/13omens/templates/dice/dicebar.hbs" 
 							dice=pc.system.wounddice
 						}}

@@ -64,6 +64,28 @@ export class o13Actor extends Actor {
 		if (this.isStory) {
 			return [...this.items].filter(item => item.type == "archetype");
 		}
+		
+		if (this.isPC) {
+			return this.storyActor?.archetypes;
+		}
+	}
+	
+	get availableArchetype() {
+		if (this.isStory) {
+			return this.archetypes.filter(archetype => !this.pcActors.find(pc => pc.archetype == archetype));
+		}
+		
+		if (this.isPC) {
+			return this.storyActor ? (this.archetype ? [this.archetype, ...this.storyActor.availableArchetype] : this.storyActor.availableArchetype) : [];
+		}
+	}
+	
+	get archetype() {
+		if (this.isPC) {
+			const archetype = this.storyActor.items.get(this.system.archetype);
+			
+			return archetype?.type == "archetype" ? archetype : undefined;
+		}
 	}
 	
 	get pcActors() {
@@ -131,7 +153,7 @@ export class o13Actor extends Actor {
 			const current = this.system.hostomendice;
 			const max = MAXHOSTOMENDICE;
 			
-			return Array.from(Array(max).keys()).map(i => i+1).map(i => ({type : i <= current ? "omen" : "blank", face : 6}))
+			return Array.from({length : max}).map((v, i) => i + 1).map(i => ({type : i <= current ? "omen" : "blank", face : 6}))
 		}
 		
 		if (this.isPC) {
@@ -175,7 +197,90 @@ export class o13Actor extends Actor {
 		}
 		
 		if (this.isPC) {
-			return {safe : this.system.wounds.filter(wound => wound.safe.filled), omen : this.system.wounds.filter(wound => wound.omen.filled)};
+			return {safe : this.system.wounds.filter(wound => wound.safe.filled).length, omen : this.isDead ? 0 : this.system.wounds.filter(wound => wound.omen.filled).length};
+		}
+	}
+	
+	get woundDice() {
+		if (this.isPC) {
+			return this.system.wounds.map((wound, index) => {
+				var die = {};
+				
+				if (!wound.omen.filled && !wound.safe.filled) {
+					die.face = (index+1 == this.system.wounds.length) ? 6 : index+1;
+					die.type = "blank";
+				}
+				else {
+					if (wound.omen.filled) {
+						die.face = wound.omen.side;
+						die.type = "omen";
+						die.act = wound.omen.act;
+					}
+					else {
+						if (wound.safe.filled) {
+							die.face = wound.safe.side;
+							die.type = "safe";
+							die.act = wound.safe.act;
+						}
+					}
+				}
+				
+				return die;
+			});
+		}
+	}
+	
+	getAspectData(aspectName, includeTN = false) {
+		if (COREASPECTS_IDS.includes(aspectName)) {
+			const add = includeTN ? {targetNumber : this.system.targetNumbers.core[aspectName]} : {};
+			
+			return {...add, ...this.system.aspects.core[aspectName], name : game.i18n.localize(`13omens.titles.${aspectName}`)};
+		}
+		
+		if (!isNaN(aspectName)) {
+			const add = includeTN ? {targetNumber : this.system.targetNumbers.story[aspectName]} : {};
+			
+			return {...add, ...this.system.aspects.story[aspectName], name : this.storyAspectNames[aspectName]};
+		}
+	}
+	
+	get storyAspectNames() {
+		if (this.isPC) {
+			return this.storyActor?.storyAspectNames || Array.from({length : 5}, () => "");
+		}
+		
+		if (this.isStory) {
+			return this.system.storyaspects.map(aspect => aspect.name);
+		}
+	}
+	
+	get activeAct() {
+		if (this.isPC) {
+			return this.storyActor?.activeAct || 0;
+		}
+		
+		if (this.isStory) {
+			return this.system.activeact;
+		}
+	}
+	
+	get cheatedDeaths() {
+		if (this.isPC) {
+			return this.storyActor?.cheatedDeaths || {1 : undefined, 2 : undefined, 3 : undefined};
+		}
+		
+		if (this.isStory) {
+			return Object.fromEntries(this.system.acts.map((act, index) => [index + 1, this.pcActors?.find(actor => actor.id == act.cheatedDeath)]));
+		}
+	}
+	
+	get canCheatDeath() {
+		if (this.isPC) {
+			return this.storyActor?.canCheatDeath;
+		}
+		
+		if (this.isStory) {
+			return !this.cheatedDeaths?.[this.activeAct]
 		}
 	}
 	
@@ -184,13 +289,24 @@ export class o13Actor extends Actor {
 			return this.pcActors.includes(actor);
 		}
 	}
+	
+	canRollAspect(aspect) {
+		if (this.isPC) {
+			return !isNaN(this.getAspectData(aspect,true).targetNumber);
+		}
+	}
 		
 	async rollAspect(aspectName, rollDialogue = false, toChat = false) {
 		if (this.isPC) {
-			const cAspectData = this.system.getAspectData(aspectName, true);
-			
-			if (cAspectData) {
-				new o13rollConfig(this, {aspect : aspectName}).render(true);
+			if (this.canRollAspect(aspectName)) {
+				const aspectData = this.getAspectData(aspectName, true);
+				
+				if (aspectData) {
+					new o13rollConfig(this, {aspect : aspectName}).render(true);
+				}
+			}
+			else {
+				ui.notifications.warn(game.i18n.localize("13omens.warnings.selectRating"), {console : false});
 			}
 		}
 	}
@@ -204,7 +320,7 @@ export class o13Actor extends Actor {
 		}
 	}
 	
-	async deletArchetype(id) {
+	async deleteArchetype(id) {
 		if (this.isStory && this.items.get(id)?.type == "archetype") {
 			this.deleteEmbeddedDocuments("Item", [id]);
 		}
@@ -330,7 +446,7 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 	static async deleteArchetype(event, target) {
 		if (this.actor.type == "story") {
 			const archetypeID = target.getAttribute("archetype-id");
-			this.actor.deletArchetype(archetypeID);
+			this.actor.deleteArchetype(archetypeID);
 		}
 	}
 	
@@ -360,8 +476,10 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 	}
 	
 	_disableExternalRenderHooks() {
-		Hooks.off(this._externalItemUpdateRender);
-		Hooks.off(this._externalActorUpdateRender);
+		Hooks.off("updateItem", this._externalItemUpdateRender);
+		this._externalItemUpdateRender = null;
+		Hooks.off("updateActor", this._externalActorUpdateRender);
+		this._externalActorUpdateRender = null;
 	}
 }
 
@@ -369,6 +487,10 @@ class storyDataModel extends foundry.abstract.TypeDataModel {
 	static defineSchema() {
 		return {
 			activeact: new NumberField({ required: true, integer: true, nullable: true, min: 1, max : 3, initial: 1 }),
+			
+			acts: new ArrayField(new SchemaField({
+				cheatedDeath : new DocumentIdField({required: true, blank: true, nullable: true, readonly: false})
+			}), { initial : () => Array.from({length : 3}, () => ({cheatedDeath : ""}))}),
 			
 			/*
 			dicebag: new SchemaField({
@@ -417,6 +539,8 @@ class pcDataModel extends foundry.abstract.TypeDataModel {
 			
 			traits : new StringField({ required: true, initial: ""}),
 			
+			archetype : new DocumentIdField({required: true, blank: true, nullable: true, readonly: false}),
+			
 			goal : new HTMLField({ required: true, blank: true, initial: "" }),
 			
 			notes : new HTMLField({ required: true, blank: true, initial: "" }),
@@ -443,7 +567,6 @@ class pcDataModel extends foundry.abstract.TypeDataModel {
 				story: new ArrayField(new SchemaField({
 					rating: newRating(),
 					strain : new BooleanField({ required: true, initial: false}),
-					name: new StringField({ required: true, initial: ""}),
 					archetypelock : new BooleanField({ required: true, initial: false})
 				}), {initial: () => Array.from({length : 5}, () => ({rating : ASPECTRATINGS[0], strain : false, name : "", archetypelock : false}))})
 			}),
@@ -468,45 +591,6 @@ class pcDataModel extends foundry.abstract.TypeDataModel {
 		this.targetNumbers = {
 			core : Object.fromEntries(Object.keys(this.aspects.core).map(key => [key, ASPECTTN[this.aspects.core[key].rating]])),
 			story : this.aspects.story.map(value => ASPECTTN[value.rating])
-		}
-		
-		this.wounddice = this.wounds.map((wound, index) => {
-			var die = {};
-			
-			if (!wound.omen.filled && !wound.safe.filled) {
-				die.face = (index+1 == this.wounds.length) ? 6 : index+1;
-				die.type = "blank";
-			}
-			else {
-				if (wound.omen.filled) {
-					die.face = wound.omen.side;
-					die.type = "omen";
-					die.act = wound.omen.act;
-				}
-				else {
-					if (wound.safe.filled) {
-						die.face = wound.safe.side;
-						die.type = "safe";
-						die.act = wound.safe.act;
-					}
-				}
-			}
-			
-			return die;
-		})
-	}
-	
-	getAspectData(aspectName, includeTN = false) {
-		if (COREASPECTS_IDS.includes(aspectName)) {
-			const add = includeTN ? {targetNumber : this.targetNumbers.core[aspectName]} : {};
-			
-			return {...add, ...this.aspects.core[aspectName]};
-		}
-		
-		if (!isNaN(aspectName)) {
-			const add = includeTN ? {targetNumber : this.targetNumbers.story[aspectName]} : {};
-			
-			return {...add, ...this.aspects.story[aspectName]};
 		}
 	}
 }

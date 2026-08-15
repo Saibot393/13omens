@@ -5,6 +5,8 @@
 		"titles" : {
 			"name" : "Name",
 			"traits" : "Traits",
+			"players" : "Players",
+			"act" : "Act",
 			
 			"hostomendice" : "Host omen dice",
 			"dicebag" : "Dice bag",
@@ -63,6 +65,10 @@
 			
 			"actorRolled" : "{actor} rolled a <b>{aspect}</b> check {with}(TN:{tn})",
 			"rollResult" : "Outcome: {taskrisk} <b>{outcome}</b>"
+		},
+		
+		"warnings" : {
+			"selectRating" : "Please select an aspect rating before rolling"
 		}
 	}
 }

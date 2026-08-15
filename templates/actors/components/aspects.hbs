@@ -9,8 +9,8 @@
 		{{#each aspects as |aspect|}}
 			<tr>
 			<td>
-			{{#if (ne aspect.name undefined)}}
-				<label class="o13-label o13-clickable" data-action="rollAspect" aspect-name="{{@key}}"><b>{{aspect.name}}</b></label>
+			{{#if (ne ../aspectsnames undefined)}}
+				<label class="o13-label o13-clickable" data-action="rollAspect" aspect-name="{{@key}}"><b>{{lookup ../aspectsnames @key}}</b></label>
 			{{else}}
 				<label class="o13-label o13-clickable" data-action="rollAspect" aspect-name="{{@key}}"><b>{{localize (concat "13omens.titles." @key)}}</b></label>
 			{{/if}}
