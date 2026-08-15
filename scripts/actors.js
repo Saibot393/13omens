@@ -2,11 +2,13 @@ const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDo
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
 
-import { o13Roll, o13rollConfig } from "./roll.js";
+import { o13Roll, o13rollConfig, MAXHOSTOMENDICE, DEFAULTDICEBAGCOUNT, counttobag } from "./roll.js";
 
 const COREASPECTS_IDS = ["courage", "evade", "fight", "luck", "perception"];
 const ASPECTRATINGS = [-1, 0,1,2,3,4];
 const ASPECTTN = [10, 9, 7, 5, 4];
+
+const DEFAULTMAXWOUNDS = 4;
 
 function newRating() {
 	return new NumberField({ required: true, integer: true, nullable : true, min: Math.min(...ASPECTRATINGS), max : Math.max(...ASPECTRATINGS), initial: ASPECTRATINGS[0] });
@@ -66,8 +68,46 @@ export class o13Actor extends Actor {
 	
 	get pcActors() {
 		if (this.isStory) {
-			return this.system.pcs.map(pc => game.actors.get(pc.id)).filter(actor => actor);
+			return this.system.pcs.map(pc => game.actors.get(pc.id)).filter(actor => actor?.isPC);
 		}
+	}
+	
+	get pcCount() {
+		if (this.isStory) {
+			return this.pcActors.length;
+		}
+	}
+	
+	get pcliveCount() {
+		if (this.isStory) {
+			return this.pcActors.filter(actor => !actor.isDead).length;
+		}
+	}
+	
+	getmaxWounds(actor = undefined) {
+		if (this.isStory) {
+			const pcCount = this.pcCount;
+			const pcliveCount = this.pcliveCount;
+			const pcdeadCount = pcCount - pcliveCount;
+			
+			if (pcCount == 1) return DEFAULTMAXWOUNDS + 2;
+			if (pcCount == 2) return DEFAULTMAXWOUNDS + 1;
+			if (pcCount == 3) return DEFAULTMAXWOUNDS;
+			if (pcCount == 4) return DEFAULTMAXWOUNDS;
+			if (pcCount == 5) return DEFAULTMAXWOUNDS - 1;
+			if (pcCount >= 6) {
+				if (pcdeadCount < 2 || actor?.isDead) return DEFAULTMAXWOUNDS - 2
+				else return DEFAULTMAXWOUNDS - 1;
+			}
+		}
+		
+		if (this.isPC) {
+			return this.storyActor?.getmaxWounds(this);
+		}
+	}
+	
+	get maxWounds() {
+		return this.getmaxWounds();
 	}
 	
 	get pickedPerks() {
@@ -75,12 +115,73 @@ export class o13Actor extends Actor {
 	}
 	
 	get isDead() {
-		
+		if (this.isPC) {
+			return this.system.death.isdead;
+		}
 	}
 	
 	get storyActor() {
 		if (this.isPC) {
 			return [...game.actors].find(actor => actor.isStory && actor.hasPC(this))
+		}
+	}
+	
+	get hostOmenDice() {
+		if (this.isStory) {
+			const current = this.system.hostomendice;
+			const max = MAXHOSTOMENDICE;
+			
+			return Array.from(Array(max).keys()).map(i => i+1).map(i => ({type : i <= current ? "omen" : "blank", face : 6}))
+		}
+		
+		if (this.isPC) {
+			return this.storyActor?.omendice;
+		}
+	}
+	
+	get diceBagCount() {
+		if (this.isStory) {
+			const wounddice = this.woundDiceCount;
+			let bag = {};
+			
+			bag.safe = DEFAULTDICEBAGCOUNT.safe - wounddice.safe;
+			bag.omen = DEFAULTDICEBAGCOUNT.omen + (MAXHOSTOMENDICE - this.system.hostomendice) - wounddice.omen;
+			
+			return bag;
+		}
+		
+		if (this.isPC) {
+			return this.storyActor?.diceBagCount || DEFAULTDICEBAGCOUNT;
+		}
+	}
+	
+	get diceBag() {
+		if (this.isStory || this.isPC) {
+			return counttobag(this.diceBagCount);
+		}
+	}
+	
+	get diceBagDice() {
+		if (this.isStory || this.isPC) {
+			return this.diceBag.map(die => ({type : die, face : 6}));
+		}
+	}
+	
+	get woundDiceCount() {
+		if (this.isStory) {
+			const pcwoundcounts = this.pcActors.map(actor => actor.woundDiceCount);
+			
+			return {safe : pcwoundcounts.reduce((acc, cur) => acc + cur.safe, 0), omen : pcwoundcounts.reduce((acc, cur) => acc + cur.omen, 0)}
+		}
+		
+		if (this.isPC) {
+			return {safe : this.system.wounds.filter(wound => wound.safe.filled), omen : this.system.wounds.filter(wound => wound.omen.filled)};
+		}
+	}
+	
+	hasPC(actor) {
+		if (this.isStory && actor.isPC) {
+			return this.pcActors.includes(actor);
 		}
 	}
 		
@@ -117,9 +218,9 @@ export class o13Actor extends Actor {
 		}
 	}
 	
-	async hasPC(actor) {
-		if (this.isStory && actor.isPC) {
-			return this.pcActors.includes(actor);
+	async removePC(id) {
+		if (this.isStory) {
+			this.update({system : {pcs : this.system.pcs.filter(pc => pc.id != id)}})
 		}
 	}
 }
@@ -140,7 +241,8 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 			rollAspect : o13ActorSheet.rollAspect,
 			createNewArchetype : o13ActorSheet.createNewArchetype,
 			openArchetype : o13ActorSheet.openArchetype,
-			deleteArchetype : o13ActorSheet.deleteArchetype
+			deleteArchetype : o13ActorSheet.deleteArchetype,
+			removePC : o13ActorSheet.removePC
 		},
 		dragDrop: [{
 			dragSelector: ".draggable-item",
@@ -181,6 +283,9 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 					}
 					break;
 				case "Item" :
+					if (object.type == "archetype") {
+						await this.actor.createEmbeddedDocuments("Item", [object.toObject()])
+					}
 			}
 		}
 	}
@@ -225,9 +330,14 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 	static async deleteArchetype(event, target) {
 		if (this.actor.type == "story") {
 			const archetypeID = target.getAttribute("archetype-id");
-			console.log(target);
-			console.log(archetypeID);
 			this.actor.deletArchetype(archetypeID);
+		}
+	}
+	
+	static async removePC(event, target) {
+		if (this.actor.type == "story") {
+			const pcID = target.getAttribute("pc-id");
+			this.actor.removePC(pcID);
 		}
 	}
 	
@@ -267,7 +377,7 @@ class storyDataModel extends foundry.abstract.TypeDataModel {
 			}),
 			*/
 			
-			hostomendice: new NumberField({ required: true, integer: true, nullable: true, initial: 13 }),
+			hostomendice: new NumberField({ required: true, integer: true, nullable: true, initial: MAXHOSTOMENDICE }),
 			
 			storyaspects: new ArrayField(new SchemaField({
 				name: new StringField({ required: true, initial: ""})
@@ -338,6 +448,11 @@ class pcDataModel extends foundry.abstract.TypeDataModel {
 				}), {initial: () => Array.from({length : 5}, () => ({rating : ASPECTRATINGS[0], strain : false, name : "", archetypelock : false}))})
 			}),
 			
+			death : new SchemaField({
+				isdead : new BooleanField({ required: true, initial: false}),
+				act : new NumberField({ required: true, integer: true, nullable: true, min: 1, max : 6, initial: null })
+			}),
+			
 			pickedperks: new ArrayField(new SchemaField({
 				id: new DocumentIdField({required: true, blank: true, nullable: true, readonly: false})
 			}))
@@ -405,36 +520,3 @@ class npcDataModel extends foundry.abstract.TypeDataModel {
 }
 
 export const actorDMs = {story : storyDataModel, pc : pcDataModel, npc : npcDataModel}
-
-/*
-class MySlider extends HTMLElement {
-  connectedCallback() {
-    this.innerHTML = `
-      <input
-    const input = document.createElement("input");
-
-    input.type = "range";
-    input.min = this.getAttribute("min") ?? 0;
-    input.max = this.getAttribute("max") ?? 100;
-    input.value = this.getAttribute("value") ?? 0;
-
-    this.appendChild(input);
-      >
-    `;
-	
-this.input.addEventListener("input", (event) => {
-      this.dispatchEvent(new CustomEvent("stat-change", {
-        bubbles: true,
-        detail: {
-          id: this.dataset.id,
-          value: Number(event.target.value)
-        }
-      }));
-    });
-  }
-  
-  
-}
-
-customElements.define("my-slider", MySlider);
-*/

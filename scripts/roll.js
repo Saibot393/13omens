@@ -8,7 +8,9 @@ const MINTD = -2;
 
 const TASKRISKS = ["risky", "normal", "harmless"]
 
-export const DEFAULTDICEBAG = ["safe", "safe", "safe", "safe", "safe", "safe", "safe", "safe", "omen"];
+export const DEFAULTDICEBAGCOUNT = {safe : 8, omen : 1, }
+
+export const MAXHOSTOMENDICE = 13;
 
 export function randomPermut(array) {
 	for (let i = array.length - 1; i > 0; i--) {
@@ -18,6 +20,18 @@ export function randomPermut(array) {
 	}
 	
 	return array;
+}
+
+export function counttobag(count) {
+	let bag = [];
+	
+	for (let key of Object.keys(count)) {
+		for (let i = 1; i <= count[key]; i++) {
+			bag.push(key);
+		}
+	}
+	
+	return bag;
 }
 
 export class o13Roll extends Roll {
@@ -131,7 +145,7 @@ export class o13Roll extends Roll {
 	}
 	
 	get diceBag() {
-		return DEFAULTDICEBAG;
+		return this.actor.diceBag;
 	}
 	
 	drawDice() {

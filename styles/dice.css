@@ -11,7 +11,7 @@
 	grid-template-columns: repeat(3, 1fr);
 	grid-template-rows: repeat(3, 1fr);
 	height:100%;
-	padding:2%;
+	padding:4px;
 	
 	overflow: hidden;
 	position: relative;
@@ -84,4 +84,22 @@
 	width: 100%;
 	height: 100%;
 	justify-items: center;
+}
+
+.o13-dice-bag {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px;
+
+    border-radius: 8px;
+}
+
+.o13-dice-bag .o13-die {
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
 }

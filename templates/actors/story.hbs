@@ -16,6 +16,24 @@
 	
 	<main>
 		<div class="flexcol">
+			<div class="flexrow">
+				<div class="flexcol o13-flexStart">
+					<label class="o13-label o13-header-label o13-content-centered´">{{localize "13omens.titles.hostomendice"}}</label>
+					<div>
+						{{> "systems/13omens/templates/dice/dicebag.hbs" 
+							dice=actor.hostOmenDice
+						}}
+					</div>
+				</div>
+				<div class="flexcol o13-flexStart">
+					<label class="o13-label o13-header-label o13-content-centered">{{localize "13omens.titles.dicebag"}}</label>
+					<div>
+						{{> "systems/13omens/templates/dice/dicebag.hbs" 
+							dice=actor.diceBagDice
+						}}
+					</div>
+				</div>
+			</div>
 			<div class="flexrow" style="flex-wrap:nowrap">
 				<div class="flexcol o13-flexStart">
 					<label class="o13-label o13-header-label o13-content-centered">{{localize "13omens.titles.storyAspects"}}</label>
@@ -39,6 +57,10 @@
 					<div class="flexrow">
 						<label class="o13-label o13-clickable o13-content-centered" type="text" pc-id="{{pc.id}}" data-action="openPC">{{pc.name}}</label>
 						<label class="o13-label o13-content-centered" type="text" pc-id="{{pc.id}}" >{{pc.archetypeName}}</label>
+						{{> "systems/13omens/templates/dice/dicebar.hbs" 
+							dice=pc.system.wounddice
+						}}
+						<i class="fa-solid fa-x o13-label o13-lowflex" pc-id="{{pc.id}}" data-action="removePC"></i>
 					</div>
 				{{/each}}
 			</div>

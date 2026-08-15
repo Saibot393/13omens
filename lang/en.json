@@ -6,6 +6,9 @@
 			"name" : "Name",
 			"traits" : "Traits",
 			
+			"hostomendice" : "Host omen dice",
+			"dicebag" : "Dice bag",
+			
 			"coreAspects" : "Core Aspects",
 			"storyAspects" : "Story Aspects",
 			
