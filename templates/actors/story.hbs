@@ -18,7 +18,7 @@
 		<div class="flexcol">
 			<div class="flexrow">
 				<div class="flexcol o13-flexStart">
-					<span class="o13-label o13-header-label o13-content-centered´">{{localize "13omens.titles.hostomendice"}}</span>
+					<span class="o13-label o13-header-label o13-content-centered">{{localize "13omens.titles.hostomendice"}}</span>
 					<div>
 						{{> "systems/13omens/templates/dice/dicebag.hbs" 
 							dice=actor.hostOmenDice
@@ -58,7 +58,8 @@
 						<span class="o13-label o13-clickable o13-content-centered" type="text" pc-id="{{pc.id}}" data-action="openPC">{{pc.name}}</span>
 						<span class="o13-label o13-content-centered" type="text" pc-id="{{pc.id}}" >{{pc.archetypeName}}</span>
 						{{> "systems/13omens/templates/dice/dicebar.hbs" 
-							dice=pc.system.wounddice
+							dice=pc.woundDice
+							microdice=true
 						}}
 						<i class="fa-solid fa-x o13-label o13-lowflex" pc-id="{{pc.id}}" data-action="removePC"></i>
 					</div>

@@ -1,4 +1,4 @@
-<div class="o13-dice-bar">
+<div class="o13-dice-bar {{#if microdice}}o13-micro-dice-bar{{/if}}">
 	{{#each dice as |die|}}
 		{{> "systems/13omens/templates/dice/dice.hbs" 
 			face = die.face

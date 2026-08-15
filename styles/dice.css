@@ -86,6 +86,15 @@
 	justify-items: center;
 }
 
+.o13-micro-dice-bar{
+	grid-template-columns: repeat(auto-fill, minmax(20px, 1fr));
+}
+
+.o13-micro-dice-bar .o13-die{
+	border-radius: 3px;
+	padding: 5px;
+}
+
 .o13-dice-bag {
     display: flex;
     flex-wrap: wrap;
