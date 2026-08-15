@@ -1,0 +1,47 @@
+<div class="actor-sheet-content o13-sheet o13-scrollable drop-zone">
+	<header class="sheet-header flexrow">
+		<div class="o13-portrait-container">
+			<img class="o13-portrait" name="img" src="{{actor.img}}" title="{{actor.name}}" alt="{{actor.name}}" data-action="choosePortrait" />
+		</div>
+		
+		<div class="form-group flexrow">
+			<label for="actor-name" class="o13-label" style="flex:0.5"><b>{{localize "13omens.titles.name"}}:</b></label>
+			<input class="o13-input o13-underline" type="text" name="name" value="{{actor.name}}" />
+		</div>
+		
+		<div class="flexrow">
+			<label class="o13-label" style="flex:0.5"><b>{{localize "13omens.titles.act"}}:</b></label>
+		</div>
+	</header>
+	
+	<main>
+		<div class="flexcol">
+			<div class="flexrow" style="flex-wrap:nowrap">
+				<div class="flexcol o13-flexStart">
+					<label class="o13-label o13-header-label o13-content-centered">{{localize "13omens.titles.storyAspects"}}</label>
+					{{#each actor.system.storyaspects as |aspect|}}
+						<input class="o13-input o13-underline" type="text" name="{{concat "system.storyaspects." @key ".name"}}" value="{{aspect.name}}" />
+					{{/each}}
+				</div>
+				<div class="flexcol o13-flexStart">
+					<label class="o13-label o13-header-label o13-content-centered">{{localize "13omens.titles.archetypes"}} <i class="fa-solid fa-plus" data-action="createNewArchetype"></i></label>
+					{{#each actor.archetypes as |archetype|}}
+						<div class="flexrow o13-padding">
+							<label class="o13-label o13-clickable o13-content-centered" type="text" archetype-id="{{archetype.id}}" data-action="openArchetype">{{archetype.name}}</label>
+							<i class="fa-solid fa-x o13-label o13-lowflex" archetype-id="{{archetype.id}}" data-action="deleteArchetype"></i>
+						</div>
+					{{/each}}
+				</div>
+			</div>
+			<div class="flexcol">
+				<label class="o13-label o13-header-label">{{localize "13omens.titles.players"}}</label>
+				{{#each actor.pcActors as |pc|}}
+					<div class="flexrow">
+						<label class="o13-label o13-clickable o13-content-centered" type="text" pc-id="{{pc.id}}" data-action="openPC">{{pc.name}}</label>
+						<label class="o13-label o13-content-centered" type="text" pc-id="{{pc.id}}" >{{pc.archetypeName}}</label>
+					</div>
+				{{/each}}
+			</div>
+		</div>
+	</main>
+</div>

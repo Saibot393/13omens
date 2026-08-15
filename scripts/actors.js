@@ -1,4 +1,4 @@
-const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDocumentField, DocumentIdField, BooleanField, FilePathField } = foundry.data.fields;
+const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDocumentField, DocumentIdField, BooleanField, FilePathField, ObjectField } = foundry.data.fields;
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
 
@@ -31,6 +31,10 @@ export class o13Actor extends Actor {
 	get isPC() {
 		return this.type == "pc";
 	}
+	
+	get isStory() {
+		return this.type == "story";
+	}
   
 	get inventory() {
 		return [...this.items].filter(item => item.type == "gear");
@@ -54,6 +58,18 @@ export class o13Actor extends Actor {
 		return this.getPerks();
 	}
 	
+	get archetypes() {
+		if (this.isStory) {
+			return [...this.items].filter(item => item.type == "archetype");
+		}
+	}
+	
+	get pcActors() {
+		if (this.isStory) {
+			return this.system.pcs.map(pc => game.actors.get(pc.id)).filter(actor => actor);
+		}
+	}
+	
 	get pickedPerks() {
 		return this.getPerks(true);
 	}
@@ -61,24 +77,49 @@ export class o13Actor extends Actor {
 	get isDead() {
 		
 	}
+	
+	get storyActor() {
+		if (this.isPC) {
+			return [...game.actors].find(actor => actor.isStory && actor.hasPC(this))
+		}
+	}
 		
 	async rollAspect(aspectName, rollDialogue = false, toChat = false) {
-		const cAspectData = this.system.getAspectData(aspectName, true);
-		
-		if (cAspectData) {
-			new o13rollConfig(this, {aspect : aspectName}).render(true);
+		if (this.isPC) {
+			const cAspectData = this.system.getAspectData(aspectName, true);
 			
-			/*
-			const roll = new o13Roll(this, aspectName);
-			
-			await roll.roll();
-			
-			if (toChat) {
-				roll.toMessage();
+			if (cAspectData) {
+				new o13rollConfig(this, {aspect : aspectName}).render(true);
 			}
-			
-			return roll;
-			*/
+		}
+	}
+	
+	async createNewArchetype() {
+		if (this.isStory) {
+			const archetype = await this.createEmbeddedDocuments("Item", [{
+				name: game.i18n.localize("13omens.titles.archetype"),
+				type: "archetype"
+			}]);
+		}
+	}
+	
+	async deletArchetype(id) {
+		if (this.isStory && this.items.get(id)?.type == "archetype") {
+			this.deleteEmbeddedDocuments("Item", [id]);
+		}
+	}
+	
+	async addPC(actor) {
+		if (this.isStory) {
+			if (actor.isPC && !actor.storyActor) {
+				this.update({system : {pcs : [...this.system.pcs, {id : actor.id}]}})
+			}
+		}
+	}
+	
+	async hasPC(actor) {
+		if (this.isStory && actor.isPC) {
+			return this.pcActors.includes(actor);
 		}
 	}
 }
@@ -96,8 +137,15 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 		},
 		actions: {
 			choosePortrait : o13ActorSheet.choosePortrait,
-			rollAspect : o13ActorSheet.rollAspect
-		}
+			rollAspect : o13ActorSheet.rollAspect,
+			createNewArchetype : o13ActorSheet.createNewArchetype,
+			openArchetype : o13ActorSheet.openArchetype,
+			deleteArchetype : o13ActorSheet.deleteArchetype
+		},
+		dragDrop: [{
+			dragSelector: ".draggable-item",
+			dropSelector: ".drop-zone"
+		}]
 	};
 
 	_configureRenderParts(options) {
@@ -113,7 +161,30 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 		context.actor = this.actor;
 		return context;
 	}
+	
+	async _onDrop(event) {
+		event.preventDefault();
+		
+		const data = foundry.applications.ux.TextEditor.implementation.getDragEventData(event);
+		
+		if (!data) return;
+		
+		const object = await fromUuid(data.uuid);
+		
+		if (!object) return;
 
+		if (this.actor.type == "story") {
+			switch(data.type) {
+				case "Actor" : 
+					if (object.isPC) {
+						this.actor.addPC(object);
+					}
+					break;
+				case "Item" :
+			}
+		}
+	}
+	
 	static async choosePortrait(event, target) {
 		const picker = new foundry.applications.apps.FilePicker.implementation({
 			type: "image",
@@ -125,10 +196,62 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 	}
 	
 	static async rollAspect(event, target) {
-		const aspectName = target.getAttribute("aspect-name");
-		if (aspectName) {
-			this.actor.rollAspect(aspectName, true, true);
+		if (this.actor.type == "pc") {
+			const aspectName = target.getAttribute("aspect-name");
+			if (aspectName) {
+				this.actor.rollAspect(aspectName, true, true);
+			}
 		}
+	}
+	
+	static async createNewArchetype(event, target) {
+		if (this.actor.type == "story") {
+			this.actor.createNewArchetype();
+		}
+	}
+	
+	static async openArchetype(event, target) {
+		if (this.actor.type == "story") {
+			const archetypeID = target.getAttribute("archetype-id");
+			
+			const archetype = this.actor.items.get(archetypeID);
+			
+			if (archetype && archetype.type == "archetype") {
+				archetype.sheet.render(true);
+			}
+		}
+	}
+	
+	static async deleteArchetype(event, target) {
+		if (this.actor.type == "story") {
+			const archetypeID = target.getAttribute("archetype-id");
+			console.log(target);
+			console.log(archetypeID);
+			this.actor.deletArchetype(archetypeID);
+		}
+	}
+	
+	async _onRender(context, options) {
+		await super._onRender(context, options);
+		
+		this._disableExternalRenderHooks();
+
+		this._externalItemUpdateRender = Hooks.on("updateItem", (item, changes, options, userId) => {
+		});
+		
+		this._externalActorUpdateRender = Hooks.on("updateActor", (actor, changes, options, userId) => {
+		});
+	}
+	
+	async _onClose(options) {
+		await super._onClose(options);
+	
+		this._disableExternalRenderHooks();
+	}
+	
+	_disableExternalRenderHooks() {
+		Hooks.off(this._externalItemUpdateRender);
+		Hooks.off(this._externalActorUpdateRender);
 	}
 }
 
@@ -137,10 +260,12 @@ class storyDataModel extends foundry.abstract.TypeDataModel {
 		return {
 			activeact: new NumberField({ required: true, integer: true, nullable: true, min: 1, max : 3, initial: 1 }),
 			
+			/*
 			dicebag: new SchemaField({
 				omen: new NumberField({ required: true, integer: true, nullable: true, initial: 1 }),
 				safe: new NumberField({ required: true, integer: true, nullable: true, initial: 8 })
 			}),
+			*/
 			
 			hostomendice: new NumberField({ required: true, integer: true, nullable: true, initial: 13 }),
 			
@@ -150,16 +275,28 @@ class storyDataModel extends foundry.abstract.TypeDataModel {
 			
 			pcs: new ArrayField(new SchemaField({
 				id: new DocumentIdField({required: true, blank: true, nullable: true, readonly: false})
-			})),
+			}), {initial: []}),
 			
 			npcs: new ArrayField(new SchemaField({
 				id: new DocumentIdField({required: true, blank: true, nullable: true, readonly: false})
-			})),
+			}), {initial: []}),
 			
-			archetypes: new ArrayField(new SchemaField({
-				id: new DocumentIdField({required: true, blank: true, nullable: true, readonly: false})
-			}))
+			/*
+			archetypeaspects: new ArrayField(new SchemaField({
+				archetypeid: new DocumentIdField({required: true, blank: true, nullable: true, readonly: false}),
+				greatstoryaspect: new NumberField({ required: true, integer: true, nullable: true, initial: null })
+			}), {initial: []})
+			*/
+			archetypeaspects: new ObjectField({ initial : {}})
 		};
+	}
+	
+	prepareDerivedData() {
+		const actor = this.parent;
+		
+		this.archetypes = actor ? actor.archetypes : [];
+		
+		this.pcActors = actor ? actor.pcActors : [];
 	}
 }
 
@@ -196,8 +333,9 @@ class pcDataModel extends foundry.abstract.TypeDataModel {
 				story: new ArrayField(new SchemaField({
 					rating: newRating(),
 					strain : new BooleanField({ required: true, initial: false}),
-					name: new StringField({ required: true, initial: ""})
-				}), {initial: () => Array.from({length : 5}, () => ({rating : ASPECTRATINGS[0], strain : false, name : ""}))})
+					name: new StringField({ required: true, initial: ""}),
+					archetypelock : new BooleanField({ required: true, initial: false})
+				}), {initial: () => Array.from({length : 5}, () => ({rating : ASPECTRATINGS[0], strain : false, name : "", archetypelock : false}))})
 			}),
 			
 			pickedperks: new ArrayField(new SchemaField({

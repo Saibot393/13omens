@@ -35,13 +35,13 @@ export class o13Roll extends Roll {
 		this._edges = options.edges;
 		this._taskDifficulty = options.taskDifficulty;
 		this._taskRisk = options.taskRisk;
+		this._targetNumber = this.aspectData.targetNumber;
+		this._strain = this.aspectData.strain;
 		
 		if (!this._dicePermut || this._dicePermut.length == 0) this.drawDice();
 		
 		this._formula = this.formula;
 		this.terms = this.constructor.parse(this.formula, this.data);
-		
-		console.log(this);
 	}
 	
 	get outcome() {
@@ -75,7 +75,7 @@ export class o13Roll extends Roll {
 	}
 	
 	get flaws() {
-		return this._flaws.length + this._omenflaws.length + (this.aspectData.strain ? 1 : 0);
+		return this._flaws.length + this._omenflaws.length + (this.strain ? 1 : 0);
 	}
 	
 	get omenflaws() {
@@ -110,12 +110,20 @@ export class o13Roll extends Roll {
 		return this._taskRisk;
 	}
 	
+	get targetNumber() {
+		return this._targetNumber || this.aspectData.targetNumber;
+	}
+	
+	get strain() {
+		return this._strain || this.aspectData.strain;
+	}
+	
 	get aspectData() {
 		return this.actor.system.getAspectData(this.aspect, true);
 	}
 	
 	get totalDifficulty() {
-		return this.aspectData.targetNumber + this.taskDifficulty;
+		return this.targetNumber + this.taskDifficulty;
 	}	
 	
 	get totalDice() {
@@ -157,7 +165,9 @@ export class o13Roll extends Roll {
                 omenflaws: this._omenflaws,
                 edges: this._edges,
                 taskDifficulty: this._taskDifficulty,
-                taskRisk: this._taskRisk
+                taskRisk: this._taskRisk,
+				targetNumber: this._targetNumber,
+				strain: this._strain
             }
         };
         return json;
@@ -194,8 +204,6 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 		this._id = foundry.utils.randomID();
 		
 		this._secondaryView = secondaryView;
-		
-		console.log(this);
 	}
 	
 	static newSecondary(socketData) {
@@ -239,6 +247,10 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 		return this.aspectData.rating;
 	}
 	
+	get strain() {
+		return this.aspectData.strain;
+	}
+	
 	get targetNumber() {
 		return this.aspectData.targetNumber;
 	}
@@ -264,11 +276,23 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 	
 	get canAddFlaws() {
-		return this.flaws.length < MAXFE;
+		return this.flaws.length + (this.strain ? 1 : 0) < MAXFE;
 	}
 	
 	get canAddEdges() {
 		return this.edges.length < MAXFE;
+	}
+	
+	addFlaw(flawName = "", omen = false) {
+		this._data.flaws = [...this._data.flaws, {name : flawName || game.i18n.localize("13omens.titles.flaw"), isomen : omen}];
+		
+		this._applyUpdate();
+	}
+	
+	addEdge(edgeName = "") {
+		this._data.edges = [...this._data.edges, {name : edgeName || game.i18n.localize("13omens.titles.edge")}];
+		
+		this._applyUpdate();
 	}
 	
 	static DEFAULT_OPTIONS = {
@@ -310,8 +334,6 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
     };
 	
 	static async _onSubmitForm(event, form, formData) {
-		console.log(formData.object);
-		
 		for (let key of Object.keys(formData.object)) {
 			foundry.utils.setProperty(this._data, key, formData.object[key]);
 		}
@@ -337,18 +359,13 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 	
 	static async addEmptyFlaw(event, target) {
 		if (this.canAddFlaws) {
-			this._data.flaws = [...this._data.flaws, {name : game.i18n.localize("13omens.titles.flaw"), isomen : false}];
-			
-			this._applyUpdate();
+			this.addFlaw();
 		}
 	}
 	
 	static async addEmptyEdge(event, target) {
-		console.log(event);
 		if (this.canAddEdges) {
-			this._data.edges = [...this._data.edges, {name : game.i18n.localize("13omens.titles.edge")}];
-			
-			this._applyUpdate();
+			this.addEdge();
 		}
 	}
 	
@@ -368,7 +385,7 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 	
 	static async roll(event, target) {
 		const roll = new o13Roll(this.actor, this.aspect, this._data);
-				console.log(roll);
+
 		await roll.evaluate();
 		roll.toMessage();
 		

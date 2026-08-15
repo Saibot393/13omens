@@ -9,6 +9,9 @@
 			"coreAspects" : "Core Aspects",
 			"storyAspects" : "Story Aspects",
 			
+			"archetypes" : "Archetypes",
+			"archetype" : "Archetype",
+			
 			"rating" : "Rating",
 			"tn" : "TN",
 			"strain" : "Strain",

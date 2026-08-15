@@ -24,6 +24,9 @@
 		<div class="flexrow">
 			<div class="flexcol o13-flexStart">
 				<label class="o13-header-label o13-content-centered">{{localize "13omens.titles.flaws"}} <i class="fa-solid fa-plus" data-action="addEmptyFlaw"></i></label>
+				{{#if config.strain}}
+					<input class="o13-input o13-underline" type="text" index="{{@key}}" value="{{localize "13omens.titles.strain"}}" style="width:80%" disabled />
+				{{/if}}
 				{{#each config.flaws as |flaw|}}
 					<div class="flexrow o13-padding">
 						<input class="o13-input o13-underline" type="text" index="{{@key}}" name="{{concat "flaws." @key ".name"}}" value="{{flaw.name}}" />
@@ -36,7 +39,7 @@
 				{{#each config.edges as |edge|}}
 					<div class="flexrow o13-padding">
 						<input class="o13-input o13-underline" type="text" index="{{@key}}" name="{{concat "edges." @key ".name"}}" value="{{edge.name}}" />
-						<i class="fa-solid fa-x o13-label o13-lowflex" data-action="removeEdge"></i>
+						<i class="fa-solid fa-x o13-label o13-lowflex" index="{{@key}}" data-action="removeEdge"></i>
 					</div>
 				{{/each}}
 			</div>
