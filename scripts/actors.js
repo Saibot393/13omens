@@ -41,7 +41,7 @@ export class o13Actor extends Actor {
 					//story aspect auto
 					const archetypeAspect = this.getArchetypeAspect(changed.system.archetype);
 					
-					const storyAspects = this.system.aspects.story;
+					const storyAspects = changed.system.aspects?.story || system.system.aspects.story;
 					
 					if (archetypeAspect >= 0 && archetypeAspect <= Math.max(...Object.keys(storyAspects))) {
 						for (let i in Object.keys(storyAspects)) {
@@ -68,6 +68,8 @@ export class o13Actor extends Actor {
 				}
 			}
 		}
+		
+		await super._preUpdate(changed, options, user);
 	}
 	
 	get isPC() {
@@ -375,7 +377,7 @@ export class o13Actor extends Actor {
 		}
 		
 		if (this.isStory) {
-			for (pc of this.pcActors) {
+			for (const pc of this.pcActors) {
 				await pc.updateMaxWounds();
 			}
 		}
@@ -453,7 +455,7 @@ export class o13Actor extends Actor {
 		}
 		
 		if (this.isStory) {
-			for (pc of this.pcActors) {
+			for (const pc of this.pcActors) {
 				await pc.checkDeath();
 			}
 		}

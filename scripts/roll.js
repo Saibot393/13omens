@@ -498,8 +498,8 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 }
 
-Hooks.on("renderChatMessage", (message, html) => {
-	const o13Buttons = html[0].querySelectorAll(".o13-button");
+Hooks.on("renderChatMessageHTML", (message, html) => {
+	const o13Buttons = html.querySelectorAll(".o13-button");
 	
 	const roll = message.rolls[0];
 
