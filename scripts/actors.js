@@ -10,6 +10,8 @@ const ASPECTTN = [10, 9, 7, 5, 4];
 
 const DEFAULTMAXWOUNDS = 4;
 
+const EMPTYWOUND = {safe : {filled : false, face : null, act : null}, omen : {filled : false, face : null, act : null}};
+
 function newRating() {
 	return new NumberField({ required: true, integer: true, nullable : true, min: Math.min(...ASPECTRATINGS), max : Math.max(...ASPECTRATINGS), initial: ASPECTRATINGS[0] });
 } 
@@ -212,13 +214,13 @@ export class o13Actor extends Actor {
 				}
 				else {
 					if (wound.omen.filled) {
-						die.face = wound.omen.side;
+						die.face = wound.omen.face;
 						die.type = "omen";
 						die.act = wound.omen.act;
 					}
 					else {
 						if (wound.safe.filled) {
-							die.face = wound.safe.side;
+							die.face = wound.safe.face;
 							die.type = "safe";
 							die.act = wound.safe.act;
 						}
@@ -230,17 +232,17 @@ export class o13Actor extends Actor {
 		}
 	}
 	
-	getAspectData(aspectName, includeTN = false) {
-		if (COREASPECTS_IDS.includes(aspectName)) {
-			const add = includeTN ? {targetNumber : this.system.targetNumbers.core[aspectName]} : {};
+	getAspectData(aspect, includeTN = false) {
+		if (COREASPECTS_IDS.includes(aspect)) {
+			const add = includeTN ? {targetNumber : this.system.targetNumbers.core[aspect]} : {};
 			
-			return {...add, ...this.system.aspects.core[aspectName], name : game.i18n.localize(`13omens.titles.${aspectName}`)};
+			return {...add, ...this.system.aspects.core[aspect], name : game.i18n.localize(`13omens.titles.${aspect}`)};
 		}
 		
-		if (!isNaN(aspectName)) {
-			const add = includeTN ? {targetNumber : this.system.targetNumbers.story[aspectName]} : {};
+		if (!isNaN(aspect)) {
+			const add = includeTN ? {targetNumber : this.system.targetNumbers.story[aspect]} : {};
 			
-			return {...add, ...this.system.aspects.story[aspectName], name : this.storyAspectNames[aspectName]};
+			return {...add, ...this.system.aspects.story[aspect], name : this.storyAspectNames[aspect]};
 		}
 	}
 	
@@ -293,6 +295,105 @@ export class o13Actor extends Actor {
 	canRollAspect(aspect) {
 		if (this.isPC) {
 			return !isNaN(this.getAspectData(aspect,true).targetNumber);
+		}
+	}
+	
+	async updateMaxWounds() {
+		if (this.isPC) {
+			const maxWounds = this.maxWounds;
+			
+			let currentWounds = this.system.wounds;
+			
+			while (currentWounds.length > maxWounds) {
+				currentWounds.pop();
+			}
+			
+			while (currentWounds.length < maxWounds) {
+				currentWounds.push(EMPTYWOUND);
+			}
+			
+			return this.update({system : {wounds : currentWounds}});
+		}
+		
+		if (this.isStory) {
+			for (pc of this.pcActors) {
+				await pc.updateMaxWounds();
+			}
+		}
+	}
+	
+	async takeWound(options = {face : 6, cheatDeath : false}) {
+		if (this.isPC) {
+			const wounds = this.system.wounds;
+			
+			const nextEmpty = wounds.indexOf(wounds.find(wound => {
+				return !wound.omen.filled && (!wound.safe.filled || !options.cheatDeath)
+			}));
+			
+			if (nextEmpty >= 0 && nextEmpty < wounds.length) {
+				if (options.cheatDeath) {
+					wounds[nextEmpty].safe.filled = true;
+					wounds[nextEmpty].safe.face = options.face;
+					wounds[nextEmpty].safe.act = this.activeAct;
+				}
+				else {
+					wounds[nextEmpty].omen.filled = true;
+					wounds[nextEmpty].omen.face = options.face;
+					wounds[nextEmpty].omen.act = this.activeAct;
+				}
+				
+				return this.update({system : {wounds : wounds}});
+			}
+		}
+	}
+	
+	async clearWound() {
+		if (this.isPC) {
+			const wounds = this.system.wounds;
+			
+			const nextEmpty = wounds.indexOf([...wounds].reverse().find(wound => {
+				return wound.omen.filled || wound.safe.filled;
+			}));
+			
+			if (nextEmpty >= 0 && nextEmpty < wounds.length) {
+				wounds[nextEmpty] = EMPTYWOUND;
+				
+				return this.update({system : {wounds : wounds}});
+			}
+		}
+	}
+	
+	async takeStrain(aspect) {
+		if (COREASPECTS_IDS.includes(aspect)) {
+			return this.update({system : {aspects : {core : {[aspect] : {strain : true}}}}});
+		}
+		
+		if (!isNaN(aspect)) {
+			const storyAspects = this.system.aspects.story;
+			
+			if (aspect >= 0 && aspect < storyAspects.length) {
+				storyAspects[aspect].strain = true;
+				
+				return this.update({system : {aspects : {story : storyAspects}}});
+			}
+		}
+	}
+	
+	async checkDeath() {
+		if (this.isPC) {
+			const isDead = !this.system.wounds.find(wound => !wound.omen.filled);
+			
+			if (isDead) {
+				await this.update({system : {death : {isdead : true, act : this.activeAct}}})
+			}
+			
+			return isDead;
+		}
+		
+		if (this.isStory) {
+			for (pc of this.pcActors) {
+				await pc.checkDeath();
+			}
 		}
 	}
 		
@@ -548,15 +649,15 @@ class pcDataModel extends foundry.abstract.TypeDataModel {
 			wounds : new ArrayField(new SchemaField({
 				safe : new SchemaField({
 					filled : new BooleanField({ required: true, initial: false}),
-					side : new NumberField({ required: true, integer: true, nullable: true, min: 1, max : 6, initial: null }),
+					face : new NumberField({ required: true, integer: true, nullable: true, min: 1, max : 6, initial: null }),
 					act : new NumberField({ required: true, integer: true, nullable: true, min: 1, max : 3, initial: null })
 				}),
 				omen : new SchemaField({
 					filled : new BooleanField({ required: true, initial: false}),
-					side : new NumberField({ required: true, integer: true, nullable: true, min: 1, max : 6, initial: null }),
+					face : new NumberField({ required: true, integer: true, nullable: true, min: 1, max : 6, initial: null }),
 					act : new NumberField({ required: true, integer: true, nullable: true, min: 1, max : 3, initial: null })
 				})
-			}), {initial: () => Array.from({length : 4}, () => ({safe : {filled : false, side : null, act : null}, omen : {filled : false, side : null, act : null}}))}),
+			}), {initial: () => Array.from({length : 4}, () => (EMPTYWOUND))}),
 			
 			aspects: new SchemaField({
 				core: new SchemaField(Object.fromEntries(COREASPECTS_IDS.map(str => [str, new SchemaField({

@@ -54,6 +54,7 @@ export class o13Roll extends Roll {
 		this._aspectName = options.aspectName || this.aspectName;
 		this._actorName = options.actorName || this.actorName;
 		this._act = options.act || this.act;
+		this._consequenceTaken = options.consequenceTaken;
 		
 		if (!this._dicePermut || this._dicePermut.length == 0) this.drawDice();
 		
@@ -179,6 +180,14 @@ export class o13Roll extends Roll {
 		return this._terms[0].results.map((result, index) => ({face : result.result, type : this.dicePermut[index], crossed : result.discarded}))
 	}
 	
+	get firstOmenDice() {
+		return this.diceResults.find(result => result.type == "omen");
+	}
+	
+	get firstSafeDice() {
+		return this.diceResults.find(result => result.type == "safe");
+	}
+	
 	get hasWound() {
 		return this.actor ? this.diceResults.find(dice => dice.face <= this.act && dice.type == "omen") : false;
 	}
@@ -191,12 +200,25 @@ export class o13Roll extends Roll {
 		return this.actor?.canCheatDeath;
 	}
 	
+	get consequenceTaken() {
+		return this._consequenceTaken;
+	}
+	
+	get canTakeConsequence() {
+		return (this.actor ?? false) && !this.consequenceTaken;
+	}
+	
 	async render() {
-		return foundry.applications.handlebars.renderTemplate("systems/13omens/templates/rolls/chatRoll.hbs", {roll : this});
+		return foundry.applications.handlebars.renderTemplate("systems/13omens/templates/rolls/chatRoll.hbs", {roll : this, flags : {canTakeConsequence : this.canTakeConsequence}});
 	}
 	
 	toJSON() {
         const json = super.toJSON();
+		
+		if (this._terms) {
+			json.terms = this._terms.map(term => term.toJSON());
+		}
+		
         json.o13Data = {
             actorId: this._actor?.id,
             aspect: this._aspect,
@@ -211,7 +233,8 @@ export class o13Roll extends Roll {
 				strain: this._strain,
 				aspectName: this._aspectName,
 				actorName: this._actorName,
-				act: this._act
+				act: this._act,
+				consequenceTaken: this._consequenceTaken
             }
         };
         return json;
@@ -227,11 +250,52 @@ export class o13Roll extends Roll {
         roll._evaluated = data.evaluated ?? true;
         roll._total = data.total;
         if (data.terms) {
-            roll._terms = data.terms.map(t => foundry.dice.terms.RollTerm.fromData(t));
+            roll._terms = data.terms.map(term => foundry.dice.terms.RollTerm.fromData(term));
         }
         
         return roll;
     }
+	
+	async dataAction(event, target, message) {
+		const dataAction = target.getAttribute("data-action");
+		console.log(event, target, message, dataAction);
+		if (dataAction) {
+			switch (dataAction) {
+				case "takeWound" : await this.takeWound(); break;
+				case "cheatDeath" : await this.cheatDeath(); break;
+				case "takeStrain" : await this.takeStrain(); break;
+			}
+			
+			message.update({
+				rolls : [this.toJSON()],
+				flags : {canTakeConsequence : this.canTakeConsequence}
+			});
+		}
+	}
+	
+	async takeWound() {
+		if (this.canTakeConsequence) {
+			this._consequenceTaken = true;
+			
+			await this.actor.takeWound({face : this.firstOmenDice?.face});
+		}
+	}
+	
+	async cheatDeath() {
+		if (this.canTakeConsequence) {
+			this._consequenceTaken = true;
+			
+			await this.actor.takeWound({face : (this.firstSafeDice || this.firstOmenDice)?.face, cheatDeath : true});
+		}
+	}
+	
+	async takeStrain() {
+		if (this.canTakeConsequence) {
+			this._consequenceTaken = true;
+			
+			await this.actor.takeStrain(this.aspect);
+		}
+	}
 }
 
 export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
@@ -436,3 +500,24 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 		return roll;
 	}
 }
+
+Hooks.on("renderChatMessage", (message, html) => {
+	console.log(message, html);
+	console.log(html[0]);
+	const o13Buttons = html[0].querySelectorAll(".o13-button");
+	
+	const roll = message.rolls[0];
+	console.log(roll);
+	if (roll instanceof o13Roll) {
+		console.log(o13Buttons);
+		o13Buttons.forEach((button) => {
+			const dataAction = button.getAttribute("data-action");
+			console.log(dataAction);
+			if (dataAction) {
+				button.addEventListener("click", async (event) => {
+					roll.dataAction(event, button, message);
+				})
+			}
+		});
+	}
+})

@@ -8,13 +8,15 @@
 		</div>
 		<span class="o13-label o13-content-centered o13-header-label" style="margin-top:5px">
 			{{{localize "13omens.titles.rollResult" taskrisk=(localize (concat "13omens.titles.taskrisks." roll.taskRisk)) outcome=(localize (concat "13omens.titles.outcomes." roll.outcome))}}}
-			{{#if roll.hasWound}}
-				{{#if roll.woundisStrain}}
-					<i class="fa-solid fa-splotch" style="color:var(--o13-strain-yellow)" data-tooltip="{{localize '13omens.tooltips.takeStrain'}}"></i>
-				{{else}}
-					<i class="fa-solid fa-skull" style="color:var(--o13-omen-red)" data-tooltip="{{localize '13omens.tooltips.takeWound'}}"></i>
-					{{#if roll.canCheatDeath}}
-						<i class="fa-solid fa-star-of-life" style="color:var(--o13-cheat-blue)" data-tooltip="{{localize '13omens.tooltips.cheatDeath'}}"></i>
+			{{#if flags.canTakeConsequence}}
+				{{#if roll.hasWound}}
+					{{#if roll.woundisStrain}}
+						<i class="fa-solid fa-bolt-lightning o13-button" style="color:var(--o13-strain-yellow)" data-action="takeStrain" data-tooltip="{{localize '13omens.tooltips.takeStrain'}}"></i>
+					{{else}}
+						<i class="fa-solid fa-droplet o13-button" style="color:var(--o13-omen-red)" data-action="takeWound" data-tooltip="{{localize '13omens.tooltips.takeWound'}}"></i>
+						{{#if roll.canCheatDeath}}
+							<i class="fa-solid fa-hourglass-half o13-button" style="color:var(--o13-cheat-blue)" data-action="cheatDeath" data-tooltip="{{localize '13omens.tooltips.cheatDeath'}}"></i>
+						{{/if}}
 					{{/if}}
 				{{/if}}
 			{{/if}}
