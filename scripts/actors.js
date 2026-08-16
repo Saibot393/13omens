@@ -35,17 +35,17 @@ export class o13Actor extends Actor {
 	}
 	
 	async _preUpdate(changed, options, user) {
+		console.log(changed);
 		if (this.isPC && changed) {
 			if (changed.system) {
 				if (changed.system.archetype) {
-					console.log(changed);
+					//story aspect auto
 					const archetypeAspect = this.getArchetypeAspect(changed.system.archetype);
 					
 					const storyAspects = this.system.aspects.story;
-					console.log(archetypeAspect, storyAspects, this);
 					
-					if (archetypeAspect >= 0 && archetypeAspect < storyAspects.length) {
-						for (let i in storyAspects) {
+					if (archetypeAspect >= 0 && archetypeAspect <= Math.max(...Object.keys(storyAspects))) {
+						for (let i in Object.keys(storyAspects)) {
 							if (i == archetypeAspect) storyAspects[i].rating = Math.max(...ASPECTRATINGS)
 							else if (storyAspects[i].rating == Math.max(...ASPECTRATINGS)) storyAspects[i].rating = -1;
 						
@@ -53,10 +53,21 @@ export class o13Actor extends Actor {
 						}
 						
 						if (!changed.system.aspects) changed.system.aspects = {};
-						console.log(changed.system.aspects.story);
-						console.log(storyAspects);
+						
 						changed.system.aspects.story = {...changed.system.aspects.story, ...storyAspects};
 					}
+				}
+				if (changed.system.aspects) {
+					//rating is Number
+					console.log(changed.system.aspects.story);
+					if (changed.system.aspects.story) {
+						for (let entry of Object.values(changed.system.aspects.story)) {
+							if (entry && "rating" in entry) {
+								entry.rating = !isNaN(entry.rating) ? Number(entry.rating) : ASPECTRATINGS[0];
+							}
+						}
+					}
+					console.log(changed.system.aspects.story);	
 				}
 			}
 		}
@@ -282,16 +293,18 @@ export class o13Actor extends Actor {
 	}
 	
 	getAspectData(aspect, includeTN = false) {
-		if (COREASPECTS_IDS.includes(aspect)) {
-			const add = includeTN ? {targetNumber : this.system.targetNumbers.core[aspect]} : {};
+		if (this.isPC) {
+			if (COREASPECTS_IDS.includes(aspect)) {
+				const add = includeTN ? {targetNumber : this.system.targetNumbers.core[aspect]} : {};
+				
+				return {...add, ...this.system.aspects.core[aspect], name : game.i18n.localize(`13omens.titles.${aspect}`)};
+			}
 			
-			return {...add, ...this.system.aspects.core[aspect], name : game.i18n.localize(`13omens.titles.${aspect}`)};
-		}
-		
-		if (!isNaN(aspect)) {
-			const add = includeTN ? {targetNumber : this.system.targetNumbers.story[aspect]} : {};
-			
-			return {...add, ...this.system.aspects.story[aspect], name : this.storyAspectNames[aspect]};
+			if (!isNaN(aspect)) {
+				const add = includeTN ? {targetNumber : this.system.targetNumbers.story[aspect]} : {};
+				
+				return {...add, ...this.system.aspects.story[aspect], name : this.storyAspectNames[aspect]};
+			}
 		}
 	}
 	
@@ -420,10 +433,13 @@ export class o13Actor extends Actor {
 		if (!isNaN(aspect)) {
 			const storyAspects = this.system.aspects.story;
 			
-			if (aspect >= 0 && aspect < storyAspects.length) {
+			if (aspect >= 0 && aspect < Math.max(...Object.keys(storyAspects))) {
+				/*
 				storyAspects[aspect].strain = true;
 				
 				return this.update({system : {aspects : {story : storyAspects}}});
+				*/
+				return this.update({system : {aspects : {story : {[aspect] : {strain : true}}}}});
 			}
 		}
 	}
@@ -679,9 +695,7 @@ class storyDataModel extends foundry.abstract.TypeDataModel {
 				greatstoryaspect: new NumberField({ required: true, integer: true, nullable: true, initial: null })
 			}), {initial: []})
 			*/
-			archetypeaspects: new ObjectField(
-				new NumberField({initial: -1, integer: true, min: -1, max: 5})
-			)
+			archetypeaspects: new ObjectField({})
 		};
 	}
 	
@@ -726,11 +740,20 @@ class pcDataModel extends foundry.abstract.TypeDataModel {
 					strain : new BooleanField({ required: true, initial: false})
 				})]))),
 				
+				/*
 				story: new ArrayField(new SchemaField({
 					rating: newRating(),
 					strain : new BooleanField({ required: true, initial: false}),
 					archetypelock : new BooleanField({ required: true, initial: false})
 				}), {initial: () => Array.from({length : 5}, () => ({rating : ASPECTRATINGS[0], strain : false, name : "", archetypelock : false}))})
+				*/
+				story: new ObjectField({
+					initial: () => Object.fromEntries(Array.from({length : 5}, (val, i) => ([i, {
+						rating: ASPECTRATINGS[0],
+						strain : false,
+						archetypelock : false
+					}])))
+				})
 			}),
 			
 			death : new SchemaField({
@@ -747,12 +770,12 @@ class pcDataModel extends foundry.abstract.TypeDataModel {
 	prepareDerivedData() {
 		this.availableRatings = {
 			core : ASPECTRATINGS.filter(rating => rating < 0 || !Object.values(this.aspects.core).find(value => value.rating == rating)),
-			story : ASPECTRATINGS.filter(rating => rating < 0 || !this.aspects.story.find(value => value.rating == rating))
+			story : ASPECTRATINGS.filter(rating => rating < 0 || !Object.values(this.aspects.story).find(value => value.rating == rating))
 		}
 		
 		this.targetNumbers = {
 			core : Object.fromEntries(Object.keys(this.aspects.core).map(key => [key, ASPECTTN[this.aspects.core[key].rating]])),
-			story : this.aspects.story.map(value => ASPECTTN[value.rating])
+			story : Object.fromEntries(Object.keys(this.aspects.story).map(key => [key, ASPECTTN[this.aspects.story[key].rating]]))
 		}
 	}
 }
