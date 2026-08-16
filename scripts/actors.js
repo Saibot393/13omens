@@ -41,7 +41,7 @@ export class o13Actor extends Actor {
 					//story aspect auto
 					const archetypeAspect = this.getArchetypeAspect(changed.system.archetype);
 					
-					const storyAspects = changed.system.aspects?.story || system.system.aspects.story;
+					const storyAspects = {...system.system.aspects.story, ...changed.system.aspects?.story};
 					
 					if (archetypeAspect >= 0 && archetypeAspect <= Math.max(...Object.keys(storyAspects))) {
 						for (let i in Object.keys(storyAspects)) {

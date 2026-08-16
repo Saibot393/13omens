@@ -67,6 +67,11 @@
 	border-bottom: 2px solid var(--o13-ink-black);
 }
 
+.o13-inline p {
+  display: inline;
+  margin: 0;
+}
+
 .o13-input:hover{
 	background: rgba(255, 255, 255, 0.05);
 }

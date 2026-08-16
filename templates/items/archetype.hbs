@@ -1,0 +1,25 @@
+<div class="item-sheet-content o13-sheet o13-scrollable flexcol drop-zone">
+	<header class="sheet-header flexrow">
+		<div class="o13-portrait-container">
+			<img class="o13-portrait" name="img" src="{{item.img}}" title="{{item.name}}" alt="{{item.name}}" data-action="choosePortrait" />
+		</div>
+		<div class="flexcol">
+			<div class="form-group flexrow">
+				<label for="item-name" class="o13-label" style="flex:0.5"><b>{{localize "13omens.titles.name"}}:</b></label>
+				<input class="o13-input o13-underline" type="text" name="name" value="{{item.name}}" />
+			</div>
+		</div>
+	</header>
+	<main>
+		<div class="flexcol">
+			<div class="flexcol">
+				<span class="o13-label o13-header-label">{{localize "13omens.titles.perks"}}</span>
+				<div style="display:grid;grid-template-columns: repeat(2, 1fr);gap: 1rem;">
+					{{#each item.perksData}}
+						<span class="o13-label o13-inline" perk-id="{{this.id}}"><b>{{this.name}}</b> {{{this.system.description}}}</span>
+					{{/each}}
+				</div>
+			</div>
+		</div>
+	</main>
+</div>
