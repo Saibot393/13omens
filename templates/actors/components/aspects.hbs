@@ -8,31 +8,30 @@
 		</tr>
 		{{#each aspects as |aspect|}}
 			<tr>
-			<td>
-			{{#if (ne ../aspectsnames undefined)}}
-				<label class="o13-label o13-clickable" data-action="rollAspect" aspect-name="{{@key}}"><b>{{lookup ../aspectsnames @key}}</b></label>
-			{{else}}
-				<label class="o13-label o13-clickable" data-action="rollAspect" aspect-name="{{@key}}"><b>{{localize (concat "13omens.titles." @key)}}</b></label>
-			{{/if}}
-			</td>
-			
-			<td>
-			<select class="o13-input o13-underline" name="{{concat ../namepath @key ".rating" }}">
-				{{#if (ne aspect.rating -1)}} <option value="{{aspect.rating}}" selected><b>{{localize (concat "13omens.titles.ratings." aspect.rating)}}</b></option> {{/if}}
-				{{#each ../availableRatings as |rating|}}
-					<option value="{{rating}}"><b>{{localize (concat "13omens.titles.ratings." rating)}}</b></option>
-				{{/each}}
-			</select>
-			</td>
-			
-			<td class="o13-content-centered o13-bottom-align">
-				<label class="o13-label o13-underline"><b>{{lookup ../targetNumbers @key}}</b></label>
-			</td>
-			
-			<td class="o13-content-centered">
-				<input class="o13-checkbox" type="checkbox" name="{{concat ../namepath @key ".strain" }}" {{checked aspect.strain}} />
-			</td>
-			
+				<td>
+					{{#if (ne ../aspectsnames undefined)}}
+						<label class="o13-label o13-clickable" data-action="rollAspect" aspect-name="{{@key}}"><b>{{lookup ../aspectsnames @key}}</b></label>
+					{{else}}
+						<label class="o13-label o13-clickable" data-action="rollAspect" aspect-name="{{@key}}"><b>{{localize (concat "13omens.titles." @key)}}</b></label>
+					{{/if}}
+				</td>
+				
+				<td>
+				<select class="o13-input o13-underline" name="{{concat ../namepath @key ".rating" }}" style="height:90%">
+					{{#if (ne aspect.rating -1)}} <option value="{{aspect.rating}}" selected><b>{{localize (concat "13omens.titles.ratings." aspect.rating)}}</b></option> {{/if}}
+					{{#each ../availableRatings as |rating|}}
+						<option value="{{rating}}"><b>{{localize (concat "13omens.titles.ratings." rating)}}</b></option>
+					{{/each}}
+				</select>
+				</td>
+				
+				<td class="o13-content-centered o13-bottom-align">
+					<label class="o13-label o13-underline"><b>{{lookup ../targetNumbers @key}}</b></label>
+				</td>
+				
+				<td class="o13-content-centered">
+					<input class="o13-checkbox" type="checkbox" name="{{concat ../namepath @key ".strain" }}" {{checked aspect.strain}} />
+				</td>
 			</tr>
 		{{/each}}
 	</table>

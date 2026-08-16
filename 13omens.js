@@ -20,4 +20,6 @@ Hooks.once("init", () => {
 	CONFIG.Dice.rolls.push(o13Roll);
 	
 	foundry.applications.handlebars.loadTemplates(templatePaths);
+	
+	Handlebars.registerHelper("eqLoose", (a, b) => a == b);
 });

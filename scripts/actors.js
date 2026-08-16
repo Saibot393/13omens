@@ -8,6 +8,8 @@ const COREASPECTS_IDS = ["courage", "evade", "fight", "luck", "perception"];
 const ASPECTRATINGS = [-1, 0,1,2,3,4];
 const ASPECTTN = [10, 9, 7, 5, 4];
 
+const ARCHETYPEASPECTRATING = 4;
+
 const DEFAULTMAXWOUNDS = 4;
 
 const EMPTYWOUND = {safe : {filled : false, face : null, act : null}, omen : {filled : false, face : null, act : null}};
@@ -28,6 +30,34 @@ export class o13Actor extends Actor {
 						disposition: CONST.TOKEN_DISPOSITIONS.FRIENDLY
 					}
 				});
+			}
+		}
+	}
+	
+	async _preUpdate(changed, options, user) {
+		if (this.isPC && changed) {
+			if (changed.system) {
+				if (changed.system.archetype) {
+					console.log(changed);
+					const archetypeAspect = this.getArchetypeAspect(changed.system.archetype);
+					
+					const storyAspects = this.system.aspects.story;
+					console.log(archetypeAspect, storyAspects, this);
+					
+					if (archetypeAspect >= 0 && archetypeAspect < storyAspects.length) {
+						for (let i in storyAspects) {
+							if (i == archetypeAspect) storyAspects[i].rating = Math.max(...ASPECTRATINGS)
+							else if (storyAspects[i].rating == Math.max(...ASPECTRATINGS)) storyAspects[i].rating = -1;
+						
+							storyAspects[i].archetypelock = i == archetypeAspect;
+						}
+						
+						if (!changed.system.aspects) changed.system.aspects = {};
+						console.log(changed.system.aspects.story);
+						console.log(storyAspects);
+						changed.system.aspects.story = {...changed.system.aspects.story, ...storyAspects};
+					}
+				}
 			}
 		}
 	}
@@ -90,6 +120,25 @@ export class o13Actor extends Actor {
 		}
 	}
 	
+	getArchetypeAspect(archetype) {
+		if (this.isStory) {
+			archetype = archetype instanceof Item ? archetype : this.items.get(archetype);
+			if (this.archetypes?.includes(archetype)) {
+				return this.system.archetypeaspects[archetype.id];
+			}
+		}
+		
+		if (this.isPC) {
+			return this.storyActor?.getArchetypeAspect(archetype);
+		}
+	}
+	
+	get archetypeAspect() {
+		if (this.isPC) {
+			return this.getArchetypeAspect(this.archetype);
+		}
+	}
+	
 	get pcActors() {
 		if (this.isStory) {
 			return this.system.pcs.map(pc => game.actors.get(pc.id)).filter(actor => actor?.isPC);
@@ -126,7 +175,7 @@ export class o13Actor extends Actor {
 		}
 		
 		if (this.isPC) {
-			return this.storyActor?.getmaxWounds(this);
+			return this.storyActor?.getmaxWounds(this) || DEFAULTMAXWOUNDS;
 		}
 	}
 	
@@ -418,12 +467,21 @@ export class o13Actor extends Actor {
 				name: game.i18n.localize("13omens.titles.archetype"),
 				type: "archetype"
 			}]);
+			console.log(archetype);
+			this.registerArchetype(archetype[0]);
+		}
+	}
+	
+	async registerArchetype(archetype) {
+		if (this.isStory && archetype) {
+			await this.update({system : {archetypeaspects : {[archetype.id] : -1}}})
 		}
 	}
 	
 	async deleteArchetype(id) {
 		if (this.isStory && this.items.get(id)?.type == "archetype") {
 			this.deleteEmbeddedDocuments("Item", [id]);
+			
 		}
 	}
 	
@@ -501,7 +559,8 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 					break;
 				case "Item" :
 					if (object.type == "archetype") {
-						await this.actor.createEmbeddedDocuments("Item", [object.toObject()])
+						const archetype = await this.actor.createEmbeddedDocuments("Item", [object.toObject()]);
+						this.actor.registerArchetype(archetype);
 					}
 			}
 		}
@@ -620,7 +679,9 @@ class storyDataModel extends foundry.abstract.TypeDataModel {
 				greatstoryaspect: new NumberField({ required: true, integer: true, nullable: true, initial: null })
 			}), {initial: []})
 			*/
-			archetypeaspects: new ObjectField({ initial : {}})
+			archetypeaspects: new ObjectField(
+				new NumberField({initial: -1, integer: true, min: -1, max: 5})
+			)
 		};
 	}
 	

@@ -60,8 +60,6 @@ export class o13Roll extends Roll {
 		
 		this._formula = this.formula;
 		this.terms = this.constructor.parse(this.formula, this.data);
-		
-		console.log(this);
 	}
 	
 	get outcome() {
@@ -258,7 +256,6 @@ export class o13Roll extends Roll {
 	
 	async dataAction(event, target, message) {
 		const dataAction = target.getAttribute("data-action");
-		console.log(event, target, message, dataAction);
 		if (dataAction) {
 			switch (dataAction) {
 				case "takeWound" : await this.takeWound(); break;
@@ -502,17 +499,15 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 }
 
 Hooks.on("renderChatMessage", (message, html) => {
-	console.log(message, html);
-	console.log(html[0]);
 	const o13Buttons = html[0].querySelectorAll(".o13-button");
 	
 	const roll = message.rolls[0];
-	console.log(roll);
+
 	if (roll instanceof o13Roll) {
-		console.log(o13Buttons);
+
 		o13Buttons.forEach((button) => {
 			const dataAction = button.getAttribute("data-action");
-			console.log(dataAction);
+
 			if (dataAction) {
 				button.addEventListener("click", async (event) => {
 					roll.dataAction(event, button, message);
