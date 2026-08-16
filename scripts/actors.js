@@ -35,7 +35,6 @@ export class o13Actor extends Actor {
 	}
 	
 	async _preUpdate(changed, options, user) {
-		console.log(changed);
 		if (this.isPC && changed) {
 			if (changed.system) {
 				if (changed.system.archetype) {
@@ -59,7 +58,6 @@ export class o13Actor extends Actor {
 				}
 				if (changed.system.aspects) {
 					//rating is Number
-					console.log(changed.system.aspects.story);
 					if (changed.system.aspects.story) {
 						for (let entry of Object.values(changed.system.aspects.story)) {
 							if (entry && "rating" in entry) {
@@ -67,7 +65,6 @@ export class o13Actor extends Actor {
 							}
 						}
 					}
-					console.log(changed.system.aspects.story);	
 				}
 			}
 		}
@@ -483,7 +480,6 @@ export class o13Actor extends Actor {
 				name: game.i18n.localize("13omens.titles.archetype"),
 				type: "archetype"
 			}]);
-			console.log(archetype);
 			this.registerArchetype(archetype[0]);
 		}
 	}
@@ -533,6 +529,7 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 			createNewArchetype : o13ActorSheet.createNewArchetype,
 			openArchetype : o13ActorSheet.openArchetype,
 			deleteArchetype : o13ActorSheet.deleteArchetype,
+			openPC : o13ActorSheet.openPC,
 			removePC : o13ActorSheet.removePC
 		},
 		dragDrop: [{
@@ -623,6 +620,18 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 		if (this.actor.type == "story") {
 			const archetypeID = target.getAttribute("archetype-id");
 			this.actor.deleteArchetype(archetypeID);
+		}
+	}
+	
+	static async openPC(event, target) {
+		if (this.actor.type == "story") {
+			const pcID = target.getAttribute("pc-id");
+			
+			const pc = this.actor.pcActors.find(actor => actor.id == pcID);
+			
+			if (pc && pc.type == "pc") {
+				pc.sheet.render(true);
+			}
 		}
 	}
 	

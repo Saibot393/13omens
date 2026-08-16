@@ -64,7 +64,7 @@
 				{{#each actor.pcActors as |pc|}}
 					<div class="flexrow">
 						<span class="o13-label o13-clickable o13-content-centered" type="text" pc-id="{{pc.id}}" data-action="openPC">{{pc.name}}</span>
-						<span class="o13-label o13-content-centered" type="text" pc-id="{{pc.id}}" >{{pc.archetypeName}}</span>
+						<span class="o13-label o13-content-centered" type="text" pc-id="{{pc.id}}" >{{pc.archetype.name}}</span>
 						{{> "systems/13omens/templates/dice/dicebar.hbs" 
 							dice=pc.woundDice
 							microdice=true

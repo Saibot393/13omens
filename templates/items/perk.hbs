@@ -1,0 +1,27 @@
+<div class="item-sheet-content o13-sheet o13-scrollable flexcol">
+	<header class="sheet-header flexrow">
+		<div class="o13-portrait-container">
+			<img class="o13-portrait" name="img" src="{{item.img}}" title="{{item.name}}" alt="{{item.name}}" data-action="choosePortrait" />
+		</div>
+		<div class="flexcol">
+			<div class="form-group flexrow">
+				<label for="item-name" class="o13-label" style="flex:0.5"><b>{{localize "13omens.titles.name"}}:</b></label>
+				<input class="o13-input o13-underline" type="text" name="name" value="{{item.name}}" />
+			</div>
+		</div>
+	</header>
+	<main class="flexcol" style="flex:1; min-height:0;">
+		<div class="o13-notes flexcol">
+		<prose-mirror
+			name="system.description"
+			document-uuid="{{item.uuid}}"
+			value="{{item.system.description}}"
+			button
+			toggled
+			editable
+			collaborative="false"
+			{{{enrichedDescription}}}
+		</prose-mirror>
+		</div>
+	</main>
+</div>

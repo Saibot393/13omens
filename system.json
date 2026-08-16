@@ -21,8 +21,7 @@
     "Actor": {
 	  "story": {},
       "pc": {},
-	  "npc": {},
-	  "loot": {}
+	  "npc": {}
     },
     "Item": {
 	  "archetype": {},

@@ -10,6 +10,7 @@
 .o13-sheet {
 	font-family: "Cinzel", "Times New Roman", Georgia, serif;
 	background-image: url("/ui/parchment.jpg");
+	height: 100%;
 }
 
 .o13-scrollable {
@@ -22,6 +23,23 @@
 	background: transparent;
 	color: var(--o13-ink-black);
 	font-size: 18px;
+}
+
+.o13-notes {
+	display: flex;
+    flex-direction: column;
+    flex: 1;
+    height: 100%;
+    min-height: 200px;
+}
+
+.o13-notes prose-mirror {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	height: 100%;
+	min-height: 150px;
+	color: var(--o13-ink-black);
 }
 
 .o13-header-label{
