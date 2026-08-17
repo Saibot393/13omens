@@ -519,7 +519,7 @@ export class o13Actor extends Actor {
 }
 
 export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
-	static DEFAULT_OPTIONS = {
+	static DEFAULT_OPTIONS = foundry.utils.mergeObject(super.DEFAULT_OPTIONS, {
 		classes: ["13omens", "actor-sheet"],
 		tag: "form",
 		form: {
@@ -542,7 +542,7 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 			dragSelector: ".draggable-item",
 			dropSelector: ".drop-zone"
 		}]
-	};
+	});
 
 	_configureRenderParts(options) {
 		return {

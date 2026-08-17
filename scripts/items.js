@@ -66,6 +66,10 @@ export class o13Item extends Item {
 		}
 	}
 	
+	get isVirtualItem() {
+		return this.hasParentAchetype && !this.parent;
+	}
+	
 	get originID() {
 		if (this.hasParentAchetype) {
 			return this.system.origin.id
@@ -172,6 +176,18 @@ export class o13Item extends Item {
 		}
 	}
 	
+	hasPerk(id) {
+		if (this.isArchetype) {
+			return Boolean(this.system.perks[id]);
+		}
+	}
+	
+	hasGear(id) {
+		if (this.isArchetype) {
+			return Boolean(this.system.gear[id]);
+		}
+	}
+	
 	get storyActor() {
 		if (this.isArchetype) {
 			if (this.parent?.type == "story") {
@@ -185,10 +201,65 @@ export class o13Item extends Item {
 			return this.storyActor?.getArchetypeAspect(this);
 		}
 	}
+	
+	async markAsGuaranteedGear(id) {
+		if (this.isArchetype) {
+			if (this.hasGear(id)) {
+				return this.update({system : {guaranteedgear : {[id] : true}}})
+			}
+		}
+	}
+	
+	async removeFromGuaranteedGear(id) {
+		if (this.isArchetype) {
+			if (this.hasGear(id)) {
+				return this.update({system : {guaranteedgear : {[id] : _del}}})
+			}
+		}
+	}
+	
+	isGuaranteedGear(id) {
+		if (this.isArchetype) {
+			if (this.hasGear(id)) {
+				return this.system.guaranteedgear[id];
+			}
+		}
+	}
+	
+	async toggleGuaranteedGear(id) {
+		if (this.isArchetype) {
+			if (this.hasGear(id)) {
+				if (this.isGuaranteedGear(id)) {
+					return this.removeFromGuaranteedGear(id);
+				}
+				else {
+					return this.markAsGuaranteedGear(id);
+				}
+			}
+		}
+	}
+	
+	get guaranteedGear() {
+		if (this.isArchetype) {
+			return Object.fromEntries(Object.keys(this.system.gear).filter(id => this.isGuaranteedGear(id)).map(id => [id, this.system.gear[id]]));
+		}
+	}
+	
+	get unguaranteedGear() {
+		if (this.isArchetype) {
+			return Object.fromEntries(Object.keys(this.system.gear).filter(id => !this.isGuaranteedGear(id)).map(id => [id, this.system.gear[id]]));
+		}
+	}
+	
+	isFromArchetype(archetype) {
+		if (this.isPerk && this.isGear) {
+			return this.system.origin.parentArchetype == archetype?.id;
+		}
+	}
 }
 
 export class o13ItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
-	static DEFAULT_OPTIONS = {
+	static DEFAULT_OPTIONS = foundry.utils.mergeObject(super.DEFAULT_OPTIONS, {
 		classes: ["13omens", "item-sheet"],
 		tag: "form",
 		form: {
@@ -206,12 +277,8 @@ export class o13ItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
 			createNewGear : o13ItemSheet.createNewGear,
 			removeGear : o13ItemSheet.removeGear,
 			openGear : o13ItemSheet.openGear
-		},
-		dragDrop: [{
-			dragSelector: ".draggable-item",
-			dropSelector: ".drop-zone"
-		}]
-	};
+		}
+	});
 
 	async _processSubmitData(event, form, formData) {
         if (this.item.hasParentAchetype && !this.item.parent) {
@@ -258,11 +325,47 @@ export class o13ItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
 		
 		const object = await fromUuid(data.uuid);
 		
-		if (!object) return;
+		const dropZone = event.target.closest("[drop-zone]");
+		
+		if (dropZone) {
+			if (this.item.type == "archetype") {
+				if (data.parentArchetype == this.item.uuid) {
+					switch(dropZone.getAttribute("drop-zone")) {
+						case "guaranteedGear":
+							return this.item.markAsGuaranteedGear(data.gearID);
+							break;
+						case "selectableGear":
+							return this.item.removeFromGuaranteedGear(data.gearID);
+							break;
+					}
+				}
+			}
+		}
+		else {
+			//Default sheet drop
+			if (!object) return;
+
+			if (this.item.type == "archetype") {
+				if(data.type == "Item") {
+					this.item.addSubItem(object);
+				}
+			}
+		}
+	}
+	
+	_onDragStart(event) {
+		const element = event.currentTarget;
 
 		if (this.item.type == "archetype") {
-			if(data.type == "Item") {
-				this.item.addSubItem(object);
+			if (element.hasAttribute("gear-id")) {
+				const dragData = {
+					parentArchetype : this.item.uuid,
+					gearID : element.getAttribute("gear-id")
+				};
+				
+				event.dataTransfer.setData("text/plain", JSON.stringify(dragData));
+				
+				return;
 			}
 		}
 	}
@@ -328,10 +431,13 @@ export class o13ItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
 			const gearID = target.getAttribute("gear-id");
 			
 			if (gearID) {
-				const gear = await this.item.getGearItem(gearID);
-				
-				if (gear) {
-					gear.sheet.render(true);
+				if (event.shiftKey) return this.item.toggleGuaranteedGear(gearID)
+				else {
+					const gear = await this.item.getGearItem(gearID);
+					
+					if (gear) {
+						gear.sheet.render(true);
+					}
 				}
 			}
 		}

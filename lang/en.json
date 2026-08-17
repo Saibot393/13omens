@@ -1,4 +1,18 @@
 {
+	"TYPES" : {
+		"Actor" : {
+			"pc" : "Player Character",
+			"story" : "Story",
+			"npc" : "Nonplayer Character"
+		},
+		
+		"Item" : {
+			"archetype" : "Archetype",
+			"perk" : "Perk",
+			"gear" : "Gear"
+		}
+	},
+	
 	"13omens" : {
 		"13omens" : "13 Omens",
 		
@@ -24,6 +38,9 @@
 			
 			"gears" : "Gear",
 			"gear" : "Gear",
+			
+			"guaranteedGear" : "Guaranteed Gear",
+			"selectableGear" : "Selectable Gear",
 			
 			"rating" : "Rating",
 			"tn" : "TN",

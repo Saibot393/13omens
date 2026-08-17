@@ -1,4 +1,4 @@
-<div class="actor-sheet-content o13-sheet o13-scrollable">
+<div class="actor-sheet-content o13-sheet o13-sheet-lining o13-scrollable">
 	<header class="sheet-header flexrow">
 		<div class="o13-portrait-container">
 			<img class="o13-portrait" name="img" src="{{actor.img}}" title="{{actor.name}}" alt="{{actor.name}}" data-action="choosePortrait" />
@@ -30,7 +30,7 @@
 			</div>
 		</div>
 		
-		<div class="o13-wound-dice" style="min-width: 265px">
+		<div class="o13-wound-dice flexcol" style="min-width: 150px; place-content: center;">
 			{{> "systems/13omens/templates/dice/dicebag.hbs" 
 				dice=actor.woundDice
 			}}
