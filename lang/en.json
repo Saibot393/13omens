@@ -8,6 +8,8 @@
 			"players" : "Players",
 			"act" : "Act",
 			
+			"story" : "Story",
+			
 			"hostomendice" : "Host omen dice",
 			"dicebag" : "Dice bag",
 			
@@ -16,6 +18,12 @@
 			
 			"archetypes" : "Archetypes",
 			"archetype" : "Archetype",
+			
+			"perks" : "Perks",
+			"perk" : "Perk",
+			
+			"gears" : "Gear",
+			"gear" : "Gear",
 			
 			"rating" : "Rating",
 			"tn" : "TN",

@@ -78,12 +78,24 @@ export class o13Roll extends Roll {
 		return this._actor;
 	}
 	
+	get isOwner() {
+		return this.actor?.isOwner;
+	}
+	
 	get actorName() {
 		return this._actorName || this.actor.name;
 	}
 	
 	get act() {
 		return this._act || this.actor.activeAct;
+	}
+	
+	get woundThreshold() {
+		return this._woundthreshold ?? this.act;
+	}
+	
+	get strainThreshold() {
+		return this._strainthreshold ?? this.act;
 	}
 	
 	get aspect() {
@@ -182,16 +194,20 @@ export class o13Roll extends Roll {
 		return this.diceResults.find(result => result.type == "omen");
 	}
 	
+	get firstOmenWoundThresholdDice() {
+		return this.diceResults.find(result => result.face <= this.woundThreshold && result.type == "omen");
+	}
+	
 	get firstSafeDice() {
 		return this.diceResults.find(result => result.type == "safe");
 	}
 	
 	get hasWound() {
-		return this.actor ? this.diceResults.find(dice => dice.face <= this.act && dice.type == "omen") : false;
+		return this.actor && this.taskRisk != "harmless" && this.diceResults.find(dice => dice.face <= this.woundThreshold && dice.type == "omen");
 	}
 	
-	get woundisStrain() {
-		return this.taskRisk == "harmless";
+	get hasStrain() {
+		return this.actor && this.taskRisk == "harmless" && this.diceResults.find(dice => dice.face <= this.strainThreshold && dice.type == "omen");
 	}
 	
 	get canCheatDeath() {
@@ -206,8 +222,12 @@ export class o13Roll extends Roll {
 		return (this.actor ?? false) && !this.consequenceTaken;
 	}
 	
+	redrawDice(dice) {
+		
+	}
+	
 	async render() {
-		return foundry.applications.handlebars.renderTemplate("systems/13omens/templates/rolls/chatRoll.hbs", {roll : this, flags : {canTakeConsequence : this.canTakeConsequence}});
+		return foundry.applications.handlebars.renderTemplate("systems/13omens/templates/rolls/chatRoll.hbs", {roll : this});
 	}
 	
 	toJSON() {
@@ -264,8 +284,7 @@ export class o13Roll extends Roll {
 			}
 			
 			message.update({
-				rolls : [this.toJSON()],
-				flags : {canTakeConsequence : this.canTakeConsequence}
+				rolls : [this.toJSON()]
 			});
 		}
 	}
@@ -274,7 +293,7 @@ export class o13Roll extends Roll {
 		if (this.canTakeConsequence) {
 			this._consequenceTaken = true;
 			
-			await this.actor.takeWound({face : this.firstOmenDice?.face});
+			await this.actor.takeWound({face : this.firstOmenWoundThresholdDice?.face || this.firstOmenDice});
 		}
 	}
 	

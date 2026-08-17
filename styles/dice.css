@@ -112,3 +112,9 @@
     height: 30px;
     flex-shrink: 0;
 }
+
+.o13-wound-dice .o13-dice-bag .o13-die{
+    width: 45px;
+    height: 45px;
+    flex-shrink: 0;
+}

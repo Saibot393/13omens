@@ -13,12 +13,24 @@
 	<main>
 		<div class="flexcol">
 			<div class="flexcol">
-				<span class="o13-label o13-header-label">{{localize "13omens.titles.perks"}}</span>
+				<span class="o13-label o13-header-label">{{localize "13omens.titles.perks"}}  <i class="fa-solid fa-plus o13-icon o13-clickable" data-action="createNewPerk"></i></span>
 				<div style="display:grid;grid-template-columns: repeat(2, 1fr);gap: 1rem;">
 					{{#each item.perksData}}
-						<span class="o13-label o13-inline" perk-id="{{this.id}}"><b>{{this.name}}</b> {{{this.system.description}}}</span>
+						<span class="o13-label o13-inline" perk-id="{{this._id}}">
+							<i class="fa-solid fa-x o13-label o13-icon o13-hover-icon o13-clickable" perk-id="{{this._id}}" data-action="removePerk"></i> <b class="o13-clickable" data-action="openPerk" perk-id="{{this._id}}">{{this.name}}</b> {{{this.system.description}}}
+						</span>
 					{{/each}}
 				</div>
+			</div>
+			<div class="flexcol">
+				<span class="o13-label o13-header-label">{{localize "13omens.titles.items"}}  <i class="fa-solid fa-plus o13-icon o13-clickable" data-action="createNewGear"></i></span>
+				<span>
+					{{#each item.gearData}}
+						<span class="o13-label o13-inline" gear-id="{{this._id}}">
+							<i class="fa-solid fa-x o13-label o13-icon o13-hover-icon o13-clickable" gear-id="{{this._id}}" data-action="removePerk"></i> <p class="o13-clickable" data-action="openGear" gear-id="{{this._id}}">{{this.name}}</p> 
+						</span>
+					{{/each}}
+				</span>
 			</div>
 		</div>
 	</main>

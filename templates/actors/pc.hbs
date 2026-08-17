@@ -13,6 +13,12 @@
 				<label for="actor-name" class="o13-label" style="flex:0.5">{{localize "13omens.titles.traits"}}:</label>
 				<input class="o13-input o13-underline" type="text" name="system.traits" value="{{actor.system.traits}}" />
 			</div>
+			{{#if actor.storyActor}}
+				<div class="form-group flexrow">
+					<label for="story-name" class="o13-label" style="flex:0.5">{{localize "13omens.titles.story"}}:</label>
+					<span class="o13-input o13-underline" type="text">{{actor.storyActor.name}}</span>
+				</div>
+			{{/if}}
 			<div class="form-group flexrow">
 				<label for="actor-name" class="o13-label" style="flex:0.5">{{localize "13omens.titles.archetype"}}:</label>
 				<select class="o13-input o13-underline" name="system.archetype">
@@ -25,9 +31,9 @@
 		</div>
 		
 		<div class="o13-wound-dice" style="min-width: 265px">
-		{{> "systems/13omens/templates/dice/dicebar.hbs" 
-			dice=actor.woundDice
-		}}
+			{{> "systems/13omens/templates/dice/dicebag.hbs" 
+				dice=actor.woundDice
+			}}
 		</div>
 	</header>
 	

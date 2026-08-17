@@ -359,21 +359,25 @@ export class o13Actor extends Actor {
 		}
 	}
 	
-	async updateMaxWounds() {
+	async updateMaxWounds(forceupdate = false) {
 		if (this.isPC) {
-			const maxWounds = this.maxWounds;
-			
-			let currentWounds = this.system.wounds;
-			
-			while (currentWounds.length > maxWounds) {
-				currentWounds.pop();
+			if (!this.isDead || forceupdate) {
+				const maxWounds = this.maxWounds;
+				
+				let currentWounds = this.system.wounds;
+				
+				if (currentWounds != currentWounds.length) {
+					while (currentWounds.length > maxWounds) {
+						currentWounds.pop();
+					}
+					
+					while (currentWounds.length < maxWounds) {
+						currentWounds.push(EMPTYWOUND);
+					}
+					
+					return this.update({system : {wounds : currentWounds}});
+				}
 			}
-			
-			while (currentWounds.length < maxWounds) {
-				currentWounds.push(EMPTYWOUND);
-			}
-			
-			return this.update({system : {wounds : currentWounds}});
 		}
 		
 		if (this.isStory) {
@@ -774,7 +778,25 @@ class pcDataModel extends foundry.abstract.TypeDataModel {
 			
 			pickedperks: new ArrayField(new SchemaField({
 				id: new DocumentIdField({required: true, blank: true, nullable: true, readonly: false})
-			}))
+			})),
+			
+			//mainly for active affects
+			/*
+			perks : new SchemaField({
+				maxwounds: new NumberField({ required: false, integer: true, nullable: true, min: 1, initial: null }),
+				
+				maxwoundschange: new NumberField({ required: false, integer: true, nullable: true, min: 1, initial: null }),
+				
+				omenwoundthreshold : new NumberField({ required: false, integer: true, nullable: true, min: 1, max : 6, initial: null }),
+				
+				noflawwoundcount: new NumberField({ required: false, integer: true, nullable: true, min: 1, initial: null }),
+								
+				chooseableitems: new NumberField({ required: false, integer: true, nullable: true, min: 1, initial: null }),
+				
+				cheatdeathamount: new NumberField({ required: false, integer: true, nullable: true, min: 1, initial: null })
+			})
+			*/
+			
 		};
 	}
 	
