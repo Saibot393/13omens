@@ -54,5 +54,21 @@
 			targetNumbers=actor.system.targetNumbers.story
 			namepath="system.aspects.story."
 		}}
+		
+		<span class="o13-label o13-header-label">{{localize "13omens.titles.perks"}} </span>
+		{{! <div style="display:grid;grid-template-columns: repeat(2, 1fr);gap: 1rem;">}}
+		<div class="o13-adaptive-grid-wrapper">
+			<div class="o13-adaptive-grid-23">
+				{{#each actor.perks}}
+					<span class="o13-label o13-inline" perk-id="{{this._id}}">
+						<input class="o13-checkbox" type="checkbox" name="system.pickedperks.{{@key}}" {{checked (lookup ../actor.system.pickedperks @key)}} /> 
+						{{#unless this.isArchetypeOrigin}}
+							<i class="fa-solid fa-x o13-label o13-icon o13-hover-icon o13-clickable" perk-id="{{this._id}}" data-action="removePerk"></i>
+						{{/unless}}
+						<b data-action="openPerk" perk-id="{{this._id}}">{{this.name}}</b> {{{this.system.description}}}
+					</span>
+				{{/each}}
+			</div>
+		</div>
 	</main>
 </div>

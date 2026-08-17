@@ -76,6 +76,10 @@ export class o13Item extends Item {
 		}
 	}
 	
+	get isArchetypeOrigin() {
+		return Boolean(this.system.origin.id && this.system.origin.parentArchetype);
+	}	
+	
 	async removeSubItem(id) {
 		if (this.isArchetype) {
 			if (this.system.perks[id]) {

@@ -40,9 +40,7 @@ export class o13Actor extends Actor {
 				if (changed.system.archetype) {
 					//story aspect auto
 					const archetypeAspect = this.getArchetypeAspect(changed.system.archetype);
-					
-					const storyAspects = {...system.system.aspects.story, ...changed.system.aspects?.story};
-					
+					const storyAspects = {...this.system.aspects.story, ...changed.system.aspects?.story};
 					if (archetypeAspect >= 0 && archetypeAspect <= Math.max(...Object.keys(storyAspects))) {
 						for (let i in Object.keys(storyAspects)) {
 							if (i == archetypeAspect) storyAspects[i].rating = Math.max(...ASPECTRATINGS)
@@ -72,6 +70,20 @@ export class o13Actor extends Actor {
 		await super._preUpdate(changed, options, user);
 	}
 	
+	async _onUpdate(changed, options, userId) {
+		await super._onUpdate(changed, options, userId);
+		
+		if (game.user.id != userId) return;
+		
+		if (this.isPC) {
+			if (changed.system) {
+				if (changed.system.archetype) {
+					await this.updateArchetypeItems();
+				}
+			}
+		}
+	}
+	
 	get isPC() {
 		return this.type == "pc";
 	}
@@ -86,16 +98,26 @@ export class o13Actor extends Actor {
 	
 	getPerks(filterpicked = false) {
 		if (this.isPC) {
-			const perks = [...this.items].filter(item => item.type == "perk");
+			let perks = this.items.filter(item => item.isPerk);
 			
 			if (filterpicked) {
-				return perks.filter(item => this.system.pickedperks.find(pickedperk => pickedperk.id == item.id));
+				perks = perks.filter(perk => this.system.pickedperks[perk.id]);
 			}
 			
-			return perks;
+			return Object.fromEntries(perks.map(perk => [perk.id, perk]));
 		}
 		
-		return [];
+		return {};
+	}
+	
+	async removePerk(id) {
+		if (this.isPC) {
+			const perk = this.items.get(id);
+			
+			if (perk.isPerk) {
+				return this.deleteEmbeddedDocuments("Item", [id]);
+			}
+		}
 	}
 	
 	get perks() {
@@ -133,6 +155,7 @@ export class o13Actor extends Actor {
 	getArchetypeAspect(archetype) {
 		if (this.isStory) {
 			archetype = archetype instanceof Item ? archetype : this.items.get(archetype);
+
 			if (this.archetypes?.includes(archetype)) {
 				return this.system.archetypeaspects[archetype.id];
 			}
@@ -516,6 +539,24 @@ export class o13Actor extends Actor {
 			this.update({system : {pcs : this.system.pcs.filter(pc => pc.id != id)}})
 		}
 	}
+	
+	async removeArchetypeItems() {
+		if (this.isPC) {
+			return this.deleteEmbeddedDocuments("Item", Array.from(this.items).filter(item => item.isArchetypeOrigin).map(item => item.id))
+		}
+	}
+	
+	async updateArchetypeItems(removeold = true) {
+		if (this.isPC) {
+			if (removeold) await this.removeArchetypeItems();
+			
+			const archetype = this.archetype;
+			
+			if (archetype) {
+				return this.createEmbeddedDocuments("Item", [...Object.values(archetype.perksData), ...Object.values(archetype.guaranteedGear)]);
+			}
+		}
+	}
 }
 
 export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
@@ -536,7 +577,8 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 			openArchetype : o13ActorSheet.openArchetype,
 			deleteArchetype : o13ActorSheet.deleteArchetype,
 			openPC : o13ActorSheet.openPC,
-			removePC : o13ActorSheet.removePC
+			removePC : o13ActorSheet.removePC,
+			removePerk : o13ActorSheet.removePerk
 		},
 		dragDrop: [{
 			dragSelector: ".draggable-item",
@@ -569,19 +611,28 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 		
 		if (!object) return;
 
-		if (this.actor.type == "story") {
-			switch(data.type) {
-				case "Actor" : 
-					if (object.isPC) {
-						this.actor.addPC(object);
+		switch (this.actor.type) {
+			case "story":
+				switch(data.type) {
+					case "Actor" : 
+						if (object.isPC) {
+							this.actor.addPC(object);
+						}
+						break;
+					case "Item" :
+						if (object.type == "archetype") {
+							const archetype = await this.actor.createEmbeddedDocuments("Item", [object.toObject()]);
+							this.actor.registerArchetype(archetype);
+						}
+				}
+				break;
+			case "pc":
+				if (data.type == "Item") {
+					if (object.type == "perk" || object.type == "gear") {
+						return this.actor.createEmbeddedDocuments("Item", [object.toObject()]);
 					}
-					break;
-				case "Item" :
-					if (object.type == "archetype") {
-						const archetype = await this.actor.createEmbeddedDocuments("Item", [object.toObject()]);
-						this.actor.registerArchetype(archetype);
-					}
-			}
+				}
+				break;
 		}
 	}
 	
@@ -645,6 +696,13 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 		if (this.actor.type == "story") {
 			const pcID = target.getAttribute("pc-id");
 			this.actor.removePC(pcID);
+		}
+	}
+	
+	static async removePerk(event, target) {
+		if (this.actor.type == "pc") {
+			const perkID = target.getAttribute("perk-id");
+			this.actor.removePerk(perkID);
 		}
 	}
 	
@@ -776,9 +834,7 @@ class pcDataModel extends foundry.abstract.TypeDataModel {
 				act : new NumberField({ required: true, integer: true, nullable: true, min: 1, max : 6, initial: null })
 			}),
 			
-			pickedperks: new ArrayField(new SchemaField({
-				id: new DocumentIdField({required: true, blank: true, nullable: true, readonly: false})
-			})),
+			pickedperks: new ObjectField({}) //refer to id
 			
 			//mainly for active affects
 			/*

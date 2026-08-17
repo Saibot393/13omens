@@ -290,3 +290,20 @@ span.o13-input-span input {
 	padding : 2px;
 	border: 2px solid var(--o13-ink-black);
 }
+
+.o13-adaptive-grid-wrapper {
+  container-type: inline-size;
+  width: 100%;
+}
+
+.o13-adaptive-grid-23 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+@container (min-width: 800px) {
+	.o13-adaptive-grid-23 {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
