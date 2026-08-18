@@ -1,4 +1,4 @@
-const DEFAULTROLLOPTIONS = {dicePermut : [], flaws : [], edges : [], strain : false, ignoreStrain : false, targetNumber : null, taskDifficulty : 0, taskRisk : "normal", woundThreshold : null, strainThreshold : null};
+const DEFAULTROLLOPTIONS = {dicePermut : [], flaws : [], edges : [], strain : null, ignoreStrain : false, targetNumber : null, taskDifficulty : 0, taskRisk : "normal", woundThreshold : null, strainThreshold : null};
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 const MAXFE = 2; //Max two flaws or edges
@@ -12,7 +12,7 @@ export const DEFAULTDICEBAGCOUNT = {safe : 8, omen : 1, }
 
 export const MAXHOSTOMENDICE = 13;
 
-expandRollData(data) {
+export function expandRollData(data) {
 	data.flaws = data.flaws.map(flaw => typeof flaw == "string" ? {name : flaw} : flaw)
 }
 
@@ -42,17 +42,25 @@ export class o13Roll extends Roll {
 	constructor(actor, aspect, options = DEFAULTROLLOPTIONS) {
 		super("0");
 		
-		options = 
-		
 		this._actor = actor;
 		this._aspect = aspect;
 		
-		this._rollData = expandRollData({...DEFAULTROLLOPTIONS, ...options});
+		this._rollData = ({...DEFAULTROLLOPTIONS, ...options});
 		
-		if (!this._dicePermut || this._dicePermut.length == 0) this.drawDice();
+		expandRollData(this._rollData);
+		
+		this._rollData.targetNumber = this.targetNumber;
+		this._rollData.strain = this.strain;
+		
+		this._actorName = this.actorName;
+		this._act = this.act;
+		
+		if (!this._rollData.dicePermut || this._rollData.dicePermut.length == 0) this.drawDice();
 		
 		this._formula = this.formula;
 		this.terms = this.constructor.parse(this.formula, this.data);
+		
+		console.log(this);
 	}
 	
 	get outcome() {
@@ -76,11 +84,11 @@ export class o13Roll extends Roll {
 	}
 	
 	get actorName() {
-		return this._actorName || this.actor.name;
+		return this._actorName || this.actor?.name;
 	}
 	
 	get act() {
-		return this._act || this.actor.activeAct;
+		return this._act || this.actor?.activeAct;
 	}
 	
 	get woundThreshold() {
@@ -98,7 +106,7 @@ export class o13Roll extends Roll {
 	get aspectName() {
 		if (this._aspectName) return this._aspectName;
 		
-		if (this.aspectData.name) return this.aspectData.name;
+		if (this.aspectData?.name) return this.aspectData.name;
 		
 		return game.i18n.localize("13omens.titles." + this.aspect);
 	}
@@ -108,7 +116,11 @@ export class o13Roll extends Roll {
 	}
 	
 	get flaws() {
-		return this._rollData.flaws.length + (this.strain ? 1 : 0);
+		return this._rollData.flaws;
+	}
+	
+	get flawsCount() {
+		return this._rollData.flaws.length + (this.useStrain ? 1 : 0);
 	}
 	
 	get omenflaws() {
@@ -116,11 +128,15 @@ export class o13Roll extends Roll {
 	}
 	
 	get edges() {
+		return this._rollData.edges;
+	}
+	
+	get edgesCount() {
 		return this._rollData.edges.length;
 	}
 	
 	get FEDifference() {
-		return this.edges - this.flaws;
+		return this.edgesCount - this.flawsCount;
 	}
 	
 	get FENumber() {
@@ -148,7 +164,11 @@ export class o13Roll extends Roll {
 	}
 	
 	get strain() {
-		return (this._rollData.strain ?? this.aspectData?.strain) && !this.ignoreStrain;
+		return this._rollData.strain ?? this.aspectData?.strain
+	}
+	
+	get useStrain() {
+		return this.strain && !this.ignoreStrain;
 	}
 	
 	get ignoreStrain() {
@@ -226,6 +246,9 @@ export class o13Roll extends Roll {
 	toJSON() {
         const json = super.toJSON();
 		
+		json.evaluated = this._evaluated;
+		json.total = this._total;
+		
 		if (this._terms) {
 			json.terms = this._terms.map(term => term.toJSON());
 		}
@@ -242,6 +265,7 @@ export class o13Roll extends Roll {
 			consequenceTaken: this._consequenceTaken
 			
         };
+		
         return json;
     }
 	
@@ -256,9 +280,14 @@ export class o13Roll extends Roll {
 		roll._act = o13Data.act;
 		roll._consequenceTaken = o13Data.consequenceTaken;
 		
+		console.log(data.terms);
         if (data.terms) {
             roll._terms = data.terms.map(term => foundry.dice.terms.RollTerm.fromData(term));
         }
+		console.log(roll._terms);
+		
+		roll._evaluated = data.evaluated;
+		roll._total = data.total;
         
         return roll;
     }
@@ -282,7 +311,7 @@ export class o13Roll extends Roll {
 		if (this.canTakeConsequence) {
 			this._consequenceTaken = true;
 			
-			await this.actor.takeWound({face : this.firstOmenWoundThresholdDice?.face || this.firstOmenDice});
+			await this.actor.takeWound({face : (this.firstOmenWoundThresholdDice || this.firstOmenDice)?.face});
 		}
 	}
 	
@@ -314,9 +343,9 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 			...data
 		}
 		
-		this._id = foundry.utils.randomID();
+		expandRollData(this._data);
 		
-		this.expandData();
+		this._id = foundry.utils.randomID();
 		
 		this._secondaryView = secondaryView;
 	}
@@ -440,6 +469,7 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 			removeFlaw : o13rollConfig.DAremoveFlaw,
 			toggleOmenFlaw : o13rollConfig.DAtoggleOmenFlaw,
 			removeEdge : o13rollConfig.DAremoveEdge,
+			removeStrain : o13rollConfig.DAremoveStrain,
 			roll : o13rollConfig.roll
 		}
 	};
@@ -513,6 +543,8 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 	
 	static async DAremoveStrain(event, target) {
 		this._data.ignoreStrain = true;
+		
+		this._applyUpdate();
 	}
 	
 	static async DAremoveEdge(event, target) {

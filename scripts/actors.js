@@ -166,9 +166,54 @@ export class o13Actor extends Actor {
 	
 	get archetype() {
 		if (this.isPC) {
-			const archetype = this.storyActor.items.get(this.system.archetype);
+			const archetype = this.storyActor?.items.get(this.system.archetype);
 			
 			return archetype?.type == "archetype" ? archetype : undefined;
+		}
+	}
+	
+	get selectableGearCount() {
+		if (this.isPC) {
+			return this.archetype?.selectableGearCount ?? 0;
+		}
+	}
+	
+	hasGearSelected(originid) {
+		if (this.isPC) {
+			return this.inventory.some(gear => gear.isFromOrigin(originid));
+		}
+	}
+	
+	get selectableGearInfo() {
+		if (this.isPC) {
+			const selectableGear = this.archetype?.unguaranteedGear;
+			
+			if (selectableGear) {
+				return Object.fromEntries(Object.keys(selectableGear).map(id => [id, {name : selectableGear[id].name, selected : this.hasGearSelected(id), id : id}]));
+			}
+			
+			return {};
+		}
+	}
+	
+	toggleSelectGear(originid) {
+		console.log(originid);
+		if (this.isPC) {
+			console.log(this.hasGearSelected(originid));
+			if (this.hasGearSelected(originid)) {
+				const matchingGear = this.inventory.find(gear => gear.isFromOrigin(originid));
+				console.log(matchingGear);
+				if (matchingGear) {
+					this.deleteEmbeddedDocuments("Item", [matchingGear.id])
+				}
+			}
+			else {
+				const gearData = this.archetype?.unguaranteedGear[originid];
+				console.log(gearData);
+				if (gearData) {
+					this.createEmbeddedDocuments("Item", [gearData]);
+				}
+			}
 		}
 	}
 	
@@ -619,13 +664,14 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 			openPC : o13ActorSheet.openPC,
 			removePC : o13ActorSheet.removePC,
 			removePerk : o13ActorSheet.removePerk,
+			removeGear : o13ActorSheet.removeGear,
 			addOmenDice : o13ActorSheet.addOmenDice,
-			removeOmenDice : o13ActorSheet.removeOmenDice
-		},
-		dragDrop: [{
-			dragSelector: ".draggable-item",
-			dropSelector: ".drop-zone"
-		}]
+			removeOmenDice : o13ActorSheet.removeOmenDice,
+			openGear : o13ActorSheet.openGear,
+			breakGear : o13ActorSheet.breakGear,
+			repairGear : o13ActorSheet.repairGear,
+			toggleSelectGear : o13ActorSheet.toggleSelectGear
+		}
 	});
 
 	_configureRenderParts(options) {
@@ -690,6 +736,34 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 		}
 	}
 	
+	async _replaceHTML(result, content, options) {
+		//scrollables persistance
+		const scrollCache = {};
+		if (this.element) {
+			const scrollables = this.element.querySelectorAll("[scroll-id]");
+			for (const el of scrollables) {
+				const id = el.getAttribute("scroll-id");
+				if (id) {
+					scrollCache[id] = { top: el.scrollTop, left: el.scrollLeft };
+				}
+			}
+		}
+		
+		await super._replaceHTML(result, content, options);
+		
+		if (this.element) {
+			const newScrollables = this.element.querySelectorAll("[scroll-id]");
+			for (const el of newScrollables) {
+				const id = el.getAttribute("scroll-id");
+				const saved = scrollCache[id];
+				if (saved) {
+					el.scrollTop = saved.top;
+					el.scrollLeft = saved.left;
+				}
+			}
+		}
+	}
+
 	static async choosePortrait(event, target) {
 		const picker = new foundry.applications.apps.FilePicker.implementation({
 			type: "image",
@@ -761,6 +835,14 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 		}
 	}
 	
+	static async removeGear(event, target) {
+		if (this.actor.type == "pc") {
+			const gearID = target.getAttribute("gear-id");
+			
+			return this.actor.removeGear(gearID);
+		}
+	}
+	
 	static async addOmenDice(event, target) {
 		if (this.actor.type == "story") {
 			return this.actor.addOmenDice();
@@ -770,6 +852,50 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 	static async removeOmenDice(event, target) {
 		if (this.actor.type == "story") {
 			return this.actor.removeOmenDice();
+		}
+	}
+	
+	static async openGear(event, target) {
+		if (this.actor.type == "pc") {
+			const gearid = target.getAttribute("gear-id");
+			
+			const gear = this.actor.items.get(gearid);
+			
+			if (gear?.isGear) {
+				gear.sheet.render(true);
+			}
+		}
+	}
+	
+	static async breakGear(event, target) {
+		if (this.actor.type == "pc") {
+			const gearid = target.getAttribute("gear-id");
+			
+			const gear = this.actor.items.get(gearid);
+			
+			if (gear?.isGear) {
+				gear.breakGear();
+			}
+		}
+	}
+	
+	static async repairGear(event, target) {
+		if (this.actor.type == "pc") {
+			const gearid = target.getAttribute("gear-id");
+			
+			const gear = this.actor.items.get(gearid);
+			
+			if (gear?.isGear) {
+				gear.repairGear();
+			}
+		}
+	}
+	
+	static async toggleSelectGear(event, target) {
+		if (this.actor.type == "pc") {
+			const gearid = target.getAttribute("gear-id");
+			
+			this.actor.toggleSelectGear(gearid);
 		}
 	}
 	
@@ -808,13 +934,6 @@ class storyDataModel extends foundry.abstract.TypeDataModel {
 				cheatedDeath : new DocumentIdField({required: true, blank: true, nullable: true, readonly: false})
 			}), { initial : () => Array.from({length : 3}, () => ({cheatedDeath : ""}))}),
 			
-			/*
-			dicebag: new SchemaField({
-				omen: new NumberField({ required: true, integer: true, nullable: true, initial: 1 }),
-				safe: new NumberField({ required: true, integer: true, nullable: true, initial: 8 })
-			}),
-			*/
-			
 			hostomendice: new NumberField({ required: true, integer: true, nullable: true, initial: MAXHOSTOMENDICE }),
 			
 			storyaspects: new ArrayField(new SchemaField({
@@ -829,12 +948,6 @@ class storyDataModel extends foundry.abstract.TypeDataModel {
 				id: new DocumentIdField({required: true, blank: true, nullable: true, readonly: false})
 			}), {initial: []}),
 			
-			/*
-			archetypeaspects: new ArrayField(new SchemaField({
-				archetypeid: new DocumentIdField({required: true, blank: true, nullable: true, readonly: false}),
-				greatstoryaspect: new NumberField({ required: true, integer: true, nullable: true, initial: null })
-			}), {initial: []})
-			*/
 			archetypeaspects: new ObjectField({})
 		};
 	}
@@ -880,13 +993,6 @@ class pcDataModel extends foundry.abstract.TypeDataModel {
 					strain : new BooleanField({ required: true, initial: false})
 				})]))),
 				
-				/*
-				story: new ArrayField(new SchemaField({
-					rating: newRating(),
-					strain : new BooleanField({ required: true, initial: false}),
-					archetypelock : new BooleanField({ required: true, initial: false})
-				}), {initial: () => Array.from({length : 5}, () => ({rating : ASPECTRATINGS[0], strain : false, name : "", archetypelock : false}))})
-				*/
 				story: new ObjectField({
 					initial: () => Object.fromEntries(Array.from({length : 5}, (val, i) => ([i, {
 						rating: ASPECTRATINGS[0],

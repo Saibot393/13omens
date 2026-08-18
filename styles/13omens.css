@@ -2,6 +2,7 @@
 	--o13-ink-black: #292229;
 	--o13-ink-grey: #20232a;
 	--o13-smoke-grey: #848884;
+	--o13-smoke-silver: #D8D8D8;
 	--o13-omen-red: #880808;
 	--o13-cheat-blue: #5B87B9;
 	--o13-strain-yellow: #CDC50A;
@@ -198,6 +199,16 @@
 	color: var(--o13-smoke-grey);
 }
 
+.o13-selected{
+	background-color: var(--o13-ink-grey);
+	color: var(--o13-smoke-grey);
+}
+
+.o13-selected .o13-clickable:hover {
+	color: var(--o13-smoke-silver);
+}
+
+
 .o13-content-centered{
 	vertical-align: middle;
 	text-align: center;	
@@ -298,6 +309,32 @@ span.o13-input-span input {
 .o13-text-editor {
 	padding : 2px;
 	border: 2px solid var(--o13-ink-black);
+}
+
+.o13-flex-span {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	width: 100%;
+}
+
+.o13-flex-grow {
+    flex: 1 1 0px;
+}
+
+.o13-flex-left {
+    text-align: right;
+}
+
+.o13-flex-right {
+    text-align: right;
+}
+
+.o13-flex-center {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .o13-adaptive-grid-wrapper {

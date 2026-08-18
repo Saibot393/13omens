@@ -77,8 +77,16 @@ export class o13Item extends Item {
 	}
 	
 	get isArchetypeOrigin() {
-		return Boolean(this.system.origin.id && this.system.origin.parentArchetype);
+		if (this.isPerk || this.isGear) {
+			return Boolean(this.system.origin?.id && this.system.origin?.parentArchetype);
+		}
 	}	
+	
+	isFromOrigin(originid) {
+		if (this.isPerk || this.isGear) {
+			return this.originID == originid;
+		}
+	}
 	
 	async removeSubItem(id) {
 		if (this.isArchetype) {
@@ -206,6 +214,49 @@ export class o13Item extends Item {
 		}
 	}
 	
+	get quantityValue() {
+		if (this.isGear) {
+			return this.system.quantity.value ?? this.system.quantity.max;
+		}
+	}
+	
+	get quantityMax() {
+		if (this.isGear) {
+			return this.system.quantity.max ?? Infinity;
+		}
+	}
+	
+	get hasQuantityMax() {
+		if (this.isGear) {
+			return this.quantityMax < Infinity;
+		}
+	}
+
+	async changeQuantity(change) {
+		if (this.isGear) {
+			console.log(change);
+			return this.update({system : {quantity : {value : Math.min(Math.max(0, this.quantityValue + change), this.quantityMax)}}});
+		}
+	}
+	
+	async breakGear() {
+		if (this.isGear) {
+			return this.changeQuantity(-1);
+		}
+	}
+	
+	async repairGear() {
+		if (this.isGear) {
+			return this.changeQuantity(1);
+		}
+	}
+	
+	async completelyBroken() {
+		if (this.isGear) {
+			return this.quantityValue <= 0;
+		}
+	}
+	
 	async markAsGuaranteedGear(id) {
 		if (this.isArchetype) {
 			if (this.hasGear(id)) {
@@ -252,6 +303,12 @@ export class o13Item extends Item {
 	get unguaranteedGear() {
 		if (this.isArchetype) {
 			return Object.fromEntries(Object.keys(this.system.gear).filter(id => !this.isGuaranteedGear(id)).map(id => [id, this.system.gear[id]]));
+		}
+	}
+	
+	get selectableGearCount() {
+		if (this.isArchetype) {
+			return this.system.selectablegearcount
 		}
 	}
 	
@@ -459,7 +516,7 @@ class archetypeDataModel extends foundry.abstract.TypeDataModel {
 			
 			guaranteedgear: new ObjectField({}), //only refer to id
 			
-			selectiongear: new NumberField({ required: true, integer: true, nullable: false, min: 1, initial: 4 })
+			selectablegearcount: new NumberField({ required: true, integer: true, nullable: false, min: 1, initial: 4 })
 		};
 	}
 	
@@ -499,8 +556,8 @@ class gearDataModel extends foundry.abstract.TypeDataModel {
 			description: new HTMLField({ required: true, initial: ""}),
 			
 			quantity: new SchemaField({
-				max : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: 0 }),
-				value : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: 1 })
+				max : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: 1 }),
+				value : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: null })
 			}),
 			
 			broken : new BooleanField({ required: true, initial: false }),

@@ -8,6 +8,14 @@
 				<label for="item-name" class="o13-label" style="flex:0.5"><b>{{localize "13omens.titles.name"}}:</b></label>
 				<input class="o13-input o13-underline" type="text" name="name" value="{{item.name}}" />
 			</div>
+			<div class="form-group flexrow">
+				<label for="item-quantity" class="o13-label" style="flex:0.5"><b>{{localize "13omens.titles.quantity.name"}}:</b></label>
+				<span class="o13-input-span o13-label">
+					<input class="o13-input o13-underline" type="number" name="system.quantity.value" value="{{item.quantityValue}}" />
+					/
+					<input class="o13-input o13-underline" type="number" name="system.quantity.max" value="{{item.system.quantity.max}}" />
+				</span>
+			</div>
 		</div>
 	</header>
 	<main class="flexcol" style="flex:1; min-height:0;">

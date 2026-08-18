@@ -37,7 +37,7 @@
 		</div>
 	</header>
 	
-	<main class="o13-scrollable" style="flex:1">
+	<main class="o13-scrollable" style="flex:1" scroll-id="main">
 		{{> "systems/13omens/templates/actors/components/aspects.hbs" 
 			aspectsname=(localize "13omens.titles.coreAspects")
 			aspects=actor.system.aspects.core
@@ -77,11 +77,31 @@
 		<div class="flexcol">
 			<span class="o13-label o13-header-label">{{localize "13omens.titles.gears"}} </span>
 			<div class="o13-adaptive-grid-wrapper">
-				<div class="o13-adaptive-grid-12">
+				{{#if actor.selectableGearCount}}
+					<span class="o13-item-line" drop-zone="selectableGear">
+						<span class="o13-label"><b>{{localize "13omens.titles.selectGear" n=actor.selectableGearCount}}:</b></span>
+						{{#each actor.selectableGearInfo}}
+							<span class="o13-label o13-inline o13-item-box {{#if this.selected}}o13-selected{{/if}}" gear-id="{{this.id}}">
+								<p class="o13-clickable" data-action="toggleSelectGear" gear-id="{{this.id}}">{{this.name}}</p> 
+							</span>
+						{{/each}}
+					</span>
+				{{/if}}
+				<div class="o13-adaptive-grid-12" style:"margin-top:10px">
 					{{#each actor.gear}}
 						<div class="flexrow o13-side-padding">
-							<span class="o13-label o13-clickable" ear-id="{{this._id}}">{{this.name}}</span>
-							<i class="fa-solid fa-x o13-label o13-icon o13-hover-icon o13-clickable o13-minflex" gear-id="{{this._id}}" data-action="removeItem"></i>
+							<span class="o13-underline o13-flex-span">
+								<span class="o13-label o13-clickable o13-flex-grow" gear-id="{{this._id}}" data-action="openGear">{{this.name}}</span>
+								<span class="o13-label o13-flex-center" gear-id="{{this._id}}" style="flex:0.4">
+									<i class="fa-solid fa-burst o13-icon o13-clickable" gear-id="{{this._id}}" data-action="breakGear"></i>
+										<span class="o13-label" gear-id="{{this._id}}">{{this.quantityValue}}</span>
+										{{#if this.hasQuantityMax}}
+											/ <span class="o13-label" gear-id="{{this._id}}">{{this.quantityMax}}</span>
+										{{/if}}
+									<i class="fa-solid fa-hammer o13-icon o13-clickable" gear-id="{{this._id}}" data-action="repairGear"></i>
+								</span>
+								<i class="fa-solid fa-x o13-label o13-icon o13-clickable o13-flex-right" gear-id="{{this._id}}" data-action="removeGear"></i>
+							</span>
 						</div>
 					{{/each}}
 				</div>

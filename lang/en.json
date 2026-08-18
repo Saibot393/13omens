@@ -89,7 +89,9 @@
 			"withEdge" : "with 1 edge ",
 			
 			"actorRolled" : "{actor} rolled a <b>{aspect}</b> check {with}(TN:{tn})",
-			"rollResult" : "Outcome: {taskrisk} <b>{outcome}</b>"
+			"rollResult" : "Outcome: {taskrisk} <b>{outcome}</b>",
+			
+			"selectGear" : "Select {n} pieces of gear"
 		},
 		
 		"warnings" : {
