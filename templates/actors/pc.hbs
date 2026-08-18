@@ -1,4 +1,4 @@
-<div class="actor-sheet-content o13-sheet o13-sheet-lining o13-scrollable">
+<div class="actor-sheet-content o13-sheet o13-sheet-lining flexcol">
 	<header class="sheet-header flexrow">
 		<div class="o13-portrait-container">
 			<img class="o13-portrait" name="img" src="{{actor.img}}" title="{{actor.name}}" alt="{{actor.name}}" data-action="choosePortrait" />
@@ -37,7 +37,7 @@
 		</div>
 	</header>
 	
-	<main>
+	<main class="o13-scrollable" style="flex:1">
 		{{> "systems/13omens/templates/actors/components/aspects.hbs" 
 			aspectsname=(localize "13omens.titles.coreAspects")
 			aspects=actor.system.aspects.core
@@ -55,19 +55,36 @@
 			namepath="system.aspects.story."
 		}}
 		
-		<span class="o13-label o13-header-label">{{localize "13omens.titles.perks"}} </span>
-		{{! <div style="display:grid;grid-template-columns: repeat(2, 1fr);gap: 1rem;">}}
-		<div class="o13-adaptive-grid-wrapper">
-			<div class="o13-adaptive-grid-23">
-				{{#each actor.perks}}
-					<span class="o13-label o13-inline" perk-id="{{this._id}}">
-						<input class="o13-checkbox" type="checkbox" name="system.pickedperks.{{@key}}" {{checked (lookup ../actor.system.pickedperks @key)}} /> 
-						{{#unless this.isArchetypeOrigin}}
-							<i class="fa-solid fa-x o13-label o13-icon o13-hover-icon o13-clickable" perk-id="{{this._id}}" data-action="removePerk"></i>
-						{{/unless}}
-						<b data-action="openPerk" perk-id="{{this._id}}">{{this.name}}</b> {{{this.system.description}}}
-					</span>
-				{{/each}}
+		<div class="flexcol">
+			<span class="o13-label o13-header-label">{{localize "13omens.titles.perks"}} </span>
+			<div class="o13-adaptive-grid-wrapper">
+				<div class="o13-adaptive-grid-23">
+					{{#each actor.perks}}
+						<div class="o13-side-padding">
+							<span class="o13-label o13-inline" perk-id="{{this._id}}">
+								<input class="o13-checkbox" type="checkbox" name="system.pickedperks.{{@key}}" {{checked (lookup ../actor.system.pickedperks @key)}} /> 
+								{{#unless this.isArchetypeOrigin}}
+									<i class="fa-solid fa-x o13-label o13-icon o13-hover-icon o13-clickable" perk-id="{{this._id}}" data-action="removePerk"></i>
+								{{/unless}}
+								<b data-action="openPerk" perk-id="{{this._id}}">{{this.name}}</b> {{{this.system.description}}}
+							</span>
+						</div>
+					{{/each}}
+				</div>
+			</div>
+		</div>
+		
+		<div class="flexcol">
+			<span class="o13-label o13-header-label">{{localize "13omens.titles.gears"}} </span>
+			<div class="o13-adaptive-grid-wrapper">
+				<div class="o13-adaptive-grid-12">
+					{{#each actor.gear}}
+						<div class="flexrow o13-side-padding">
+							<span class="o13-label o13-clickable" ear-id="{{this._id}}">{{this.name}}</span>
+							<i class="fa-solid fa-x o13-label o13-icon o13-hover-icon o13-clickable o13-minflex" gear-id="{{this._id}}" data-action="removeItem"></i>
+						</div>
+					{{/each}}
+				</div>
 			</div>
 		</div>
 	</main>

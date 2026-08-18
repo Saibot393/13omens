@@ -10,9 +10,9 @@
 			<tr>
 				<td>
 					{{#if (ne ../aspectsnames undefined)}}
-						<label class="o13-label o13-clickable" data-action="rollAspect" aspect-name="{{@key}}"><b>{{lookup ../aspectsnames @key}}</b></label>
+						<label class="o13-label o13-clickable" data-action="rollAspect" aspect-name="{{@key}}" style="padding-left:5px;"><b>{{lookup ../aspectsnames @key}}</b></label>
 					{{else}}
-						<label class="o13-label o13-clickable" data-action="rollAspect" aspect-name="{{@key}}"><b>{{localize (concat "13omens.titles." @key)}}</b></label>
+						<label class="o13-label o13-clickable" data-action="rollAspect" aspect-name="{{@key}}" style="padding-left:5px;"><b>{{localize (concat "13omens.titles." @key)}}</b></label>
 					{{/if}}
 				</td>
 				

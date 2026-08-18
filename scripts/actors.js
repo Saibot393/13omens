@@ -114,7 +114,7 @@ export class o13Actor extends Actor {
 		if (this.isPC) {
 			const perk = this.items.get(id);
 			
-			if (perk.isPerk) {
+			if (perk?.isPerk) {
 				return this.deleteEmbeddedDocuments("Item", [id]);
 			}
 		}
@@ -122,6 +122,26 @@ export class o13Actor extends Actor {
 	
 	get perks() {
 		return this.getPerks();
+	}
+	
+	async removeGear(id) {
+		if (this.isPC) {
+			let gear = this.items.get(id);
+			
+			if (gear?.isGear) {
+				return this.deleteEmbeddedDocuments("Item", [id]);
+			}
+		}
+	}
+	
+	get gear() {
+		if (this.isPC) {
+			let gear = this.items.filter(item => item.isGear);
+			
+			return Object.fromEntries(gear.map(item => [item.id, item]));
+		}
+		
+		return {};
 	}
 	
 	get archetypes() {
@@ -270,6 +290,22 @@ export class o13Actor extends Actor {
 	get diceBagDice() {
 		if (this.isStory || this.isPC) {
 			return this.diceBag.map(die => ({type : die, face : 6}));
+		}
+	}
+	
+	async addOmenDice() {
+		if (this.isStory) {
+			if (this.system.hostomendice > 0) {
+				this.update({system : {hostomendice : this.system.hostomendice - 1}});
+			}
+		}
+	}
+	
+	async removeOmenDice() {
+		if (this.isStory) {
+			if (this.diceBagCount.omen > 0) {
+				this.update({system : {hostomendice : this.system.hostomendice + 1}});
+			}
 		}
 	}
 	
@@ -563,6 +599,10 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 	static DEFAULT_OPTIONS = foundry.utils.mergeObject(super.DEFAULT_OPTIONS, {
 		classes: ["13omens", "actor-sheet"],
 		tag: "form",
+		position: {
+			width: 600,
+			height: 800
+		},
 		form: {
 			closeOnSubmit: false,
 			submitOnChange: true
@@ -578,7 +618,9 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 			deleteArchetype : o13ActorSheet.deleteArchetype,
 			openPC : o13ActorSheet.openPC,
 			removePC : o13ActorSheet.removePC,
-			removePerk : o13ActorSheet.removePerk
+			removePerk : o13ActorSheet.removePerk,
+			addOmenDice : o13ActorSheet.addOmenDice,
+			removeOmenDice : o13ActorSheet.removeOmenDice
 		},
 		dragDrop: [{
 			dragSelector: ".draggable-item",
@@ -597,6 +639,18 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 	async _prepareContext(options) {
 		const context = await super._prepareContext(options);
 		context.actor = this.actor;
+		
+		context.editable = true;
+
+        context.enrichedDescription = await foundry.applications.ux.TextEditor.implementation.enrichHTML(
+            this.actor.system.description ?? "",
+            {
+                secrets: this.actor.isOwner,
+                async: true,
+                relativeTo: this.actor
+            }
+        );
+		
 		return context;
 	}
 	
@@ -695,14 +749,27 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 	static async removePC(event, target) {
 		if (this.actor.type == "story") {
 			const pcID = target.getAttribute("pc-id");
-			this.actor.removePC(pcID);
+			return this.actor.removePC(pcID);
 		}
 	}
 	
 	static async removePerk(event, target) {
 		if (this.actor.type == "pc") {
 			const perkID = target.getAttribute("perk-id");
-			this.actor.removePerk(perkID);
+			
+			return this.actor.removePerk(perkID);
+		}
+	}
+	
+	static async addOmenDice(event, target) {
+		if (this.actor.type == "story") {
+			return this.actor.addOmenDice();
+		}
+	}
+	
+	static async removeOmenDice(event, target) {
+		if (this.actor.type == "story") {
+			return this.actor.removeOmenDice();
 		}
 	}
 	
@@ -872,7 +939,7 @@ class pcDataModel extends foundry.abstract.TypeDataModel {
 class npcDataModel extends foundry.abstract.TypeDataModel {
 	static defineSchema() {
 		return {
-			story: new HTMLField({ required: true, blank: true, initial: "" })
+			description: new HTMLField({ required: true, blank: true, initial: "" })
 		};
 	}
 }

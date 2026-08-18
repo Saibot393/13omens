@@ -86,6 +86,15 @@
   margin: 0;
 }
 
+.o13-minflex {
+	flex: 0 0 auto;
+}
+
+.o13-side-padding {
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
 .o13-input:hover{
 	background: rgba(255, 255, 255, 0.05);
 }
@@ -302,8 +311,17 @@ span.o13-input-span input {
   gap: 1rem;
 }
 
+.o13-adaptive-grid-12 {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1rem;
+}
+
 @container (min-width: 800px) {
 	.o13-adaptive-grid-23 {
 		grid-template-columns: repeat(3, 1fr);
+	}
+	.o13-adaptive-grid-12 {
+		grid-template-columns: repeat(2, 1fr);
 	}
 }
