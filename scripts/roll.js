@@ -1,4 +1,4 @@
-const DEFAULTROLLOPTIONS = {dicePermut : [], flaws : [], omenflaws : [], edges : [], taskDifficulty : 0, taskRisk : "normal"};
+const DEFAULTROLLOPTIONS = {dicePermut : [], flaws : [], edges : [], strain : false, ignoreStrain : false, targetNumber : null, taskDifficulty : 0, taskRisk : "normal", woundThreshold : null, strainThreshold : null};
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 const MAXFE = 2; //Max two flaws or edges
@@ -11,6 +11,10 @@ const TASKRISKS = ["risky", "normal", "harmless"]
 export const DEFAULTDICEBAGCOUNT = {safe : 8, omen : 1, }
 
 export const MAXHOSTOMENDICE = 13;
+
+expandRollData(data) {
+	data.flaws = data.flaws.map(flaw => typeof flaw == "string" ? {name : flaw} : flaw)
+}
 
 export function randomPermut(array) {
 	for (let i = array.length - 1; i > 0; i--) {
@@ -38,23 +42,12 @@ export class o13Roll extends Roll {
 	constructor(actor, aspect, options = DEFAULTROLLOPTIONS) {
 		super("0");
 		
-		options = {...DEFAULTROLLOPTIONS, ...options};
+		options = 
 		
 		this._actor = actor;
 		this._aspect = aspect;
 		
-		this._dicePermut = options.dicePermut;
-		this._flaws = options.flaws;
-		this._omenflaws = options.omenflaws;
-		this._edges = options.edges;
-		this._taskDifficulty = options.taskDifficulty;
-		this._taskRisk = options.taskRisk;
-		this._targetNumber = options.targetNumber || this.aspectData?.targetNumber;
-		this._strain = options.strain || this.aspectData?.strain;
-		this._aspectName = options.aspectName || this.aspectName;
-		this._actorName = options.actorName || this.actorName;
-		this._act = options.act || this.act;
-		this._consequenceTaken = options.consequenceTaken;
+		this._rollData = expandRollData({...DEFAULTROLLOPTIONS, ...options});
 		
 		if (!this._dicePermut || this._dicePermut.length == 0) this.drawDice();
 		
@@ -91,11 +84,11 @@ export class o13Roll extends Roll {
 	}
 	
 	get woundThreshold() {
-		return this._woundthreshold ?? this.act;
+		return this._rollData.woundthreshold ?? this.act;
 	}
 	
 	get strainThreshold() {
-		return this._strainthreshold ?? this.act;
+		return this._rollData.strainthreshold ?? this.act;
 	}
 	
 	get aspect() {
@@ -111,19 +104,19 @@ export class o13Roll extends Roll {
 	}
 	
 	get dicePermut() {
-		return this._dicePermut;
+		return this._rollData.dicePermut;
 	}
 	
 	get flaws() {
-		return this._flaws.length + this._omenflaws.length + (this.strain ? 1 : 0);
+		return this._rollData.flaws.length + (this.strain ? 1 : 0);
 	}
 	
 	get omenflaws() {
-		return this._omenflaws.length;
+		return this._rollData.flaws.filter(flaw => flaw.isomen).length;
 	}
 	
 	get edges() {
-		return this._edges.length;
+		return this._rollData.edges.length;
 	}
 	
 	get FEDifference() {
@@ -143,19 +136,23 @@ export class o13Roll extends Roll {
 	}	
 	
 	get taskDifficulty() {
-		return this._taskDifficulty;
+		return this._rollData.taskDifficulty;
 	}
 	
 	get taskRisk() {
-		return this._taskRisk;
+		return this._rollData.taskRisk;
 	}
 	
 	get targetNumber() {
-		return this._targetNumber || this.aspectData?.targetNumber;
+		return this._rollData.targetNumber ?? this.aspectData?.targetNumber;
 	}
 	
 	get strain() {
-		return this._strain || this.aspectData?.strain;
+		return (this._rollData.strain ?? this.aspectData?.strain) && !this.ignoreStrain;
+	}
+	
+	get ignoreStrain() {
+		return this._rollData.ignoreStrain;
 	}
 	
 	get aspectData() {
@@ -175,7 +172,7 @@ export class o13Roll extends Roll {
 	}
 	
 	drawDice() {
-		this._dicePermut = randomPermut(this.diceBag);
+		this._rollData.dicePermut = randomPermut(this.diceBag);
 	}
 	
 	get formula() {
@@ -222,10 +219,6 @@ export class o13Roll extends Roll {
 		return (this.actor ?? false) && !this.consequenceTaken;
 	}
 	
-	redrawDice(dice) {
-		
-	}
-	
 	async render() {
 		return foundry.applications.handlebars.renderTemplate("systems/13omens/templates/rolls/chatRoll.hbs", {roll : this});
 	}
@@ -240,20 +233,14 @@ export class o13Roll extends Roll {
         json.o13Data = {
             actorId: this._actor?.id,
             aspect: this._aspect,
-            options: {
-                dicePermut: this._dicePermut,
-                flaws: this._flaws,
-                omenflaws: this._omenflaws,
-                edges: this._edges,
-                taskDifficulty: this._taskDifficulty,
-                taskRisk: this._taskRisk,
-				targetNumber: this._targetNumber,
-				strain: this._strain,
-				aspectName: this._aspectName,
-				actorName: this._actorName,
-				act: this._act,
-				consequenceTaken: this._consequenceTaken
-            }
+			
+            rollData: this._rollData,
+			
+			aspectName: this._aspectName,
+			actorName: this._actorName,
+			act: this._act,
+			consequenceTaken: this._consequenceTaken
+			
         };
         return json;
     }
@@ -262,11 +249,13 @@ export class o13Roll extends Roll {
         const o13Data = data.o13Data ?? {};
         const actor = game.actors.get(o13Data.actorId);
         
-        const roll = new this(actor, o13Data.aspect, o13Data.options);
+        const roll = new this(actor, o13Data.aspect, o13Data.rollData);
         
-        roll._formula = data.formula;
-        roll._evaluated = data.evaluated ?? true;
-        roll._total = data.total;
+		roll._aspectName = o13Data.aspectName;
+		roll._actorName = o13Data.actorName;
+		roll._act = o13Data.act;
+		roll._consequenceTaken = o13Data.consequenceTaken;
+		
         if (data.terms) {
             roll._terms = data.terms.map(term => foundry.dice.terms.RollTerm.fromData(term));
         }
@@ -327,6 +316,8 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 		
 		this._id = foundry.utils.randomID();
 		
+		this.expandData();
+		
 		this._secondaryView = secondaryView;
 	}
 	
@@ -372,7 +363,7 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 	
 	get strain() {
-		return this.aspectData.strain;
+		return this.aspectData.strain && !this._data.ignoreStrain;
 	}
 	
 	get targetNumber() {
@@ -389,6 +380,10 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 	
 	get flaws() {
 		return this._data.flaws;
+	}
+	
+	get omenflaws() {
+		return this._data.flaws.filter(flaw => flaw.isomen);
 	}
 	
 	get edges() {
@@ -419,6 +414,10 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 		this._applyUpdate();
 	}
 	
+	toggleOmenFlaw(index) {
+		if (this._data.flaw[index]) this._data.flaw[index].isomen = !this._data.flaw[index].isomen;
+	}
+	
 	static DEFAULT_OPTIONS = {
 		tag: "form",
 		window: {
@@ -434,12 +433,13 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 			closeOnSubmit: false
 		},
 		actions: {
-			reduceTaskDifficulty : o13rollConfig.reduceTaskDifficulty,
-			increaseTaskDifficulty : o13rollConfig.increaseTaskDifficulty,
-			addEmptyFlaw : o13rollConfig.addEmptyFlaw,
-			addEmptyEdge : o13rollConfig.addEmptyEdge,
-			removeFlaw : o13rollConfig.removeFlaw,
-			removeEdge : o13rollConfig.removeEdge,
+			reduceTaskDifficulty : o13rollConfig.DAreduceTaskDifficulty,
+			increaseTaskDifficulty : o13rollConfig.DAincreaseTaskDifficulty,
+			addEmptyFlaw : o13rollConfig.DAaddEmptyFlaw,
+			addEmptyEdge : o13rollConfig.DAaddEmptyEdge,
+			removeFlaw : o13rollConfig.DAremoveFlaw,
+			toggleOmenFlaw : o13rollConfig.DAtoggleOmenFlaw,
+			removeEdge : o13rollConfig.DAremoveEdge,
 			roll : o13rollConfig.roll
 		}
 	};
@@ -469,45 +469,63 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 		this.render(true);
 	}
 	
-	static async reduceTaskDifficulty(event, target) {
+	static async DAreduceTaskDifficulty(event, target) {
 		if (this._data.taskDifficulty > MINTD) this._data.taskDifficulty -= 1;
 		
 		this._applyUpdate();
 	}
 	
-	static async increaseTaskDifficulty(event, target) {
+	static async DAincreaseTaskDifficulty(event, target) {
 		if (this._data.taskDifficulty < MAXTD) this._data.taskDifficulty += 1;
 		
 		this._applyUpdate();
 	}
 	
-	static async addEmptyFlaw(event, target) {
+	static async DAaddEmptyFlaw(event, target) {
 		if (this.canAddFlaws) {
 			this.addFlaw();
 		}
 	}
 	
-	static async addEmptyEdge(event, target) {
+	static async DAaddEmptyEdge(event, target) {
 		if (this.canAddEdges) {
 			this.addEdge();
 		}
 	}
 	
-	static async removeFlaw(event, target) {
+	static async DAremoveFlaw(event, target) {
 		const index = target.getAttribute("index");
+		
+		if (isNaN(index)) return;
+		
 		this._data.flaws.splice(index, 1);
 		
 		this._applyUpdate();
 	}
 	
-	static async removeEdge(event, target) {
+	static async DAtoggleOmenFlaw(event, target) {
 		const index = target.getAttribute("index");
+		
+		if (isNaN(index)) return;
+		
+		this.toggleOmenFlaw(index);
+	}
+	
+	static async DAremoveStrain(event, target) {
+		this._data.ignoreStrain = true;
+	}
+	
+	static async DAremoveEdge(event, target) {
+		const index = target.getAttribute("index");
+		
+		if (isNaN(index)) return;
+		
 		this._data.edges.splice(index, 1);
 		
 		this._applyUpdate();
 	}
 	
-	static async roll(event, target) {
+	static async roll() {
 		const roll = new o13Roll(this.actor, this.aspect, this._data);
 
 		await roll.evaluate();
