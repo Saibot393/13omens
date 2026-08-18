@@ -47,7 +47,7 @@ export class o13Roll extends Roll {
 		this._actor = actor;
 		this._aspect = aspect;
 		
-		this._rollData = {...DEFAULTROLLOPTIONS, ...options};
+		this._rollData = expandRollData({...DEFAULTROLLOPTIONS, ...options});
 		
 		if (!this._dicePermut || this._dicePermut.length == 0) this.drawDice();
 		
