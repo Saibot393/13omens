@@ -49,6 +49,13 @@
 			"taskRisk" : "Task Risk",
 			"taskDifficulty" : "Task Difficulty",
 			
+			"actNames" : {
+				"0" : "Prologue",
+				"1" : "Act I",
+				"2" : "Act II",
+				"3" : "Act III"
+			},
+			
 			"edge" : "Edge",
 			"flaw" : "Flaw",
 			"flaws" : "Flaws",

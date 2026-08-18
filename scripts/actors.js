@@ -91,6 +91,14 @@ export class o13Actor extends Actor {
 	get isStory() {
 		return this.type == "story";
 	}
+	
+	get isHostView() {
+		return game.user.isGM;
+	}
+	
+	get isPlayerView() {
+		return !game.user.isGM;
+	}
   
 	get inventory() {
 		return [...this.items].filter(item => item.type == "gear");
@@ -431,14 +439,18 @@ export class o13Actor extends Actor {
 		}
 	}
 	
-	get cheatedDeaths() {
+	cheatedDeathCount(act = null) {
 		if (this.isPC) {
-			return this.storyActor?.cheatedDeaths || {1 : undefined, 2 : undefined, 3 : undefined};
-		}
-		
-		if (this.isStory) {
-			return Object.fromEntries(this.system.acts.map((act, index) => [index + 1, this.pcActors?.find(actor => actor.id == act.cheatedDeath)]));
-		}
+			const lookupact = act ?? this.activeAct;
+			
+			return Object.values(this.system.wounds).filter(wound => wound.safe?.filled && wound.safe?.act == lookupact).length;
+		}	
+	}
+	
+	hasCheatedDeath(act = null) {
+		if (this.isPC) {
+			return this.cheatedDeathCount(act) > 0
+		}	
 	}
 	
 	get canCheatDeath() {
@@ -447,7 +459,7 @@ export class o13Actor extends Actor {
 		}
 		
 		if (this.isStory) {
-			return !this.cheatedDeaths?.[this.activeAct]
+			return !this.pcActors.some(actor => actor.hasCheatedDeath());
 		}
 	}
 	
@@ -671,7 +683,10 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 			openGear : o13ActorSheet.openGear,
 			breakGear : o13ActorSheet.breakGear,
 			repairGear : o13ActorSheet.repairGear,
-			toggleSelectGear : o13ActorSheet.toggleSelectGear
+			toggleSelectGear : o13ActorSheet.toggleSelectGear,
+			takeWound : o13ActorSheet.takeWound,
+			cheatDeath : o13ActorSheet.cheatDeath,
+			clearWound : o13ActorSheet.clearWound
 		}
 	});
 
@@ -900,6 +915,24 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 		}
 	}
 	
+	static async takeWound(event, target) {
+		if (this.actor.type == "pc") {
+			this.actor.takeWound({face : 6, cheatDeath : false})
+		}
+	}
+	
+	static async cheatDeath(event, target) {
+		if (this.actor.type == "pc") {
+			this.actor.takeWound({face : 6, cheatDeath : true})
+		}
+	}
+	
+	static async clearWound(event, target) {
+		if (this.actor.type == "pc") {
+			this.actor.clearWound();
+		}
+	}
+	
 	async _onRender(context, options) {
 		await super._onRender(context, options);
 		
@@ -929,11 +962,11 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 class storyDataModel extends foundry.abstract.TypeDataModel {
 	static defineSchema() {
 		return {
-			activeact: new NumberField({ required: true, integer: true, nullable: true, min: 1, max : 3, initial: 1 }),
+			activeact: new NumberField({ required: true, integer: true, nullable: true, min: 0, max : 3, initial: 0 }),
 			
 			acts: new ArrayField(new SchemaField({
-				cheatedDeath : new DocumentIdField({required: true, blank: true, nullable: true, readonly: false})
-			}), { initial : () => Array.from({length : 3}, () => ({cheatedDeath : ""}))}),
+				
+			}), { initial : () => Array.from({length : 4}, () => ({}))}),
 			
 			hostomendice: new NumberField({ required: true, integer: true, nullable: true, initial: MAXHOSTOMENDICE }),
 			

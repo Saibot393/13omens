@@ -34,6 +34,12 @@
 	font-size: 18px;
 }
 
+.o13-act-title {
+	font-size: 50px;
+	color: var(--o13-omen-red);
+	margin: 0 auto;
+}
+
 .o13-icon {
 	font-size: 14px;
 	display: inline-block;
@@ -290,6 +296,23 @@ span .o13-hover-icon {
 
 span:hover > .o13-hover-icon {
 	display: inline-block;
+}
+
+.o13-hover-field-icon {
+	display: none;
+}
+
+div:hover > .o13-hover-field-icon,
+div:hover > div > .o13-hover-field-icon {
+    display: inline-block;
+}
+
+.o13-hover-div {
+	display: none;
+}
+
+div:hover > .o13-hover-div {
+    display: inline-block;
 }
 
 span.o13-input-span {

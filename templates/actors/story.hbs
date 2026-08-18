@@ -9,8 +9,11 @@
 			<input class="o13-input o13-underline" type="text" name="name" value="{{actor.name}}" />
 		</div>
 		
-		<div class="flexrow">
-			<span class="o13-label" style="flex:0.5"><b>{{localize "13omens.titles.act"}}:</b></span>
+		<div class="flexcol">
+			<span class="o13-label o13-act-title" style="display:inline-flex;align-items: center;">
+				<b>{{localize (concat "13omens.titles.actNames." actor.activeAct)}}</b>
+				<i class="fa-solid fa-rotate-left o13-icon o13-hover-icon o13-clickable" style="color:var(--o13-ink-black)" data-action="resetStory"></i>
+			</span>
 		</div>
 	</header>
 	
