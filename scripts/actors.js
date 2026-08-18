@@ -77,7 +77,7 @@ export class o13Actor extends Actor {
 		
 		if (this.isPC) {
 			if (changed.system) {
-				if (changed.system.archetype) {
+				if (changed.system.hasOwnProperty("archetype")) {
 					await this.updateArchetypeItems();
 				}
 			}
@@ -623,6 +623,7 @@ export class o13Actor extends Actor {
 	
 	async removeArchetypeItems() {
 		if (this.isPC) {
+			console.log(Array.from(this.items).filter(item => item.isArchetypeOrigin));
 			return this.deleteEmbeddedDocuments("Item", Array.from(this.items).filter(item => item.isArchetypeOrigin).map(item => item.id))
 		}
 	}
