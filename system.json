@@ -38,7 +38,7 @@
   "secondaryTokenAttribute": "resources.power",
   "url": "https://github.com/Saibot393/13omens",
   "download": "https://github.com/Saibot393/13omens/archive/refs/tags/v0.0.0.zip",
-  "manifest": "https://github.com/Saibot393/13omens/releases/latest/download/module.json",
+  "manifest": "https://github.com/Saibot393/13omens/releases/latest/download/system.json",
   "readme": "https://github.com/Saibot393/13omens/blob/main/README.md",
   "changelog": "https://github.com/Saibot393/13omens/blob/main/CHANGELOG.md",
   "bugs": "https://github.com/Saibot393/13omens/issues",
