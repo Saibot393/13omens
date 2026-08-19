@@ -16,6 +16,12 @@
 	height: 100%;
 }
 
+select:disabled {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+}
+
 .o13-sheet-lining {
 	padding : 10px;
 	outline: 2px solid var(--o13-ink-black);

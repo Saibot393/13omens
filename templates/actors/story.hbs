@@ -1,4 +1,4 @@
-<div class="actor-sheet-content o13-sheet o13-sheet-lining o13-scrollable">
+<div class="actor-sheet-content o13-sheet o13-sheet-lining flexcol">
 	<header class="sheet-header flexrow">
 		<div class="o13-portrait-container">
 			<img class="o13-portrait" name="img" src="{{actor.img}}" title="{{actor.name}}" alt="{{actor.name}}" data-action="choosePortrait" />
@@ -13,6 +13,7 @@
 			<span class="o13-label o13-act-title" style="display:inline-flex;justify-content:center;white-space : nowrap;">
 				<b>{{localize (concat "13omens.titles.actNames." actor.activeAct)}}</b>
 			</span>
+			{{#if actor.isHostView}}
 			<div class="flexcol {{#unless actor.isPrologue}}o13-hover-div{{/unless}}" style="flex:0.1">
 				{{#if actor.isPrologue}}
 					<i class="fa-solid fa-play o13-icon o13-clickable" style="color:var(--o13-omen-red)" data-action="advanceAct"></i>
@@ -21,10 +22,11 @@
 					<i class="fa-solid fa-right-long o13-icon o13-clickable" style="color:var(--o13-omen-red)" data-action="advanceAct"></i>
 				{{/if}}
 			</div>
+			{{/if}}
 		</div>
 	</header>
 	
-	<main class="o13-scrollable" scroll-id="main">
+	<main class="o13-scrollable" style="flex:1" scroll-id="main">
 		<div class="flexcol">
 			<div class="flexrow">
 				<div class="flexcol o13-flexStart">
@@ -35,10 +37,12 @@
 						}}
 					</div>
 				</div>
-				<div class="flexcol o13-minflex">
-					{{#if actor.canAddOmenDice}}<i class="fa-solid fa-right-long o13-icon o13-clickable" style="color:var(--o13-omen-red);" data-action="addOmenDice"></i>{{/if}}
-					{{#if actor.canRemoveOmenDice}}<i class="fa-solid fa-left-long o13-icon o13-clickable"  style="color:var(--o13-omen-red);" data-action="removeOmenDice"></i>{{/if}}
-				</div>
+				{{#if actor.isHostView}}
+					<div class="flexcol o13-minflex">
+						{{#if actor.canAddOmenDice}}<i class="fa-solid fa-right-long o13-icon o13-clickable" style="color:var(--o13-omen-red);" data-action="addOmenDice"></i>{{/if}}
+						{{#if actor.canRemoveOmenDice}}<i class="fa-solid fa-left-long o13-icon o13-clickable"  style="color:var(--o13-omen-red);" data-action="removeOmenDice"></i>{{/if}}
+					</div>
+				{{/if}}
 				<div class="flexcol o13-flexStart">
 					<span class="o13-label o13-header-label o13-content-centered">{{localize "13omens.titles.dicebag"}}</span>
 					<div>
@@ -48,45 +52,47 @@
 					</div>
 				</div>
 			</div>
-			<div class="flexrow" style="flex-wrap:nowrap;margin-bottom:15px">
-				<div class="flexcol o13-flexStart">
-					<span class="o13-label o13-header-label o13-content-centered">{{localize "13omens.titles.storyAspects"}}</span>
-					{{#each actor.system.storyaspects as |aspect|}}
-						<input class="o13-input o13-underline" type="text" name="{{concat "system.storyaspects." @key ".name"}}" value="{{aspect.name}}" />
-					{{/each}}
+			{{#if actor.isHostView}}
+				<div class="flexrow" style="flex-wrap:nowrap;margin-bottom:15px">
+					<div class="flexcol o13-flexStart">
+						<span class="o13-label o13-header-label o13-content-centered">{{localize "13omens.titles.storyAspects"}}</span>
+						{{#each actor.system.storyaspects as |aspect|}}
+							<input class="o13-input o13-underline" type="text" name="{{concat "system.storyaspects." @key ".name"}}" value="{{aspect.name}}" />
+						{{/each}}
+					</div>
+					<div class="flexcol o13-flexStart" style="flex:1.5">
+						<span class="o13-label o13-header-label o13-content-centered">{{localize "13omens.titles.archetypes"}} <i class="fa-solid fa-plus" data-action="createNewArchetype"></i></span>
+						{{#each actor.archetypes as |archetype|}}
+							<div class="flexrow o13-padding">
+								<span class="o13-label o13-clickable o13-content-centered" type="text" archetype-id="{{archetype.id}}" data-action="openArchetype">{{archetype.name}}</span>
+								<select class="o13-input o13-underline" name="{{concat "system.archetypeaspects." archetype.id}}">
+									<option value="-1"></option>
+									{{#each actor.system.storyaspects as |aspect|}}
+										{{#if aspect.name}}
+											<option value="{{@key}}" {{#if (eqLoose @key (lookup @root.actor.system.archetypeaspects archetype.id))}}selected{{/if}}>{{aspect.name}}</option>
+										{{/if}}
+									{{/each}}
+								</select>
+								<i class="fa-solid fa-x o13-label o13-lowflex" archetype-id="{{archetype.id}}" data-action="deleteArchetype"></i>
+							</div>
+						{{/each}}
+					</div>
 				</div>
-				<div class="flexcol o13-flexStart" style="flex:1.5">
-					<span class="o13-label o13-header-label o13-content-centered">{{localize "13omens.titles.archetypes"}} <i class="fa-solid fa-plus" data-action="createNewArchetype"></i></span>
-					{{#each actor.archetypes as |archetype|}}
-						<div class="flexrow o13-padding">
-							<span class="o13-label o13-clickable o13-content-centered" type="text" archetype-id="{{archetype.id}}" data-action="openArchetype">{{archetype.name}}</span>
-							<select class="o13-input o13-underline" name="{{concat "system.archetypeaspects." archetype.id}}">
-								<option value="-1"></option>
-								{{#each actor.system.storyaspects as |aspect|}}
-									{{#if aspect.name}}
-										<option value="{{@key}}" {{#if (eqLoose @key (lookup @root.actor.system.archetypeaspects archetype.id))}}selected{{/if}}>{{aspect.name}}</option>
-									{{/if}}
-								{{/each}}
-							</select>
-							<i class="fa-solid fa-x o13-label o13-lowflex" archetype-id="{{archetype.id}}" data-action="deleteArchetype"></i>
+				<div class="flexcol">
+					<span class="o13-label o13-header-label">{{localize "13omens.titles.players"}}</span>
+					{{#each actor.pcActors as |pc|}}
+						<div class="flexrow">
+							<span class="o13-label o13-clickable o13-content-centered" type="text" pc-id="{{pc.id}}" data-action="openPC">{{pc.name}}</span>
+							<span class="o13-label o13-content-centered" type="text" pc-id="{{pc.id}}" >{{pc.archetype.name}}</span>
+							{{> "systems/13omens/templates/dice/dicebar.hbs" 
+								dice=pc.woundDice
+								microdice=true
+							}}
+							<i class="fa-solid fa-x o13-label o13-lowflex" pc-id="{{pc.id}}" data-action="removePC"></i>
 						</div>
 					{{/each}}
 				</div>
-			</div>
-			<div class="flexcol">
-				<span class="o13-label o13-header-label">{{localize "13omens.titles.players"}}</span>
-				{{#each actor.pcActors as |pc|}}
-					<div class="flexrow">
-						<span class="o13-label o13-clickable o13-content-centered" type="text" pc-id="{{pc.id}}" data-action="openPC">{{pc.name}}</span>
-						<span class="o13-label o13-content-centered" type="text" pc-id="{{pc.id}}" >{{pc.archetype.name}}</span>
-						{{> "systems/13omens/templates/dice/dicebar.hbs" 
-							dice=pc.woundDice
-							microdice=true
-						}}
-						<i class="fa-solid fa-x o13-label o13-lowflex" pc-id="{{pc.id}}" data-action="removePC"></i>
-					</div>
-				{{/each}}
-			</div>
+			{{/if}}
 		</div>
 	</main>
 </div>

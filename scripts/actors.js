@@ -12,6 +12,8 @@ const ARCHETYPEASPECTRATING = 4;
 
 const DEFAULTMAXWOUNDS = 4;
 
+const DEFAULTMAXHOSTOMENDICE = 13;
+
 const DEFAULTACTOMENDCIETHRESHOLD = {
 	0 : 0,
 	1 : 1,
@@ -373,13 +375,13 @@ export class o13Actor extends Actor {
 	
 	get canRemoveOmenDice() {
 		if (this.isStory) {
-			return this.system.hostomendice <= 13;
+			return this.system.hostomendice <= DEFAULTMAXHOSTOMENDICE;
 		}
 	}
 	
 	async removeOmenDice(remove = 1) {
 		if (this.isStory) {
-			const diceRemove = Math.min(Math.max(remove, 0), 13 - this.system.hostomendice);
+			const diceRemove = Math.min(Math.max(remove, 0), DEFAULTMAXHOSTOMENDICE - this.system.hostomendice);
 			
 			if (diceRemove > 0) {
 				return this.update({system : {hostomendice : this.system.hostomendice + diceRemove}});
@@ -390,7 +392,7 @@ export class o13Actor extends Actor {
 	async checkAct() {
 		if (this.isStory) {
 			if (!this.isPrologue) {
-				const hostOmenDice = 13 - this.system.hostomendice;
+				const hostOmenDice = DEFAULTMAXHOSTOMENDICE - this.system.hostomendice;
 				console.log(hostOmenDice);
 				const targetAct = Math.max(...Object.keys(DEFAULTACTOMENDCIETHRESHOLD).filter(id => DEFAULTACTOMENDCIETHRESHOLD[id] <= hostOmenDice));
 				console.log(DEFAULTACTOMENDCIETHRESHOLD);
@@ -416,7 +418,7 @@ export class o13Actor extends Actor {
 			await this.update({
 				system : {
 					activeact : 0,
-					hostomendice : 13
+					hostomendice : DEFAULTMAXHOSTOMENDICE
 				}
 			});
 			
@@ -780,6 +782,7 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 		},
 		actions: {
 			choosePortrait : o13ActorSheet.choosePortrait,
+			viewStory : o13ActorSheet.viewStory,
 			rollAspect : o13ActorSheet.rollAspect,
 			createNewArchetype : o13ActorSheet.createNewArchetype,
 			openArchetype : o13ActorSheet.openArchetype,
@@ -893,13 +896,21 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 	}
 
 	static async choosePortrait(event, target) {
-		const picker = new foundry.applications.apps.FilePicker.implementation({
-			type: "image",
-			current: this.actor.img,
-			callback: async (path) => {
-				await this.actor.update({img : path})
-			}
-		}).render(true);
+		if (this.actor.isOwner) {
+			const picker = new foundry.applications.apps.FilePicker.implementation({
+				type: "image",
+				current: this.actor.img,
+				callback: async (path) => {
+					await this.actor.update({img : path})
+				}
+			}).render(true);
+		}
+	}
+	
+	static async viewStory(event, target) {
+		if (this.actor.type == "pc") {
+			this.actor.storyActor?.sheet.render(true);
+		}
 	}
 	
 	static async rollAspect(event, target) {
@@ -1063,9 +1074,30 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 		this._disableExternalRenderHooks();
 
 		this._externalItemUpdateRender = Hooks.on("updateItem", (item, changes, options, userId) => {
+			
 		});
 		
 		this._externalActorUpdateRender = Hooks.on("updateActor", (actor, changes, options, userId) => {
+			let rerender = false;
+			
+			if (actor?.isPC) {
+				//decide if actor update is relevant for this sheet
+				if (actor.storyActor == this.actor) {
+					if (changes.hasOwnProperty("name")) {
+						rerender = true;
+					}
+					
+					if (changes.system) {
+						if (changes.system.wounds || changes.system.hasOwnProperty("archetype")) {
+							rerender = true;
+						}
+					}
+				}
+			}
+			
+			if (rerender) {
+				this.render(true);
+			}
 		});
 	}
 	

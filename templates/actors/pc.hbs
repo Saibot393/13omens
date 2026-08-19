@@ -10,18 +10,18 @@
 				<input class="o13-input o13-underline" type="text" name="name" value="{{actor.name}}" />
 			</div>
 			<div class="form-group flexrow">
-				<label for="actor-name" class="o13-label" style="flex:0.5">{{localize "13omens.titles.traits"}}:</label>
+				<label for="traits" class="o13-label" style="flex:0.5">{{localize "13omens.titles.traits"}}:</label>
 				<input class="o13-input o13-underline" type="text" name="system.traits" value="{{actor.system.traits}}" />
 			</div>
 			{{#if actor.storyActor}}
-				<div class="form-group flexrow">
+				<div class="form-group flexrow"  style="min-height:32px">
 					<label for="story-name" class="o13-label" style="flex:0.5">{{localize "13omens.titles.story"}}:</label>
-					<span class="o13-input o13-underline" type="text">{{actor.storyActor.name}}</span>
+					<span class="o13-input o13-underline o13-clickable" type="text" data-action="viewStory" style="align-self:flex-end;padding-bottom:3px;">{{actor.storyActor.name}}</span>
 				</div>
 			{{/if}}
 			<div class="form-group flexrow">
-				<label for="actor-name" class="o13-label" style="flex:0.5">{{localize "13omens.titles.archetype"}}:</label>
-				<select class="o13-input o13-underline" name="system.archetype">
+				<label for="archetype-name" class="o13-label" style="flex:0.5">{{localize "13omens.titles.archetype"}}:</label>
+				<select class="o13-input o13-underline" name="system.archetype" {{#unless actor.canPrepare}}disabled{{/unless}}>
 					<option value=""></option>
 					{{#each actor.availableArchetype as |archetype|}}
 						<option value="{{archetype.id}}" {{#if (eq archetype.id ../actor.system.archetype)}}selected{{/if}}>{{archetype.name}}</option>
@@ -75,7 +75,7 @@
 					{{#each actor.perks}}
 						<div class="o13-side-padding">
 							<span class="o13-label o13-inline" perk-id="{{this._id}}">
-								<input class="o13-checkbox" type="checkbox" name="system.pickedperks.{{@key}}" {{checked (lookup ../actor.system.pickedperks @key)}} /> 
+								<input class="o13-checkbox" type="checkbox" name="system.pickedperks.{{@key}}" {{#unless actor.canPrepare}}disabled{{/unless}} {{checked (lookup ../actor.system.pickedperks @key)}} /> 
 								{{#unless this.isArchetypeOrigin}}
 									<i class="fa-solid fa-x o13-label o13-icon o13-hover-icon o13-clickable" perk-id="{{this._id}}" data-action="removePerk"></i>
 								{{/unless}}
@@ -90,16 +90,18 @@
 		<div class="flexcol" style="margin-top:10px">
 			<span class="o13-label o13-header-label">{{localize "13omens.titles.gears"}} </span>
 			<div class="o13-adaptive-grid-wrapper">
-				{{#if actor.selectableGearCount}}
-					<span class="o13-item-line" drop-zone="selectableGear">
-						<span class="o13-label"><b>{{localize "13omens.titles.selectGear" n=actor.selectableGearCount}}:</b></span>
-						{{#each actor.selectableGearInfo}}
-							<span class="o13-label o13-inline o13-item-box {{#if this.selected}}o13-selected{{/if}}" gear-id="{{this.id}}">
-								<p class="o13-clickable" data-action="toggleSelectGear" gear-id="{{this.id}}">{{this.name}}</p> 
-							</span>
-						{{/each}}
-					</span>
-				{{/if}}
+				{{#unless actor.canPrepare}}
+					{{#if actor.selectableGearCount}}
+						<span class="o13-item-line" drop-zone="selectableGear">
+							<span class="o13-label"><b>{{localize "13omens.titles.selectGear" n=actor.selectableGearCount}}:</b></span>
+							{{#each actor.selectableGearInfo}}
+								<span class="o13-label o13-inline o13-item-box {{#if this.selected}}o13-selected{{/if}}" gear-id="{{this.id}}">
+									<p class="o13-clickable" data-action="toggleSelectGear" gear-id="{{this.id}}">{{this.name}}</p> 
+								</span>
+							{{/each}}
+						</span>
+					{{/if}}
+				{{/unless}}
 				<div class="o13-adaptive-grid-12" style="margin-top:15px">
 					{{#each actor.gear}}
 						<div class="flexrow o13-side-padding">
