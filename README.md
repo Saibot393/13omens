@@ -20,3 +20,17 @@ This system is intended for Paizo's new horror pen & paper system [13 Omens](htt
 **Rolls**
 Rolls can be initiated from a player character's (PC) sheet. The config popup allows for the risk level and the check difficulty to be set. Flaws and edges are also displayed in the config and can be added or removed, flaws can also be marked as omen flaws.
 Once a roll is made, dice are randomly drawn from the dice bag and the result is calculated. Wounds and strains a character might suffer are indicated in the result and can directly be applied from there.
+
+---
+## Roadmap
+
+I have multiple additions to the system planned, the following is an incomplete list with no specific order
+- Adding active effect to perks, so that they can affect PC properties, e.g. the maximum amount of wounds
+- Adding inline checks for aspects, which allow for roll properties to be parsed
+- More drag and drop utility for items in sheets, including reordering
+- Dedicated tab in the Story and PC actor sheets for notes and descriptions
+- Dedicated tab in the archetype item sheet for descriptions
+- Posting Gear and Perks to chat
+- Implementation of the final sacrifice mechanic
+- Allowing for perks to add roll rules (egdes, roll behaviour)
+- Story independent archetypes on the PC sheet
