@@ -41,4 +41,4 @@ If you encounter any bugs or issues while playing, [please let me know](https://
 
 If you want support for a language to be added and are able to do the required translation, feel free to open a PR or [open an issue](https://github.com/Saibot393/13omens/issues) if you need help with the technical side of things.
 
-I am open to any [requests](https://github.com/Saibot393/13omens/issues) and PRs regarding system features
+I am open to any [feature requests](https://github.com/Saibot393/13omens/issues) and PRs regarding system features
