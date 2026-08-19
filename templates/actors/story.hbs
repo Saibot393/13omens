@@ -9,18 +9,22 @@
 			<input class="o13-input o13-underline" type="text" name="name" value="{{actor.name}}" />
 		</div>
 		
-		<div class="flexrow">
-			<span class="o13-label o13-act-title" style="display:inline-flex;align-items: center;white-space : nowrap;">
+		<div class="flexrow" style="justify-content:center">
+			<span class="o13-label o13-act-title" style="display:inline-flex;justify-content:center;white-space : nowrap;">
 				<b>{{localize (concat "13omens.titles.actNames." actor.activeAct)}}</b>
 			</span>
-			<div class="flexcol">
-				<i class="fa-solid fa-play o13-icon o13-hover-field-icon o13-clickable" style="color:var(--o13-ink-black)" data-action="progressAct"></i>
-				<i class="fa-solid fa-rotate-left o13-icon o13-hover-field-icon o13-clickable" style="color:var(--o13-ink-black)" data-action="resetStory"></i>
+			<div class="flexcol {{#unless actor.isPrologue}}o13-hover-div{{/unless}}" style="flex:0.1">
+				{{#if actor.isPrologue}}
+					<i class="fa-solid fa-play o13-icon o13-clickable" style="color:var(--o13-omen-red)" data-action="advanceAct"></i>
+				{{else}}
+					<i class="fa-solid fa-rotate-left o13-icon o13-clickable" style="color:var(--o13-ink-black)" data-action="resettoPrologue"></i>
+					<i class="fa-solid fa-right-long o13-icon o13-clickable" style="color:var(--o13-omen-red)" data-action="advanceAct"></i>
+				{{/if}}
 			</div>
 		</div>
 	</header>
 	
-	<main>
+	<main class="o13-scrollable" scroll-id="main">
 		<div class="flexcol">
 			<div class="flexrow">
 				<div class="flexcol o13-flexStart">
@@ -32,8 +36,8 @@
 					</div>
 				</div>
 				<div class="flexcol o13-minflex">
-					<i class="fa-solid fa-right-long o13-icon o13-clickable" style="color:var(--o13-omen-red);" data-action="addOmenDice"></i>
-					<i class="fa-solid fa-left-long o13-icon o13-clickable"  style="color:var(--o13-omen-red);" data-action="removeOmenDice"></i>
+					{{#if actor.canAddOmenDice}}<i class="fa-solid fa-right-long o13-icon o13-clickable" style="color:var(--o13-omen-red);" data-action="addOmenDice"></i>{{/if}}
+					{{#if actor.canRemoveOmenDice}}<i class="fa-solid fa-left-long o13-icon o13-clickable"  style="color:var(--o13-omen-red);" data-action="removeOmenDice"></i>{{/if}}
 				</div>
 				<div class="flexcol o13-flexStart">
 					<span class="o13-label o13-header-label o13-content-centered">{{localize "13omens.titles.dicebag"}}</span>
@@ -44,7 +48,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="flexrow" style="flex-wrap:nowrap">
+			<div class="flexrow" style="flex-wrap:nowrap;margin-bottom:15px">
 				<div class="flexcol o13-flexStart">
 					<span class="o13-label o13-header-label o13-content-centered">{{localize "13omens.titles.storyAspects"}}</span>
 					{{#each actor.system.storyaspects as |aspect|}}

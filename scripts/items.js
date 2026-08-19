@@ -443,6 +443,34 @@ export class o13ItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
 		}
 	}
 	
+	async _replaceHTML(result, content, options) {
+		//scrollables persistance
+		const scrollCache = {};
+		if (this.element) {
+			const scrollables = this.element.querySelectorAll("[scroll-id]");
+			for (const el of scrollables) {
+				const id = el.getAttribute("scroll-id");
+				if (id) {
+					scrollCache[id] = { top: el.scrollTop, left: el.scrollLeft };
+				}
+			}
+		}
+		
+		await super._replaceHTML(result, content, options);
+		
+		if (this.element) {
+			const newScrollables = this.element.querySelectorAll("[scroll-id]");
+			for (const el of newScrollables) {
+				const id = el.getAttribute("scroll-id");
+				const saved = scrollCache[id];
+				if (saved) {
+					el.scrollTop = saved.top;
+					el.scrollLeft = saved.left;
+				}
+			}
+		}
+	}
+	
 	static async choosePortrait(event, target) {
 		const picker = new foundry.applications.apps.FilePicker.implementation({
 			type: "image",

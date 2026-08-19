@@ -61,8 +61,6 @@
 			"flaws" : "Flaws",
 			"edges" : "Edges",
 			
-			"roll" : "Roll",
-			
 			"ratings" : {
 				"-1" : "-",
 				"0" : "Terrible",
@@ -95,7 +93,15 @@
 			"withEdges" : "with {n} edges ",
 			"withEdge" : "with 1 edge ",
 			
-			"selectGear" : "Select {n} pieces of gear"
+			"selectGear" : "Select {n} pieces of gear",
+			
+			"quantity" : {
+				"name" : "Quantity"
+			}
+		},
+		
+		"actions" : {
+			"roll" : "Roll"
 		},
 		
 		"chats" : {

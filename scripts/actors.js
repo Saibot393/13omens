@@ -353,23 +353,95 @@ export class o13Actor extends Actor {
 		}
 	}
 	
+	get canAddOmenDice() {
+		if (this.isStory) {
+			return this.system.hostomendice > 1;
+		}
+	}
+	
 	async addOmenDice(add = 1) {
 		if (this.isStory) {
 			const diceAdd = Math.min(Math.max(add, 0), this.system.hostomendice);
 			
 			if (diceAdd > 0) {
-				this.update({system : {hostomendice : this.system.hostomendice - diceAdd}});
+				await this.update({system : {hostomendice : this.system.hostomendice - diceAdd}});
+				
+				return await this.checkAct();
 			}
+		}
+	}
+	
+	get canRemoveOmenDice() {
+		if (this.isStory) {
+			return this.system.hostomendice <= 13;
 		}
 	}
 	
 	async removeOmenDice(remove = 1) {
 		if (this.isStory) {
-			const diceRemove = Math.min(Math.max(remove, 0), this.system.hostomendice);
+			const diceRemove = Math.min(Math.max(remove, 0), 13 - this.system.hostomendice);
 			
 			if (diceRemove > 0) {
-				this.update({system : {hostomendice : this.system.hostomendice + diceRemove}});
+				return this.update({system : {hostomendice : this.system.hostomendice + diceRemove}});
 			}
+		}
+	}
+	
+	async checkAct() {
+		if (this.isStory) {
+			if (!this.isPrologue) {
+				const hostOmenDice = 13 - this.system.hostomendice;
+				console.log(hostOmenDice);
+				const targetAct = Math.max(...Object.keys(DEFAULTACTOMENDCIETHRESHOLD).filter(id => DEFAULTACTOMENDCIETHRESHOLD[id] <= hostOmenDice));
+				console.log(DEFAULTACTOMENDCIETHRESHOLD);
+				console.log(Object.keys(DEFAULTACTOMENDCIETHRESHOLD).filter(id => DEFAULTACTOMENDCIETHRESHOLD[id] <= hostOmenDice));
+				console.log(targetAct);
+				return this.advanceAct(targetAct);
+			}
+		}
+	}
+	
+	async advanceAct(target) {
+		if (this.isStory) {
+			const targetAct = target ?? this.activeAct + 1;
+			
+			if (targetAct > this.activeAct && targetAct <= 3 && targetAct >= 0) {
+				return this.update({system : {activeact : targetAct}});
+			}
+		}
+	}
+	
+	async resettoPrologue() {
+		if (this.isStory) {
+			await this.update({
+				system : {
+					activeact : 0,
+					hostomendice : 13
+				}
+			});
+			
+			for (const pc of this.pcActors) {
+				await pc.resettoPrologue();
+			}
+		}
+		
+		if (this.isPC) {
+			const strainlessAspects = {core : {}, story : {}};
+			
+			for (const key of Object.keys(this.system.aspects.core)) {
+				strainlessAspects.core[key] = {strain : false};
+			}
+			
+			for (const key of Object.keys(this.system.aspects.story)) {
+				strainlessAspects.story[key] = {strain : false};
+			}
+			
+			this.update({
+				system : {
+					wounds : Array.from({length : 4}, () => (EMPTYWOUND)),
+					aspects : strainlessAspects
+				}
+			})
 		}
 	}
 	
@@ -447,6 +519,22 @@ export class o13Actor extends Actor {
 		
 		if (this.isStory) {
 			return this.system.activeact;
+		}
+	}
+	
+	get isPrologue() {
+		if (this.isPC) {
+			return this.storyActor?.isPrologue ?? true;
+		}
+		
+		if (this.isStory) {
+			return this.activeAct == 0;
+		}
+	}
+	
+	get canPrepare() {
+		if (this.isPC) {
+			return this.isPrologue;
 		}
 	}
 	
@@ -590,7 +678,7 @@ export class o13Actor extends Actor {
 		if (this.isPC) {
 			const isDead = !this.system.wounds.find(wound => !wound.omen.filled);
 			
-			if (isDead) {
+			if (isDead && !this.system.death.isdead) {
 				await this.update({system : {death : {isdead : true, act : this.activeAct}}})
 			}
 			
@@ -599,7 +687,7 @@ export class o13Actor extends Actor {
 		
 		if (this.isStory) {
 			for (const pc of this.pcActors) {
-				await pc.checkDeath();
+				return  pc.checkDeath();
 			}
 		}
 	}
@@ -708,7 +796,9 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 			toggleSelectGear : o13ActorSheet.toggleSelectGear,
 			takeWound : o13ActorSheet.takeWound,
 			cheatDeath : o13ActorSheet.cheatDeath,
-			clearWound : o13ActorSheet.clearWound
+			clearWound : o13ActorSheet.clearWound,
+			advanceAct : o13ActorSheet.advanceAct,
+			resettoPrologue : o13ActorSheet.resettoPrologue
 		}
 	});
 
@@ -952,6 +1042,18 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 	static async clearWound(event, target) {
 		if (this.actor.type == "pc") {
 			this.actor.clearWound();
+		}
+	}
+	
+	static async advanceAct(event, target) {
+		if (this.actor.type == "story") {
+			this.actor.advanceAct();
+		}
+	}
+	
+	static async resettoPrologue(event, target) {
+		if (this.actor.type == "story") {
+			this.actor.resettoPrologue();
 		}
 	}
 	
