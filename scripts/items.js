@@ -215,7 +215,15 @@ export class o13Item extends Item {
 	}
 	
 	get isChosen() {
-		
+		if (this.isPerk) {
+			
+		}
+	}
+	
+	resetUses() {
+		if (this.isPerk) {
+			
+		}
 	}
 	
 	get quantityValue() {
