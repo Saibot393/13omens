@@ -12,6 +12,13 @@ const ARCHETYPEASPECTRATING = 4;
 
 const DEFAULTMAXWOUNDS = 4;
 
+const DEFAULTACTOMENDCIETHRESHOLD = {
+	0 : 0,
+	1 : 1,
+	2 : 4,
+	3 : 8
+}
+
 const EMPTYWOUND = {safe : {filled : false, face : null, act : null}, omen : {filled : false, face : null, act : null}};
 
 function newRating() {
@@ -438,6 +445,18 @@ export class o13Actor extends Actor {
 			return this.system.activeact;
 		}
 	}
+	
+	get autoProgressActs() {
+		if (this.isStory) {
+			return this.system.autoprogressacts;
+		}
+	}	
+	
+	get addOmenDiceonActStart() {
+		if (this.isStory) {
+			return this.system.addomendiceonactstart;
+		}
+	}	
 	
 	cheatedDeathCount(act = null) {
 		if (this.isPC) {
@@ -965,8 +984,12 @@ class storyDataModel extends foundry.abstract.TypeDataModel {
 			activeact: new NumberField({ required: true, integer: true, nullable: true, min: 0, max : 3, initial: 0 }),
 			
 			acts: new ArrayField(new SchemaField({
-				
-			}), { initial : () => Array.from({length : 4}, () => ({}))}),
+				omenDiceThreshold : new NumberField({ required: true, integer: true, nullable: true, min: 0, max : 14, initial: null })
+			}), { initial : () => Array.from({length : 4}, (_, index) => ({omenDiceThreshold : DEFAULTACTOMENDCIETHRESHOLD[index]}))}),
+			
+			autoprogressacts : new BooleanField({ required : true, initial : true}),
+			
+			addomendiceonactstart : new BooleanField({ required : true, initial : true}),
 			
 			hostomendice: new NumberField({ required: true, integer: true, nullable: true, initial: MAXHOSTOMENDICE }),
 			
@@ -974,15 +997,15 @@ class storyDataModel extends foundry.abstract.TypeDataModel {
 				name: new StringField({ required: true, initial: ""})
 			}), {initial: () => Array.from({length : 5}, () => ({name : ""}))}),
 			
+			archetypeaspects: new ObjectField({}),
+			
 			pcs: new ArrayField(new SchemaField({
 				id: new DocumentIdField({required: true, blank: true, nullable: true, readonly: false})
 			}), {initial: []}),
 			
 			npcs: new ArrayField(new SchemaField({
 				id: new DocumentIdField({required: true, blank: true, nullable: true, readonly: false})
-			}), {initial: []}),
-			
-			archetypeaspects: new ObjectField({})
+			}), {initial: []})
 		};
 	}
 	

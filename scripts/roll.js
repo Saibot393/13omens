@@ -54,6 +54,7 @@ export class o13Roll extends Roll {
 		
 		this._actorName = this.actorName;
 		this._act = this.act;
+		this._storyID = this.storyID;
 		
 		if (!this._rollData.dicePermut || this._rollData.dicePermut.length == 0) this.drawDice();
 		
@@ -89,6 +90,10 @@ export class o13Roll extends Roll {
 	
 	get act() {
 		return this._act || this.actor?.activeAct;
+	}
+	
+	get storyID() {
+		return this._storyID || this.actor?.storyActor?.id;
 	}
 	
 	get woundThreshold() {
@@ -262,6 +267,7 @@ export class o13Roll extends Roll {
 			aspectName: this._aspectName,
 			actorName: this._actorName,
 			act: this._act,
+			storyID : this._storyID,
 			consequenceTaken: this._consequenceTaken
 			
         };
@@ -278,13 +284,12 @@ export class o13Roll extends Roll {
 		roll._aspectName = o13Data.aspectName;
 		roll._actorName = o13Data.actorName;
 		roll._act = o13Data.act;
+		roll._storyID = o13Data.storyID;
 		roll._consequenceTaken = o13Data.consequenceTaken;
 		
-		console.log(data.terms);
         if (data.terms) {
             roll._terms = data.terms.map(term => foundry.dice.terms.RollTerm.fromData(term));
         }
-		console.log(roll._terms);
 		
 		roll._evaluated = data.evaluated;
 		roll._total = data.total;

@@ -214,6 +214,10 @@ export class o13Item extends Item {
 		}
 	}
 	
+	get isChosen() {
+		
+	}
+	
 	get quantityValue() {
 		if (this.isGear) {
 			return this.system.quantity.value ?? this.system.quantity.max;
@@ -533,9 +537,19 @@ class perkDataModel extends foundry.abstract.TypeDataModel {
 			description: new HTMLField({ required: true, initial: ""}),
 			
 			usesper:  new SchemaField({
-				filled : new StringField({ required: true, nullable: true, initial: null, choices: ["act", "story"]}),
+				filled : new StringField({ required: true, nullable: true, initial: "passive", choices: ["passive", "act", "story"]}),
 				max : new NumberField({ required: true, integer: true, nullable: true, min: 1, initial: null }),
 				value : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: null })
+			}),
+			
+			used : new SchemaField({
+				story : new SchemaField({
+					uses : new NumberField({ required: true, integer: true, min: 0, initial: 0 })
+				}),
+				
+				acts : new ArrayField(new SchemaField({
+					uses : new NumberField({ required: true, integer: true, min: 0, initial: 0 })
+				}), {initial: () => Array.from({length : 4}, () => ({uses : 0}))})
 			}),
 			
 			origin: new SchemaField({
@@ -559,8 +573,6 @@ class gearDataModel extends foundry.abstract.TypeDataModel {
 				max : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: 1 }),
 				value : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: null })
 			}),
-			
-			broken : new BooleanField({ required: true, initial: false }),
 			
 			origin: new SchemaField({
 				id: new DocumentIdField({required: false, nullable: true, initial: null}),
