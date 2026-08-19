@@ -7,14 +7,16 @@ This system is intended for Paizo's new horror pen & paper system [13 Omens](htt
 ---
 ## Overview
 
-### Actor Types
-- **Story**: The story actor allows the GM to plan a story and organise Story Aspects, Archetypes, and Players. It also displays the currently available Omen-Dice and the dice bag. Player characters (PC) can be added to a story dropping their actor onto the sheet. It is intended as the general control hub for a given story.
-- **PC**: The player actor allows players to track their wounds and choose their aspect ratings. Once an archetype is chosen, the player can also pick perks and select items. Perks and Items can also directly be dropped into the sheet. Note that some functionality is only available once a player character is connected to a story.
-- **NPC**: A minimalistic sheet to take notes, give NPCs a portrait and a token.
+**Actor Types**
+- **Story:** The story actor allows the GM to plan a story and organise Story Aspects, Archetypes, and Players. It also displays the currently available Omen-Dice and the dice bag. Player characters (PC) can be added to a story by dropping their actor onto the sheet. It is intended as the general control hub for a given story.
+- **PC:** The player actor allows players to track their wounds and choose their aspect ratings. Once an archetype is chosen, the player can also pick perks and select gear. Perks and gear can also directly be dropped into the sheet. Note that some functionality is only available once a player character is connected to a story.
+- **NPC:** A minimalistic sheet to take notes, give NPCs a portrait and a token.
 
-### Item Types
-- **Archetype**: An archetype can be added to a story and chosen by a pc. Perks and items can be added to it. Items can be set as guaranteed or selectable, the amount of selectable items can also be set.
-- **Perk**: In addition to a description, the amount of uses can also be specified.
-- **Gear**: Includes a description and allows for the quantity/maximum quantity to be set.
+**Item Types**
+- **Archetype:** An archetype can be added to a story and chosen by a pc. Perks and items can be added to it. Items can be set as guaranteed or selectable, the amount of selectable items can also be set.
+- **Perk:** In addition to a description, the amount of uses can also be specified.
+- **Gear:** Includes a description and allows for the quantity/maximum quantity to be set.
 
-### Rolls
+**Rolls**
+Rolls can be initiated from a player character's (PC) sheet. The config popup allows for the risk level and the check difficulty to be set. Flaws and edges are also displayed in the config and can be added or removed, flaws can also be marked as omen flaws.
+Once a roll is made, dice are randomly drawn from the dice bag and the result is calculated. Wounds and strains a character might suffer are indicated in the result and can directly be applied from there.
