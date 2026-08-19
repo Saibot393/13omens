@@ -1,3 +1,5 @@
+import {o13Roll} from "./roll.js";
+
 export function onO13Hooks() {
 	Hooks.on("createChatMessage", async (message, options, userId) => {
 		if (game.user.isGM) {

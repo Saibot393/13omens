@@ -91,6 +91,14 @@ export class o13Actor extends Actor {
 				}
 			}
 		}
+		
+		if (this.isStory) {
+			if (changed.system) {
+				if (changed.system.pcs) {
+					this.updateMaxWounds();
+				}
+			}
+		}
 	}
 	
 	get isPC() {
@@ -214,19 +222,17 @@ export class o13Actor extends Actor {
 	}
 	
 	toggleSelectGear(originid) {
-		console.log(originid);
 		if (this.isPC) {
-			console.log(this.hasGearSelected(originid));
 			if (this.hasGearSelected(originid)) {
 				const matchingGear = this.inventory.find(gear => gear.isFromOrigin(originid));
-				console.log(matchingGear);
+
 				if (matchingGear) {
 					this.deleteEmbeddedDocuments("Item", [matchingGear.id])
 				}
 			}
 			else {
 				const gearData = this.archetype?.unguaranteedGear[originid];
-				console.log(gearData);
+
 				if (gearData) {
 					this.createEmbeddedDocuments("Item", [gearData]);
 				}
@@ -393,11 +399,9 @@ export class o13Actor extends Actor {
 		if (this.isStory) {
 			if (!this.isPrologue) {
 				const hostOmenDice = DEFAULTMAXHOSTOMENDICE - this.system.hostomendice;
-				console.log(hostOmenDice);
+
 				const targetAct = Math.max(...Object.keys(DEFAULTACTOMENDCIETHRESHOLD).filter(id => DEFAULTACTOMENDCIETHRESHOLD[id] <= hostOmenDice));
-				console.log(DEFAULTACTOMENDCIETHRESHOLD);
-				console.log(Object.keys(DEFAULTACTOMENDCIETHRESHOLD).filter(id => DEFAULTACTOMENDCIETHRESHOLD[id] <= hostOmenDice));
-				console.log(targetAct);
+
 				return this.advanceAct(targetAct);
 			}
 		}
@@ -1080,15 +1084,30 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 		this._externalActorUpdateRender = Hooks.on("updateActor", (actor, changes, options, userId) => {
 			let rerender = false;
 			
-			if (actor?.isPC) {
-				//decide if actor update is relevant for this sheet
-				if (actor.storyActor == this.actor) {
-					if (changes.hasOwnProperty("name")) {
-						rerender = true;
+			//decide if actor update is relevant for this sheet
+			if (this.actor.isStory) {
+				if (actor?.isPC) {
+					if (actor.storyActor == this.actor) {
+						if (changes.hasOwnProperty("name")) {
+							rerender = true;
+						}
+						
+						if (changes.system) {
+							if (changes.system.wounds || changes.system.hasOwnProperty("archetype")) {
+								rerender = true;
+							}
+						}
 					}
-					
-					if (changes.system) {
-						if (changes.system.wounds || changes.system.hasOwnProperty("archetype")) {
+				}
+			}
+			
+			if (this.actor.isPC) {
+				if (actor.isStory) {
+					if (this.actor.storyActor == actor) {
+						if (changes.system.storyaspects) {
+							rerender = true;
+						}
+						if (changes.system.hasOwnProperty("activeact")) {
 							rerender = true;
 						}
 					}

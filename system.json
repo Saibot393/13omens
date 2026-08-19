@@ -36,7 +36,10 @@
   },
   "primaryTokenAttribute": "resources.health",
   "secondaryTokenAttribute": "resources.power",
-  "url": "https://your/hosted/system/repo/",
-  "manifest": "https://your/hosted/system/repo/system.json",
-  "download": "https://your/packaged/download/archive.zip"
+  "url": "https://github.com/Saibot393/13omens",
+  "download": "https://github.com/Saibot393/13omens/archive/refs/tags/v0.0.0.zip",
+  "manifest": "https://github.com/Saibot393/13omens/releases/latest/download/module.json",
+  "readme": "https://github.com/Saibot393/13omens/blob/main/README.md",
+  "changelog": "https://github.com/Saibot393/13omens/blob/main/CHANGELOG.md",
+  "bugs": "https://github.com/Saibot393/13omens/issues",
 }

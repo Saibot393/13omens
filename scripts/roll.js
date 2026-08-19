@@ -60,8 +60,6 @@ export class o13Roll extends Roll {
 		
 		this._formula = this.formula;
 		this.terms = this.constructor.parse(this.formula, this.data);
-		
-		console.log(this);
 	}
 	
 	get outcome() {
@@ -564,9 +562,6 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 		
 		if (isNaN(index)) return;
 		
-		console.log(this._data.flaws[index].isomen);
-		console.log(this);
-		
 		this._data.flaws[index].isomen = !this._data.flaws[index].isomen;
 		
 		this._applyUpdate();
@@ -601,6 +596,8 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 
 		await roll.evaluate();
 		roll.toMessage();
+		
+		this.close();
 		
 		return roll;
 	}

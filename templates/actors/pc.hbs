@@ -57,6 +57,7 @@
 			availableRatings=actor.system.availableRatings.core
 			targetNumbers=actor.system.targetNumbers.core
 			namepath="system.aspects.core."
+			canPrepare=actor.canPrepare
 		}}
 		
 		{{> "systems/13omens/templates/actors/components/aspects.hbs" 
@@ -66,6 +67,7 @@
 			availableRatings=actor.system.availableRatings.story
 			targetNumbers=actor.system.targetNumbers.story
 			namepath="system.aspects.story."
+			canPrepare=actor.canPrepare
 		}}
 		
 		<div class="flexcol">
@@ -77,7 +79,9 @@
 							<span class="o13-label o13-inline" perk-id="{{this._id}}">
 								<input class="o13-checkbox" type="checkbox" name="system.pickedperks.{{@key}}" {{#unless actor.canPrepare}}disabled{{/unless}} {{checked (lookup ../actor.system.pickedperks @key)}} /> 
 								{{#unless this.isArchetypeOrigin}}
-									<i class="fa-solid fa-x o13-label o13-icon o13-hover-icon o13-clickable" perk-id="{{this._id}}" data-action="removePerk"></i>
+									{{#if ../actor.canPrepare}}
+										<i class="fa-solid fa-x o13-label o13-icon o13-hover-icon o13-clickable" perk-id="{{this._id}}" data-action="removePerk"></i>
+									{{/if}}
 								{{/unless}}
 								<b data-action="openPerk" perk-id="{{this._id}}">{{this.name}}</b> {{{this.system.description}}}
 							</span>
@@ -90,7 +94,7 @@
 		<div class="flexcol" style="margin-top:10px">
 			<span class="o13-label o13-header-label">{{localize "13omens.titles.gears"}} </span>
 			<div class="o13-adaptive-grid-wrapper">
-				{{#unless actor.canPrepare}}
+				{{#if actor.canPrepare}}
 					{{#if actor.selectableGearCount}}
 						<span class="o13-item-line" drop-zone="selectableGear">
 							<span class="o13-label"><b>{{localize "13omens.titles.selectGear" n=actor.selectableGearCount}}:</b></span>
@@ -101,7 +105,7 @@
 							{{/each}}
 						</span>
 					{{/if}}
-				{{/unless}}
+				{{/if}}
 				<div class="o13-adaptive-grid-12" style="margin-top:15px">
 					{{#each actor.gear}}
 						<div class="flexrow o13-side-padding">

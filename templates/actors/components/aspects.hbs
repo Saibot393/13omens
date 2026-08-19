@@ -17,7 +17,7 @@
 				</td>
 				
 				<td>
-				<select class="o13-input o13-underline" name="{{concat ../namepath @key ".rating" }}" style="height:90%" {{#unless actor.canPrepare}}disabled{{/unless}} {{#if aspect.archetypelock}}disabled{{/if}}>
+				<select class="o13-input o13-underline" name="{{concat ../namepath @key ".rating" }}" style="height:90%" {{#unless ../canPrepare}}disabled{{/unless}} {{#if aspect.archetypelock}}disabled{{/if}}>
 					{{#if (ne aspect.rating -1)}} <option value="{{aspect.rating}}" selected><b>{{localize (concat "13omens.titles.ratings." aspect.rating)}}</b></option> {{/if}}
 					{{#each ../availableRatings as |rating|}}
 						<option value="{{rating}}"><b>{{localize (concat "13omens.titles.ratings." rating)}}</b></option>

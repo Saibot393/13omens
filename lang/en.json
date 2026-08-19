@@ -104,6 +104,14 @@
 			"roll" : "Roll"
 		},
 		
+		"tooltips" : {
+			"takeWound" : "Take wound",
+			"cheatDeath" : "Cheat death",
+			"takeStrain" : "Take strain",
+			"clearWound" : "Clear wound"
+			
+		},
+		
 		"chats" : {
 			"actorRolled" : "{actor} rolled a <b>{aspect}</b> check {with}(TN:{tn})",
 			"rollResult" : "Outcome: {taskrisk} <b>{outcome}</b>"
