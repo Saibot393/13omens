@@ -1,6 +1,6 @@
 # 13 Omens
 
-> This system uses trademarks and/or copyrights owned by Paizo Inc., used under Paizo’s [Community Use Policy](https://paizo.com/licenses/communityuse). This system is not published, endorsed, or specifically approved by Paizo. For more information about Paizo Inc. and Paizo products, visit [paizo.com](https://paizo.com).”
+> This system uses trademarks and/or copyrights owned by Paizo Inc., used under Paizo’s [Community Use Policy](https://paizo.com/licenses/communityuse). This system is not published, endorsed, or specifically approved by Paizo. For more information about Paizo Inc. and Paizo products, visit [paizo.com](https://paizo.com).
 
 This system is intended for Paizo's new horror pen & paper system [13 Omens](https://store.paizo.com/13-omens/). It is best used with the preview PDF, which you can get by reserving a pledge for the upcoming Kickstarter at the link above.
 
@@ -13,7 +13,7 @@ This system is intended for Paizo's new horror pen & paper system [13 Omens](htt
 - **NPC:** A minimalistic sheet to take notes, give NPCs a portrait and a token.
 
 **Item Types**
-- **Archetype:** An archetype can be added to a story and chosen by a pc. Perks and items can be added to it. Items can be set as guaranteed or selectable, the amount of selectable items can also be set.
+- **Archetype:** An archetype can be added to a story and chosen by a PC. Perks and items can be added to it. Items can be set as guaranteed or selectable, the amount of selectable items can also be set.
 - **Perk:** In addition to a description, the amount of uses can also be specified.
 - **Gear:** Includes a description and allows for the quantity/maximum quantity to be set.
 
@@ -32,7 +32,7 @@ I have multiple additions to the system planned, the following is an incomplete 
 - Dedicated tab in the archetype item sheet for descriptions
 - Posting Gear and Perks to chat
 - Implementation of the final sacrifice mechanic
-- Allowing for perks to add roll rules (egdes, roll behaviour)
+- Allowing for perks to add roll rules (edges, roll behaviour)
 - Story independent archetypes on the PC sheet
 
 ## Bugs and Feature requests
