@@ -34,3 +34,9 @@ I have multiple additions to the system planned, the following is an incomplete 
 - Implementation of the final sacrifice mechanic
 - Allowing for perks to add roll rules (egdes, roll behaviour)
 - Story independent archetypes on the PC sheet
+
+## Bugs and Feature requests
+
+If you encounter any bugs or issues while playing, [please let me know](https://github.com/Saibot393/13omens/issues).
+If you want support for a language to be added and are able to do the required translation, feel free to open a PR or [open an issue](https://github.com/Saibot393/13omens/issues) if you need help with the technical side of things.
+I am open to any [requests](https://github.com/Saibot393/13omens/issues) and PRs regarding system features
