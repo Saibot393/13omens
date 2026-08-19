@@ -95,10 +95,17 @@
 			"withEdges" : "with {n} edges ",
 			"withEdge" : "with 1 edge ",
 			
-			"actorRolled" : "{actor} rolled a <b>{aspect}</b> check {with}(TN:{tn})",
-			"rollResult" : "Outcome: {taskrisk} <b>{outcome}</b>",
-			
 			"selectGear" : "Select {n} pieces of gear"
+		},
+		
+		"chats" : {
+			"actorRolled" : "{actor} rolled a <b>{aspect}</b> check {with}(TN:{tn})",
+			"rollResult" : "Outcome: {taskrisk} <b>{outcome}</b>"
+		},
+		
+		"dialogues" : {
+			"confirmOmenDiceAddition" : "Omen dice addition",
+			"playerOmenFlawRoll" : "{pcName} rolled a check with {flawCount} omen flaw, do you want to add the omen die to the {storyName} dice bag?"
 		},
 		
 		"warnings" : {

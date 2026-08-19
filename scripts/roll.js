@@ -120,6 +120,24 @@ export class o13Roll extends Roll {
 		return this._rollData.dicePermut;
 	}
 	
+	get dicePermutOmenApplied() {
+		const dicePermut =  [...this.dicePermut];
+		
+		const flaws = this.flaws;
+		
+		if (this.FEDifference < 0) {
+			for (let i = 0; i < flaws.length; i++) {
+				if (flaws[i].isomen) {
+					const removedDice = dicePermut[i+2]; //leave first two dice alone
+					dicePermut[i+2] = "omen";
+					dicePermut.push(removedDice); //make sure no dice ist lost, probably irrelevant, better save than sorry
+				}
+			}
+		}
+		
+		return dicePermut;
+	}
+	
 	get flaws() {
 		return this._rollData.flaws;
 	}
@@ -209,7 +227,9 @@ export class o13Roll extends Roll {
 			return [];
 		}
 		
-		return this._terms[0].results.map((result, index) => ({face : result.result, type : this.dicePermut[index], crossed : result.discarded}))
+		const dicePermutOmenApplied = this.dicePermutOmenApplied;
+		
+		return this._terms[0].results.map((result, index) => ({face : result.result, type : dicePermutOmenApplied[index], crossed : result.discarded}))
 	}
 	
 	get firstOmenDice() {
@@ -313,7 +333,7 @@ export class o13Roll extends Roll {
 	}
 	
 	async takeWound() {
-		if (this.canTakeConsequence) {
+		if (this.canTakeConsequence && this.hasWound) {
 			this._consequenceTaken = true;
 			
 			await this.actor.takeWound({face : (this.firstOmenWoundThresholdDice || this.firstOmenDice)?.face});
@@ -321,7 +341,7 @@ export class o13Roll extends Roll {
 	}
 	
 	async cheatDeath() {
-		if (this.canTakeConsequence) {
+		if (this.canTakeConsequence && this.hasWound && this.canCheatDeath) {
 			this._consequenceTaken = true;
 			
 			await this.actor.takeWound({face : (this.firstSafeDice || this.firstOmenDice)?.face, cheatDeath : true});
@@ -329,7 +349,7 @@ export class o13Roll extends Roll {
 	}
 	
 	async takeStrain() {
-		if (this.canTakeConsequence) {
+		if (this.canTakeConsequence && this.hasStrain) {
 			this._consequenceTaken = true;
 			
 			await this.actor.takeStrain(this.aspect);
@@ -472,6 +492,7 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 			addEmptyFlaw : o13rollConfig.DAaddEmptyFlaw,
 			addEmptyEdge : o13rollConfig.DAaddEmptyEdge,
 			removeFlaw : o13rollConfig.DAremoveFlaw,
+			toggleFlawOmen : o13rollConfig.DAtoggleFlawOmen,
 			toggleOmenFlaw : o13rollConfig.DAtoggleOmenFlaw,
 			removeEdge : o13rollConfig.DAremoveEdge,
 			removeStrain : o13rollConfig.DAremoveStrain,
@@ -534,6 +555,19 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 		if (isNaN(index)) return;
 		
 		this._data.flaws.splice(index, 1);
+		
+		this._applyUpdate();
+	}
+	
+	static async DAtoggleFlawOmen(event, target) {
+		const index = target.getAttribute("index");
+		
+		if (isNaN(index)) return;
+		
+		console.log(this._data.flaws[index].isomen);
+		console.log(this);
+		
+		this._data.flaws[index].isomen = !this._data.flaws[index].isomen;
 		
 		this._applyUpdate();
 	}

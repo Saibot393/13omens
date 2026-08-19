@@ -19,7 +19,7 @@
 					</label>
 				{{/if}}
 			</div>
-			<label class="o13-label o13-content-centered">{{localize "13omens.titles.taskDifficulty"}}: {{#if config.hostView}}<i class="fa-solid fa-minus o13-smalltext" data-action="reduceTaskDifficulty"></i>{{/if}} {{config.taskDifficulty}} {{#if config.hostView}}<i class="fa-solid fa-plus o13-smalltext" data-action="increaseTaskDifficulty"></i>{{/if}} </b></label>
+			<label class="o13-label o13-content-centered">{{localize "13omens.titles.taskDifficulty"}}: {{#if config.hostView}}<i class="fa-solid fa-minus o13-smalltext o13-clickable" data-action="reduceTaskDifficulty"></i>{{/if}} {{config.taskDifficulty}} {{#if config.hostView}}<i class="fa-solid fa-plus o13-smalltext o13-clickable" data-action="increaseTaskDifficulty"></i>{{/if}} </b></label>
 		</div>
 		<div class="flexrow">
 			<div class="flexcol o13-flexStart">
@@ -28,14 +28,15 @@
 					{{#unless config.ignoreStrain}}
 						<div class="flexrow o13-padding">
 							<input class="o13-input o13-underline" type="text" index="{{@key}}" value="{{localize "13omens.titles.strain"}}" style="width:80%" disabled />
-							<i class="fa-solid fa-x o13-label o13-lowflex" data-action="removeStrain"></i>
+							<i class="fa-solid fa-x o13-label o13-lowflex o13-clickable" data-action="removeStrain"></i>
 						</div>
 					{{/unless}}
 				{{/if}}
 				{{#each config.flaws as |flaw|}}
 					<div class="flexrow o13-padding">
 						<input class="o13-input o13-underline" type="text" index="{{@key}}" name="{{concat "flaws." @key ".name"}}" value="{{flaw.name}}" />
-						<i class="fa-solid fa-x o13-label o13-lowflex" data-action="removeFlaw"></i>
+						<i class="fa-solid fa-dice-six o13-label o13-lowflex o13-clickable" index="{{@key}}" data-action="toggleFlawOmen" {{#if flaw.isomen}}style="color:var(--o13-omen-red);"{{/if}}></i>
+						<i class="fa-solid fa-x o13-label o13-lowflex o13-clickable" index="{{@key}}" data-action="removeFlaw"></i>
 					</div>
 				{{/each}}
 			</div>
@@ -44,7 +45,7 @@
 				{{#each config.edges as |edge|}}
 					<div class="flexrow o13-padding">
 						<input class="o13-input o13-underline" type="text" index="{{@key}}" name="{{concat "edges." @key ".name"}}" value="{{edge.name}}" />
-						<i class="fa-solid fa-x o13-label o13-lowflex" index="{{@key}}" data-action="removeEdge"></i>
+						<i class="fa-solid fa-x o13-label o13-lowflex o13-clickable" index="{{@key}}" data-action="removeEdge"></i>
 					</div>
 				{{/each}}
 			</div>

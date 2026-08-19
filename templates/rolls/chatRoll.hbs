@@ -1,13 +1,13 @@
 <div class="o13-sheet o13-bordered">
 	<div class="flexcol">
-		<span class="o13-label" style="text-align:center;margin-bottom:5px">{{{localize "13omens.titles.actorRolled" actor=roll.actorName aspect=roll.aspectName with=roll.FEDescription tn=roll.totalDifficulty}}}</span>
+		<span class="o13-label" style="text-align:center;margin-bottom:5px">{{{localize "13omens.chats.actorRolled" actor=roll.actorName aspect=roll.aspectName with=roll.FEDescription tn=roll.totalDifficulty}}}</span>
 		<div style="height : 40px">
 			{{> "systems/13omens/templates/dice/dicebar.hbs" 
 				dice=roll.diceResults
 			}}
 		</div>
 		<span class="o13-label o13-content-centered o13-header-label" style="margin-top:5px">
-			{{{localize "13omens.titles.rollResult" taskrisk=(localize (concat "13omens.titles.taskrisks." roll.taskRisk)) outcome=(localize (concat "13omens.titles.outcomes." roll.outcome))}}}
+			{{{localize "13omens.chats.rollResult" taskrisk=(localize (concat "13omens.titles.taskrisks." roll.taskRisk)) outcome=(localize (concat "13omens.titles.outcomes." roll.outcome))}}}
 			{{#if roll.isOwner}}
 				{{#if roll.canTakeConsequence}}
 					{{#if roll.hasWound}}

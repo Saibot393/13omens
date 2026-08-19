@@ -353,18 +353,22 @@ export class o13Actor extends Actor {
 		}
 	}
 	
-	async addOmenDice() {
+	async addOmenDice(add = 1) {
 		if (this.isStory) {
-			if (this.system.hostomendice > 0) {
-				this.update({system : {hostomendice : this.system.hostomendice - 1}});
+			const diceAdd = Math.min(Math.max(add, 0), this.system.hostomendice);
+			
+			if (diceAdd > 0) {
+				this.update({system : {hostomendice : this.system.hostomendice - diceAdd}});
 			}
 		}
 	}
 	
-	async removeOmenDice() {
+	async removeOmenDice(remove = 1) {
 		if (this.isStory) {
-			if (this.diceBagCount.omen > 0) {
-				this.update({system : {hostomendice : this.system.hostomendice + 1}});
+			const diceRemove = Math.min(Math.max(remove, 0), this.system.hostomendice);
+			
+			if (diceRemove > 0) {
+				this.update({system : {hostomendice : this.system.hostomendice + diceRemove}});
 			}
 		}
 	}
@@ -654,7 +658,6 @@ export class o13Actor extends Actor {
 	
 	async removeArchetypeItems() {
 		if (this.isPC) {
-			console.log(Array.from(this.items).filter(item => item.isArchetypeOrigin));
 			return this.deleteEmbeddedDocuments("Item", Array.from(this.items).filter(item => item.isArchetypeOrigin).map(item => item.id))
 		}
 	}
