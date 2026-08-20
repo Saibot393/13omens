@@ -1,3 +1,5 @@
+const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDocumentField, DocumentIdField, BooleanField, FilePathField, ObjectField } = foundry.data.fields;
+
 import {utils} from "../utils.js";
 
 export class o13storyActor {
@@ -235,5 +237,45 @@ export class o13storyActor {
 		if (diceRemove > 0) {
 			return this.update({system : {hostomendice : this.system.hostomendice + diceRemove}});
 		}
+	}
+}
+
+export class storyDataModel extends foundry.abstract.TypeDataModel {
+	static defineSchema() {
+		return {
+			activeact: new NumberField({ required: true, integer: true, nullable: true, min: 0, max : 3, initial: 0 }),
+			
+			acts: new ArrayField(new SchemaField({
+				omenDiceThreshold : new NumberField({ required: true, integer: true, nullable: true, min: 0, max : 14, initial: null })
+			}), { initial : () => Array.from({length : 4}, (_, index) => ({omenDiceThreshold : CONFIG["13OMENS"].DEFAULTACTOMENDCIETHRESHOLD[index]}))}),
+			
+			autoprogressacts : new BooleanField({ required : true, initial : true}),
+			
+			addomendiceonactstart : new BooleanField({ required : true, initial : true}),
+			
+			hostomendice: new NumberField({ required: true, integer: true, nullable: true, initial: CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE }),
+			
+			storyaspects: new ArrayField(new SchemaField({
+				name: new StringField({ required: true, initial: ""})
+			}), {initial: () => Array.from({length : 5}, () => ({name : ""}))}),
+			
+			archetypeaspects: new ObjectField({}),
+			
+			pcs: new ArrayField(new SchemaField({
+				id: new DocumentIdField({required: true, blank: true, nullable: true, readonly: false})
+			}), {initial: []}),
+			
+			npcs: new ArrayField(new SchemaField({
+				id: new DocumentIdField({required: true, blank: true, nullable: true, readonly: false})
+			}), {initial: []})
+		};
+	}
+	
+	prepareDerivedData() {
+		const actor = this.parent;
+		
+		this.archetypes = actor ? actor.archetypes : [];
+		
+		this.pcActors = actor ? actor.pcActors : [];
 	}
 }

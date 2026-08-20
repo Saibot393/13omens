@@ -20,4 +20,8 @@ export class utils {
 		
 		return bag;
 	}
+	
+	static expandRollData(data) {
+		data.flaws = data.flaws.map(flaw => typeof flaw == "string" ? {name : flaw} : flaw)
+	}
 }

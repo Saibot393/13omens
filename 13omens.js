@@ -3,7 +3,9 @@ import {o13Item, o13ItemSheet, itemDMs} from "./scripts/items.js";
 
 import  { disPatcher } from "./scripts/disPatcher.js";
 
-import {o13Roll} from "./scripts/roll.js";
+import {o13Roll, o13rollConfig} from "./scripts/roll.js";
+import {utils} from "./scripts/utils.js";
+
 import {onO13Hooks} from "./scripts/hooks.js";
 
 import {CONSTANTS} from "./scripts/constants.js";
@@ -11,6 +13,7 @@ import {CONSTANTS} from "./scripts/constants.js";
 const templatePaths = ["actors/pc", "actors/story", "actors/components/aspects", "items/perk", "dice/dice", "dice/dicebar", "dice/dicebag", "rolls/rollConfig", "rolls/chatRoll", "dialogues/general", "dialogues/confirmOmenDiceRoll"].map((path) => `systems/13omens/templates/${path}.hbs`);
 
 Hooks.once("init", () => {
+	//CONST
 	CONFIG["13OMENS"] = {...CONSTANTS}
 	
 	//Actors
@@ -53,4 +56,11 @@ Hooks.once("init", () => {
 	
 	//On Hooks
 	onO13Hooks();
+	
+	//API
+	game.system.api = {
+		o13rollConfig,
+		o13Roll,
+		utils
+	}
 });

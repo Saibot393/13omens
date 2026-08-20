@@ -1,8 +1,14 @@
+const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDocumentField, DocumentIdField, BooleanField, FilePathField, ObjectField } = foundry.data.fields;
+
 import {utils} from "../utils.js";
 
 import { o13rollConfig } from "../roll.js";
 
 const EMPTYWOUND = {safe : {filled : false, face : null, act : null}, omen : {filled : false, face : null, act : null}};
+
+function newRating() {
+	return new NumberField({ required: true, integer: true, nullable : true, min: Math.min(...CONFIG["13OMENS"].ASPECTRATINGS), max : Math.max(...CONFIG["13OMENS"].ASPECTRATINGS), initial: CONFIG["13OMENS"].ASPECTRATINGS[0] });
+} 
 
 export class o13pcActor {
 	//Updates & Create
@@ -31,14 +37,12 @@ export class o13pcActor {
 					
 					if (changed.system.archetype) {
 						if (archetypeAspect >= 0 && archetypeAspect <= Math.max(...Object.keys(storyAspects))) {
-							console.log(foundry.utils.deepClone(storyAspects));
 							for (let i in Object.keys(storyAspects)) {
 								if (i == archetypeAspect) storyAspects[i].rating = Math.max(...CONFIG["13OMENS"].ASPECTRATINGS)
 								else if (this.system.aspects.story[i].rating == Math.max(...CONFIG["13OMENS"].ASPECTRATINGS)) storyAspects[i].rating = -1;
 							
 								storyAspects[i].archetypelock = i == archetypeAspect;
 							}
-							console.log(foundry.utils.deepClone(storyAspects));
 							
 							changed.system.aspects.story = {...changed.system.aspects.story, ...storyAspects};
 						}
@@ -427,5 +431,86 @@ export class o13pcActor {
 	
 	get canPrepare() {
 		return this.isPrologue;
+	}
+}
+
+export class pcDataModel extends foundry.abstract.TypeDataModel {
+	static defineSchema() {
+		return {
+			//story : new DocumentIdField({required: true, blank: true, nullable: true, readonly: false}),
+			
+			traits : new StringField({ required: true, initial: ""}),
+			
+			archetype : new DocumentIdField({required: true, blank: true, nullable: true, readonly: false}),
+			
+			goal : new HTMLField({ required: true, blank: true, initial: "" }),
+			
+			notes : new HTMLField({ required: true, blank: true, initial: "" }),
+			
+			wounds : new ArrayField(new SchemaField({
+				safe : new SchemaField({
+					filled : new BooleanField({ required: true, initial: false}),
+					face : new NumberField({ required: true, integer: true, nullable: true, min: 1, max : 6, initial: null }),
+					act : new NumberField({ required: true, integer: true, nullable: true, min: 1, max : 3, initial: null })
+				}),
+				omen : new SchemaField({
+					filled : new BooleanField({ required: true, initial: false}),
+					face : new NumberField({ required: true, integer: true, nullable: true, min: 1, max : 6, initial: null }),
+					act : new NumberField({ required: true, integer: true, nullable: true, min: 1, max : 3, initial: null })
+				})
+			}), {initial: () => Array.from({length : 4}, () => (EMPTYWOUND))}),
+			
+			aspects: new SchemaField({
+				core: new SchemaField(Object.fromEntries(CONFIG["13OMENS"].COREASPECTSIDS.map(str => [str, new SchemaField({
+					rating : newRating(),
+					strain : new BooleanField({ required: true, initial: false})
+				})]))),
+				
+				story: new ObjectField({
+					initial: () => Object.fromEntries(Array.from({length : 5}, (val, i) => ([i, {
+						rating: CONFIG["13OMENS"].ASPECTRATINGS[0],
+						strain : false,
+						archetypelock : false
+					}])))
+				})
+			}),
+			
+			death : new SchemaField({
+				isdead : new BooleanField({ required: true, initial: false}),
+				act : new NumberField({ required: true, integer: true, nullable: true, min: 1, max : 6, initial: null })
+			}),
+			
+			pickedperks: new ObjectField({}) //refer to id
+			
+			//mainly for active affects
+			/*
+			perks : new SchemaField({
+				maxwounds: new NumberField({ required: false, integer: true, nullable: true, min: 1, initial: null }),
+				
+				maxwoundschange: new NumberField({ required: false, integer: true, nullable: true, min: 1, initial: null }),
+				
+				omenwoundthreshold : new NumberField({ required: false, integer: true, nullable: true, min: 1, max : 6, initial: null }),
+				
+				noflawwoundcount: new NumberField({ required: false, integer: true, nullable: true, min: 1, initial: null }),
+								
+				chooseableitems: new NumberField({ required: false, integer: true, nullable: true, min: 1, initial: null }),
+				
+				cheatdeathamount: new NumberField({ required: false, integer: true, nullable: true, min: 1, initial: null })
+			})
+			*/
+			
+		};
+	}
+	
+	prepareDerivedData() {
+		this.availableRatings = {
+			core : CONFIG["13OMENS"].ASPECTRATINGS.filter(rating => rating < 0 || !Object.values(this.aspects.core).find(value => value.rating == rating)),
+			story : CONFIG["13OMENS"].ASPECTRATINGS.filter(rating => rating < 0 || !Object.values(this.aspects.story).find(value => value.rating == rating))
+		}
+		
+		this.targetNumbers = {
+			core : Object.fromEntries(Object.keys(this.aspects.core).map(key => [key, CONFIG["13OMENS"].ASPECTTN[this.aspects.core[key].rating]])),
+			story : Object.fromEntries(Object.keys(this.aspects.story).map(key => [key, CONFIG["13OMENS"].ASPECTTN[this.aspects.story[key].rating]]))
+		}
 	}
 }

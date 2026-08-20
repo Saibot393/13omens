@@ -1,42 +1,7 @@
 const DEFAULTROLLOPTIONS = {dicePermut : [], flaws : [], edges : [], strain : null, ignoreStrain : false, targetNumber : null, taskDifficulty : 0, taskRisk : "normal", woundThreshold : null, strainThreshold : null};
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
-const MAXFE = 2; //Max two flaws or edges
-
-const MAXTD = 2;
-const MINTD = -2;
-
-const TASKRISKS = ["risky", "normal", "harmless"]
-
-export const DEFAULTDICEBAGCOUNT = {safe : 8, omen : 1, }
-
-export const MAXHOSTOMENDICE = 13;
-
-export function expandRollData(data) {
-	data.flaws = data.flaws.map(flaw => typeof flaw == "string" ? {name : flaw} : flaw)
-}
-
-export function randomPermut(array) {
-	for (let i = array.length - 1; i > 0; i--) {
-		const j = Math.floor(Math.random() * (i + 1));
-		
-		[array[i], array[j]] = [array[j], array[i]];
-	}
-	
-	return array;
-}
-
-export function counttobag(count) {
-	let bag = [];
-	
-	for (let key of Object.keys(count)) {
-		for (let i = 1; i <= count[key]; i++) {
-			bag.push(key);
-		}
-	}
-	
-	return bag;
-}
+import { utils } from "./utils.js";
 
 export class o13Roll extends Roll {
 	constructor(actor, aspect, options = DEFAULTROLLOPTIONS) {
@@ -47,7 +12,7 @@ export class o13Roll extends Roll {
 		
 		this._rollData = ({...DEFAULTROLLOPTIONS, ...options});
 		
-		expandRollData(this._rollData);
+		utils.expandRollData(this._rollData);
 		
 		this._rollData.targetNumber = this.targetNumber;
 		this._rollData.strain = this.strain;
@@ -213,7 +178,7 @@ export class o13Roll extends Roll {
 	}
 	
 	drawDice() {
-		this._rollData.dicePermut = randomPermut(this.diceBag);
+		this._rollData.dicePermut = utils.randomPermut(this.diceBag);
 	}
 	
 	get formula() {
@@ -366,7 +331,7 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 			...data
 		}
 		
-		expandRollData(this._data);
+		utils.expandRollData(this._data);
 		
 		this._id = foundry.utils.randomID();
 		
@@ -447,11 +412,11 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 	
 	get canAddFlaws() {
-		return this.flaws.length + (this.strain ? 1 : 0) < MAXFE;
+		return this.flaws.length + (this.strain ? 1 : 0) < CONFIG["13OMENS"].MAXFE;
 	}
 	
 	get canAddEdges() {
-		return this.edges.length < MAXFE;
+		return this.edges.length < CONFIG["13OMENS"].MAXFE;
 	}
 	
 	addFlaw(flawName = "", omen = false) {
@@ -507,7 +472,7 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 	async _prepareContext(options) {
 		return {
 			config: this,
-			taskRisks: TASKRISKS
+			taskRisks: CONFIG["13OMENS"].TASKRISKS
 		}
     };
 	
@@ -524,13 +489,13 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 	
 	static async DAreduceTaskDifficulty(event, target) {
-		if (this._data.taskDifficulty > MINTD) this._data.taskDifficulty -= 1;
+		if (this._data.taskDifficulty > CONFIG["13OMENS"].MINTD) this._data.taskDifficulty -= 1;
 		
 		this._applyUpdate();
 	}
 	
 	static async DAincreaseTaskDifficulty(event, target) {
-		if (this._data.taskDifficulty < MAXTD) this._data.taskDifficulty += 1;
+		if (this._data.taskDifficulty < CONFIG["13OMENS"].MAXTD) this._data.taskDifficulty += 1;
 		
 		this._applyUpdate();
 	}
