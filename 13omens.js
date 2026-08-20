@@ -6,9 +6,13 @@ import  { disPatcher } from "./scripts/disPatcher.js";
 import {o13Roll} from "./scripts/roll.js";
 import {onO13Hooks} from "./scripts/hooks.js";
 
+import {CONSTANTS} from "./scripts/constants.js";
+
 const templatePaths = ["actors/pc", "actors/story", "actors/components/aspects", "items/perk", "dice/dice", "dice/dicebar", "dice/dicebag", "rolls/rollConfig", "rolls/chatRoll", "dialogues/general", "dialogues/confirmOmenDiceRoll"].map((path) => `systems/13omens/templates/${path}.hbs`);
 
 Hooks.once("init", () => {
+	CONFIG["13OMENS"] = {...CONSTANTS}
+	
 	//Actors
 	CONFIG.Actor.dataModels = {
 		...actorDMs

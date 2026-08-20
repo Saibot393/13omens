@@ -8,7 +8,7 @@ import { o13npcActor } from "./actors/npc.js";
 
 import { o13Roll, o13rollConfig, MAXHOSTOMENDICE, DEFAULTDICEBAGCOUNT, counttobag } from "./roll.js";
 
-const COREASPECTS_IDS = ["courage", "evade", "fight", "luck", "perception"];
+const COREASPECTSIDS = ["courage", "evade", "fight", "luck", "perception"];
 const ASPECTRATINGS = [-1, 0,1,2,3,4];
 const ASPECTTN = [10, 9, 7, 5, 4];
 
@@ -91,7 +91,7 @@ export class o13Actor extends Actor {
 		
 		await super._preUpdate(changed, options, user);
 	}
-	
+	/*
 	async _onUpdate(changed, options, userId) {
 		await super._onUpdate(changed, options, userId);
 		
@@ -113,6 +113,7 @@ export class o13Actor extends Actor {
 			}
 		}
 	}
+	*/
 	
 	get isPC() {
 		return this.type == "pc";
@@ -295,7 +296,6 @@ export class o13Actor extends Actor {
 			return this.pcActors.filter(actor => !actor.isDead).length;
 		}
 	}
-	*/
 	
 	getmaxWounds(actor = undefined) {
 		if (this.isStory) {
@@ -461,12 +461,12 @@ export class o13Actor extends Actor {
 				strainlessAspects.story[key] = {strain : false};
 			}
 			
-			this.update({
+			return this.update({
 				system : {
 					wounds : Array.from({length : 4}, () => (EMPTYWOUND)),
 					aspects : strainlessAspects
 				}
-			})
+			});
 		}
 	}
 	
@@ -510,10 +510,9 @@ export class o13Actor extends Actor {
 			});
 		}
 	}
-	
 	getAspectData(aspect, includeTN = false) {
 		if (this.isPC) {
-			if (COREASPECTS_IDS.includes(aspect)) {
+			if (COREASPECTSIDS.includes(aspect)) {
 				const add = includeTN ? {targetNumber : this.system.targetNumbers.core[aspect]} : {};
 				
 				return {...add, ...this.system.aspects.core[aspect], name : game.i18n.localize(`13omens.titles.${aspect}`)};
@@ -681,7 +680,7 @@ export class o13Actor extends Actor {
 	}
 	
 	async takeStrain(aspect) {
-		if (COREASPECTS_IDS.includes(aspect)) {
+		if (COREASPECTSIDS.includes(aspect)) {
 			return this.update({system : {aspects : {core : {[aspect] : {strain : true}}}}});
 		}
 		
@@ -689,16 +688,10 @@ export class o13Actor extends Actor {
 			const storyAspects = this.system.aspects.story;
 			
 			if (aspect >= 0 && aspect < Math.max(...Object.keys(storyAspects))) {
-				/*
-				storyAspects[aspect].strain = true;
-				
-				return this.update({system : {aspects : {story : storyAspects}}});
-				*/
 				return this.update({system : {aspects : {story : {[aspect] : {strain : true}}}}});
 			}
 		}
 	}
-	
 	async checkDeath() {
 		if (this.isPC) {
 			const isDead = !this.system.wounds.find(wound => !wound.omen.filled);
@@ -731,7 +724,6 @@ export class o13Actor extends Actor {
 			}
 		}
 	}
-	
 	async createNewArchetype() {
 		if (this.isStory) {
 			const archetype = await this.createEmbeddedDocuments("Item", [{
@@ -768,7 +760,6 @@ export class o13Actor extends Actor {
 			this.update({system : {pcs : this.system.pcs.filter(pc => pc.id != id)}})
 		}
 	}
-	
 	async removeArchetypeItems() {
 		if (this.isPC) {
 			return this.deleteEmbeddedDocuments("Item", Array.from(this.items).filter(item => item.isArchetypeOrigin).map(item => item.id))
@@ -786,6 +777,7 @@ export class o13Actor extends Actor {
 			}
 		}
 	}
+	*/
 }
 
 export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
@@ -1220,7 +1212,7 @@ class pcDataModel extends foundry.abstract.TypeDataModel {
 			}), {initial: () => Array.from({length : 4}, () => (EMPTYWOUND))}),
 			
 			aspects: new SchemaField({
-				core: new SchemaField(Object.fromEntries(COREASPECTS_IDS.map(str => [str, new SchemaField({
+				core: new SchemaField(Object.fromEntries(COREASPECTSIDS.map(str => [str, new SchemaField({
 					rating : newRating(),
 					strain : new BooleanField({ required: true, initial: false})
 				})]))),

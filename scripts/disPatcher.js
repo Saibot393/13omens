@@ -96,8 +96,6 @@ export class disPatcher {
 						}
 					}
 					
-					console.log(targetTypes);
-					
 					if (!targetTypes.length) {
 						console.error(`disPatcher has encountered problem while patching a document class: Key "${pKey}" does not have a patchable property type, skipping Key`, documentClass);
 						continue;

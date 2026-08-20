@@ -1,5 +1,90 @@
+import {utils} from "../utils.js";
+
+import { o13rollConfig } from "../roll.js";
+
+const EMPTYWOUND = {safe : {filled : false, face : null, act : null}, omen : {filled : false, face : null, act : null}};
+
 export class o13pcActor {
-	//archetypes
+	//Updates & Create
+	async _preCreate(data, options, user) {
+		await this.superPD._preCreate(data, options, user);
+
+		if (!data.prototypeToken) {
+			this.updateSource({
+				prototypeToken: {
+					actorLink: true,
+					disposition: CONST.TOKEN_DISPOSITIONS.FRIENDLY
+				}
+			});
+		}
+	}
+	
+	async _preUpdate(changed, options, user) {
+		if (changed) {
+			if (changed.system) {
+				if (changed.system.hasOwnProperty("archetype")) {
+					//story aspect auto
+					const archetypeAspect = this.getArchetypeAspect(changed.system.archetype);
+					const storyAspects = {...this.system.aspects.story, ...changed.system.aspects?.story};
+					
+					if (!changed.system.aspects) changed.system.aspects = {};
+					
+					if (changed.system.archetype) {
+						if (archetypeAspect >= 0 && archetypeAspect <= Math.max(...Object.keys(storyAspects))) {
+							console.log(foundry.utils.deepClone(storyAspects));
+							for (let i in Object.keys(storyAspects)) {
+								if (i == archetypeAspect) storyAspects[i].rating = Math.max(...CONFIG["13OMENS"].ASPECTRATINGS)
+								else if (this.system.aspects.story[i].rating == Math.max(...CONFIG["13OMENS"].ASPECTRATINGS)) storyAspects[i].rating = -1;
+							
+								storyAspects[i].archetypelock = i == archetypeAspect;
+							}
+							console.log(foundry.utils.deepClone(storyAspects));
+							
+							changed.system.aspects.story = {...changed.system.aspects.story, ...storyAspects};
+						}
+					}
+					else {
+							for (let i in Object.keys(storyAspects)) {
+								storyAspects[i].archetypelock = false;
+							}
+							
+							changed.system.aspects.story = {...changed.system.aspects.story, ...storyAspects};
+					}
+				}
+				if (changed.system.aspects) {
+					//rating is Number
+					if (changed.system.aspects.story) {
+						for (let entry of Object.values(changed.system.aspects.story)) {
+							if (entry && "rating" in entry) {
+								entry.rating = !isNaN(entry.rating) ? Number(entry.rating) : CONFIG["13OMENS"].ASPECTRATINGS[0];
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		await this.superPD._preUpdate(changed, options, user);
+	}
+	
+	async _onUpdate(changed, options, userId) {
+		await this.superPD._onUpdate(changed, options, userId);
+		
+		if (game.user.id != userId) return;
+		
+		if (changed.system) {
+			if (changed.system.hasOwnProperty("archetype")) {
+				await this.updateArchetypeItems();
+			}
+		}
+	}
+	
+	//Story
+	get storyActor() {
+		return [...game.actors].find(actor => actor.isStory && actor.hasPC(this))
+	}
+	
+	//Archetypes
 	get archetypes() {
 		return this.storyActor?.archetypes;
 	}
@@ -12,6 +97,20 @@ export class o13pcActor {
 		const archetype = this.storyActor?.items.get(this.system.archetype);
 		
 		return archetype?.type == "archetype" ? archetype : undefined;
+	}
+	
+	async removeArchetypeItems() {
+		return this.deleteEmbeddedDocuments("Item", Array.from(this.items).filter(item => item.isArchetypeOrigin).map(item => item.id))
+	}
+	
+	async updateArchetypeItems(removeold = true) {
+		if (removeold) await this.removeArchetypeItems();
+		
+		const archetype = this.archetype;
+		
+		if (archetype) {
+			return this.createEmbeddedDocuments("Item", [...Object.values(archetype.perksData), ...Object.values(archetype.guaranteedGear)]);
+		}
 	}
 	
 	//Perks
@@ -35,6 +134,10 @@ export class o13pcActor {
 	
 	get perks() {
 		return this.getPerks();
+	}
+	
+	get pickedPerks() {
+		return this.getPerks(true);
 	}
 	
 	//Gear
@@ -97,5 +200,232 @@ export class o13pcActor {
 	
 	get archetypeAspect() {
 		return this.getArchetypeAspect(this.archetype);
+	}
+	
+	getAspectData(aspect, includeTN = false) {
+		if (CONFIG["13OMENS"].COREASPECTSIDS.includes(aspect)) {
+			const add = includeTN ? {targetNumber : this.system.targetNumbers.core[aspect]} : {};
+			
+			return {...add, ...this.system.aspects.core[aspect], name : game.i18n.localize(`13omens.titles.${aspect}`)};
+		}
+		
+		if (!isNaN(aspect)) {
+			const add = includeTN ? {targetNumber : this.system.targetNumbers.story[aspect]} : {};
+			
+			return {...add, ...this.system.aspects.story[aspect], name : this.storyAspectNames[aspect]};
+		}
+	}
+	
+	get storyAspectNames() {
+		return this.storyActor?.storyAspectNames || Array.from({length : 5}, () => "");
+	}
+	
+	canRollAspect(aspect) {
+		return !isNaN(this.getAspectData(aspect,true).targetNumber);
+	}
+	
+	async rollAspect(aspectName, rollDialogue = false, toChat = true) {
+		if (this.canRollAspect(aspectName)) {
+			const aspectData = this.getAspectData(aspectName, true);
+			
+			if (aspectData) {
+				new o13rollConfig(this, {aspect : aspectName}).render(true);
+			}
+		}
+		else {
+			ui.notifications.warn(game.i18n.localize("13omens.warnings.selectRating"), {console : false});
+		}
+	}
+	
+	//Wounds
+	getmaxWounds(actor = undefined) {
+		return this.storyActor?.getmaxWounds(this) || CONFIG["13OMENS"].DEFAULTMAXWOUNDS;
+	}
+	
+	get maxWounds() {
+		return this.getmaxWounds();
+	}
+	
+	get isDead() {
+		if (this.isPC) {
+			return this.system.death.isdead;
+		}
+	}
+	
+	get woundDiceCount() {
+		return {safe : this.system.wounds.filter(wound => wound.safe.filled).length, omen : this.isDead ? 0 : this.system.wounds.filter(wound => wound.omen.filled).length};
+	}
+	
+	get woundDice() {
+		return this.system.wounds.map((wound, index) => {
+			var die = {};
+			
+			if (!wound.omen.filled && !wound.safe.filled) {
+				die.face = (index+1 == this.system.wounds.length) ? 6 : index+1;
+				die.type = "blank";
+			}
+			else {
+				if (wound.omen.filled) {
+					die.face = wound.omen.face;
+					die.type = "omen";
+					die.act = wound.omen.act;
+				}
+				else {
+					if (wound.safe.filled) {
+						die.face = wound.safe.face;
+						die.type = "safe";
+						die.act = wound.safe.act;
+					}
+				}
+			}
+			
+			return die;
+		});
+	}
+	
+	async updateMaxWounds(forceupdate = false) {
+		if (!this.isDead || forceupdate) {
+			const maxWounds = this.maxWounds;
+			
+			let currentWounds = this.system.wounds;
+			
+			if (currentWounds != currentWounds.length) {
+				while (currentWounds.length > maxWounds) {
+					currentWounds.pop();
+				}
+				
+				while (currentWounds.length < maxWounds) {
+					currentWounds.push(EMPTYWOUND);
+				}
+				
+				return this.update({system : {wounds : currentWounds}});
+			}
+		}
+	}
+	
+	async takeWound(options = {face : 6, cheatDeath : false}) {
+		const wounds = this.system.wounds;
+		
+		const nextEmpty = wounds.indexOf(wounds.find(wound => {
+			return !wound.omen.filled && (!wound.safe.filled || !options.cheatDeath)
+		}));
+		
+		if (nextEmpty >= 0 && nextEmpty < wounds.length) {
+			if (options.cheatDeath) {
+				wounds[nextEmpty].safe.filled = true;
+				wounds[nextEmpty].safe.face = options.face;
+				wounds[nextEmpty].safe.act = this.activeAct;
+			}
+			else {
+				wounds[nextEmpty].omen.filled = true;
+				wounds[nextEmpty].omen.face = options.face;
+				wounds[nextEmpty].omen.act = this.activeAct;
+			}
+			
+			return this.update({system : {wounds : wounds}});
+		}
+	}
+	
+	async clearWound() {
+		const wounds = this.system.wounds;
+		
+		const nextEmpty = wounds.indexOf([...wounds].reverse().find(wound => {
+			return wound.omen.filled || wound.safe.filled;
+		}));
+		
+		if (nextEmpty >= 0 && nextEmpty < wounds.length) {
+			wounds[nextEmpty] = EMPTYWOUND;
+			
+			return this.update({system : {wounds : wounds}});
+		}
+	}
+	
+	async checkDeath() {
+		const isDead = !this.system.wounds.find(wound => !wound.omen.filled);
+		
+		if (isDead && !this.system.death.isdead) {
+			await this.update({system : {death : {isdead : true, act : this.activeAct}}})
+		}
+		
+		return isDead;
+	}
+	
+	//Cheat death
+	cheatedDeathCount(act = null) {
+		const lookupact = act ?? this.activeAct;
+			
+		return Object.values(this.system.wounds).filter(wound => wound.safe?.filled && wound.safe?.act == lookupact).length;
+	}
+	
+	hasCheatedDeath(act = null) {
+		return this.cheatedDeathCount(act) > 0;
+	}
+	
+	get canCheatDeath() {
+		return this.storyActor?.canCheatDeath;
+	}
+	
+	//strain
+	async takeStrain(aspect) {
+		if (CONFIG["13OMENS"].COREASPECTSIDS.includes(aspect)) {
+			return this.update({system : {aspects : {core : {[aspect] : {strain : true}}}}});
+		}
+		
+		if (!isNaN(aspect)) {
+			const storyAspects = this.system.aspects.story;
+			
+			if (aspect >= 0 && aspect < Math.max(...Object.keys(storyAspects))) {
+				return this.update({system : {aspects : {story : {[aspect] : {strain : true}}}}});
+			}
+		}
+	}
+	
+	//Dice
+	get hostOmenDice() {
+		return this.storyActor?.omendice;
+	}
+	
+	get diceBagCount() {
+		return this.storyActor?.diceBagCount || CONFIG["13OMENS"].DEFAULTDICEBAGCOUNT;
+	}
+	
+	get diceBag() {
+		return utils.counttobag(this.diceBagCount);
+	}
+	
+	get diceBagDice() {
+		return this.diceBag.map(die => ({type : die, face : 6}));
+	}
+	
+	//Acts
+	async resettoPrologue() {
+		const strainlessAspects = {core : {}, story : {}};
+		
+		for (const key of Object.keys(this.system.aspects.core)) {
+			strainlessAspects.core[key] = {strain : false};
+		}
+		
+		for (const key of Object.keys(this.system.aspects.story)) {
+			strainlessAspects.story[key] = {strain : false};
+		}
+		
+		return this.update({
+			system : {
+				wounds : Array.from({length : 4}, () => (EMPTYWOUND)),
+				aspects : strainlessAspects
+			}
+		});
+	}
+	
+	get activeAct() {
+		return this.storyActor?.activeAct || 0;
+	}
+	
+	get isPrologue() {
+		return this.storyActor?.isPrologue ?? true;
+	}
+	
+	get canPrepare() {
+		return this.isPrologue;
 	}
 }
