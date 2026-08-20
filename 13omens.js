@@ -1,6 +1,8 @@
 import {o13Actor, o13ActorSheet, actorDMs} from "./scripts/actors.js";
 import {o13Item, o13ItemSheet, itemDMs} from "./scripts/items.js";
 
+import  { disPatcher } from "./scripts/disPatcher.js";
+
 import {o13Roll} from "./scripts/roll.js";
 import {onO13Hooks} from "./scripts/hooks.js";
 
@@ -10,6 +12,8 @@ Hooks.once("init", () => {
 	CONFIG.Actor.dataModels = {
 		...actorDMs
 	};
+	
+	disPatcher.patch(o13Actor);
 	
 	CONFIG.Actor.documentClass = o13Actor;
 	

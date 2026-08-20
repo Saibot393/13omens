@@ -2,6 +2,8 @@ const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDo
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
 
+
+
 import { o13Roll, o13rollConfig, MAXHOSTOMENDICE, DEFAULTDICEBAGCOUNT, counttobag } from "./roll.js";
 
 const COREASPECTS_IDS = ["courage", "evade", "fight", "luck", "perception"];
@@ -28,6 +30,16 @@ function newRating() {
 } 
 
 export class o13Actor extends Actor {
+	/*
+	static _disPatchInfo = {
+		typePatches : {
+			pc : testPC,
+			story : testStory
+		},
+		superPD : ["_preCreate", "_preUpdate", "_onUpdate"]
+	}
+	*/
+	
 	async _preCreate(data, options, user) {
 		await super._preCreate(data, options, user);
 
