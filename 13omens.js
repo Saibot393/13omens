@@ -9,6 +9,7 @@ import {onO13Hooks} from "./scripts/hooks.js";
 const templatePaths = ["actors/pc", "actors/story", "actors/components/aspects", "items/perk", "dice/dice", "dice/dicebar", "dice/dicebag", "rolls/rollConfig", "rolls/chatRoll", "dialogues/general", "dialogues/confirmOmenDiceRoll"].map((path) => `systems/13omens/templates/${path}.hbs`);
 
 Hooks.once("init", () => {
+	//Actors
 	CONFIG.Actor.dataModels = {
 		...actorDMs
 	};
@@ -23,9 +24,12 @@ Hooks.once("init", () => {
 		label: "13OMENS.ActorSheet"
 	});
 	
+	//Items
 	CONFIG.Item.dataModels = {
 		...itemDMs
 	};
+	
+	disPatcher.patch(o13Item);
 	
 	CONFIG.Item.documentClass = o13Item;
 	
@@ -35,11 +39,14 @@ Hooks.once("init", () => {
 		label: "13OMENS.ItemSheet"
 	});
 	
+	//Rolls
 	CONFIG.Dice.rolls.push(o13Roll);
 	
+	//Handlebars
 	foundry.applications.handlebars.loadTemplates(templatePaths);
 	
 	Handlebars.registerHelper("eqLoose", (a, b) => a == b);
 	
+	//On Hooks
 	onO13Hooks();
 });

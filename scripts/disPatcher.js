@@ -1,12 +1,13 @@
 export class disPatcher {
 	/*	The disPatcher patches dis
-		dis being document classes, as FoundryVTT only allows once class per actor/item/et.c. document and i don ot like using the data models for functions/getters/setter etc.,
-		this class will allow for seperate type dependent document types to be written and the patches into the base class
+		dis being document classes, as FoundryVTT only allows once class per actor/item/et.c. document and i do not like using the data models for functions/getters/setter etc.,
+		this class will allow for seperate type dependent document types to be written and then be patched into the base class, super methods that are overwritten will be stored in superPD
 		The following is either smart js usage or abuse of it, your choice
 	*/
 	
 	static patch(documentClass) {
 		if (documentClass._disPatchInfo) {
+			//super PD
 			const superPD = documentClass._disPatchInfo.superPD; //pre dispatch super function to be saved, can later be refered to as superPD.xyz instead of super.xyz, usefull when overwriting base methods
 			
 			const superPDFunctions = {};
@@ -43,6 +44,7 @@ export class disPatcher {
 				configurable: true
 			});
 			
+			//patches
 			const typePatches = documentClass._disPatchInfo.typePatches;
 						
 			const types = Object.keys(typePatches).filter(key => typeof typePatches[key] === "function" /*&& documentClass.prototype.isPrototypeOf(typePatches[key].prototype)*/);
@@ -53,15 +55,29 @@ export class disPatcher {
 				
 				
 				for (const type of types) {
-					descriptors[type] = Object.getOwnPropertyDescriptors(typePatches[type].prototype);
+					//traverse all extended prototypes to make sure all properties are included
+					descriptors[type] = {};
+					let currentProto = typePatches[type].prototype;
 					
+					while (currentProto && currentProto !== Object.prototype && currentProto !== documentClass.prototype) {
+						const currentDescriptors = Object.getOwnPropertyDescriptors(currentProto);
+
+						for (const [key, descriptor] of Object.entries(currentDescriptors)) {
+							if (!(key in descriptors[type])) {
+								descriptors[type][key] = descriptor;
+							}
+						}
+
+						currentProto = Object.getPrototypeOf(currentProto);
+					}
+
 					propertyKeys = [...propertyKeys, ...Object.keys(descriptors[type])];
 				}
 				
 				const uniqueKeys = new Set(propertyKeys);
 				
 				for (const pKey of uniqueKeys) {
-					
+					//patch preperations
 					if (pKey == "constructor") continue; //lets not do this
 					
 					const patches = {};
@@ -94,6 +110,7 @@ export class disPatcher {
 						continue;
 					}
 
+					//apply descriptors
 					switch (targetTypes[0]) {
 						case "function":
 							const pdFunction = documentClass.prototype[pKey];

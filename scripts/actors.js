@@ -2,7 +2,9 @@ const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDo
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
 
-
+import { o13pcActor } from "./actors/pc.js";
+import { o13storyActor } from "./actors/story.js";
+import { o13npcActor } from "./actors/npc.js";
 
 import { o13Roll, o13rollConfig, MAXHOSTOMENDICE, DEFAULTDICEBAGCOUNT, counttobag } from "./roll.js";
 
@@ -30,15 +32,14 @@ function newRating() {
 } 
 
 export class o13Actor extends Actor {
-	/*
 	static _disPatchInfo = {
 		typePatches : {
-			pc : testPC,
-			story : testStory
+			pc : o13pcActor,
+			story : o13storyActor,
+			npc : o13npcActor
 		},
 		superPD : ["_preCreate", "_preUpdate", "_onUpdate"]
 	}
-	*/
 	
 	async _preCreate(data, options, user) {
 		await super._preCreate(data, options, user);
@@ -121,6 +122,10 @@ export class o13Actor extends Actor {
 		return this.type == "story";
 	}
 	
+	get isNPC() {
+		return this.type == "npc";
+	}
+	
 	get isHostView() {
 		return game.user.isGM;
 	}
@@ -133,6 +138,7 @@ export class o13Actor extends Actor {
 		return [...this.items].filter(item => item.type == "gear");
 	}
 	
+	/*
 	getPerks(filterpicked = false) {
 		if (this.isPC) {
 			let perks = this.items.filter(item => item.isPerk);
@@ -289,6 +295,7 @@ export class o13Actor extends Actor {
 			return this.pcActors.filter(actor => !actor.isDead).length;
 		}
 	}
+	*/
 	
 	getmaxWounds(actor = undefined) {
 		if (this.isStory) {
