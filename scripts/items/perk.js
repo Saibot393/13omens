@@ -15,7 +15,7 @@ export class o13perkItem extends virtualItem {
 	}
 	
 	//Use
-	resetUses() {
+	async resetUses() {
 		return this.update({system : {usesper : {value : this.system.usesper.max}}})
 	}
 	
@@ -39,14 +39,16 @@ export class o13perkItem extends virtualItem {
 		return this.system.usesper.value ?? 0;
 	}
 	
-	newAct() {
+	async newAct() {
 		if (this.system.usesper.per == "act") {
-			this.resetUses();
+			await this.resetUses();
 		}
 	}
 	
-	use() {
-		console.log(this.name);
+	async use() {
+		if (this.canBeUsed && this.usesLeft > 0) {
+			this.update({system : {usesper : {value : this.usesLeft - 1}}})
+		}
 	}
 }
 

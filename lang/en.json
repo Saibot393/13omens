@@ -102,14 +102,19 @@
 				"per" : {
 					"passive" : "passive",
 					"act" : "per act",
-					"story" : "per scene",
+					"story" : "per story",
 					"custom" : "per custom"
 				}
 			},
 			
 			"quantity" : {
 				"name" : "Quantity"
-			}
+			},
+			
+			"newActor" : "{user}'s Character",
+			
+			"confirmAdvanceAct" : "Confirm act advancement",
+			"confirmResettoPrologue" : "Confrim reset to prologue"
 		},
 		
 		"actions" : {
@@ -121,7 +126,8 @@
 			"takeWound" : "Take wound",
 			"cheatDeath" : "Cheat death",
 			"takeStrain" : "Take strain",
-			"clearWound" : "Clear wound"
+			"clearWound" : "Clear wound",
+			"createPCs" : "Create player characters"
 			
 		},
 		
@@ -132,7 +138,9 @@
 		
 		"dialogues" : {
 			"confirmOmenDiceAddition" : "Omen dice addition",
-			"playerOmenFlawRoll" : "{pcName} rolled a check with {flawCount} omen flaw, do you want to add the omen die to the {storyName} dice bag?"
+			"playerOmenFlawRoll" : "{pcName} rolled a check with {flawCount} omen flaw, do you want to add the omen die to the {storyName} dice bag?",
+			"confirmAdvanceAct" : "Do you want to advance to act {act}?",
+			"confirmResettoPrologue" : "Do you want to reset the story to the prologue? This will also reset all players characters to the prologue state"
 		},
 		
 		"warnings" : {

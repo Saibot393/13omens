@@ -61,7 +61,7 @@
 						{{/each}}
 					</div>
 					<div class="flexcol o13-flexStart" style="flex:1.5">
-						<span class="o13-label o13-header-label o13-content-centered">{{localize "13omens.titles.archetypes"}} <i class="fa-solid fa-plus" data-action="createNewArchetype"></i></span>
+						<span class="o13-label o13-header-label o13-content-centered">{{localize "13omens.titles.archetypes"}} <i class="fa-solid fa-plus o13-clickable" data-action="createNewArchetype"></i></span>
 						{{#each actor.archetypes as |archetype|}}
 							<div class="flexrow o13-padding">
 								<span class="o13-label o13-clickable o13-content-centered" type="text" archetype-id="{{archetype.id}}" data-action="openArchetype">{{archetype.name}}</span>
@@ -79,7 +79,7 @@
 					</div>
 				</div>
 				<div class="flexcol">
-					<span class="o13-label o13-header-label">{{localize "13omens.titles.players"}}</span>
+					<span class="o13-label o13-header-label o13-flex-span">{{localize "13omens.titles.players"}} <i class="fa-solid fa-people-group o13-flex-right o13-icon o13-clickable" data-action="autoPopulatePCs" style="flex:1" data-tooltip="{{localize '13omens.tooltips.createPCs'}}"></i></span>
 					{{#each actor.pcActors as |pc|}}
 						<div class="flexrow">
 							<span class="o13-label o13-clickable o13-content-centered" type="text" pc-id="{{pc.id}}" data-action="openPC">{{pc.name}}</span>

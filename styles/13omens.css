@@ -230,6 +230,10 @@ select:disabled {
 	color: var(--o13-smoke-grey);
 }
 
+.o13-header-label .o13-clickable:hover {
+	color: var(--o13-smoke-silver);
+}
+
 .o13-selected{
 	background-color: var(--o13-ink-grey);
 	color: var(--o13-smoke-grey);

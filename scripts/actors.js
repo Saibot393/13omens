@@ -14,7 +14,7 @@ export class o13Actor extends Actor {
 			story : o13storyActor,
 			npc : o13npcActor
 		},
-		superPD : ["update", "_preCreate", "_preUpdate", "_onUpdate"]
+		superPD : ["update", "_preCreate", "_preUpdate", "_onUpdate", "_onCreateDescendantDocuments"]
 	}
 	
 	get isPC() {
@@ -79,7 +79,8 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 			clearWound : o13ActorSheet.clearWound,
 			advanceAct : o13ActorSheet.advanceAct,
 			resettoPrologue : o13ActorSheet.resettoPrologue,
-			usePerk : o13ActorSheet.usePerk
+			usePerk : o13ActorSheet.usePerk,
+			autoPopulatePCs : o13ActorSheet.autoPopulatePCs
 		}
 	});
 
@@ -336,13 +337,13 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 	
 	static async advanceAct(event, target) {
 		if (this.actor.type == "story") {
-			this.actor.advanceAct();
+			this.actor.advanceAct(null, event.shiftKey);
 		}
 	}
 	
 	static async resettoPrologue(event, target) {
 		if (this.actor.type == "story") {
-			this.actor.resettoPrologue();
+			this.actor.resettoPrologue(event.shiftKey);
 		}
 	}
 	
@@ -352,6 +353,13 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 			
 			
 			this.actor.usePerk(perkID);
+		}
+	}
+	
+	static async autoPopulatePCs(event, target) {
+		console.log(this.actor);
+		if (this.actor.type == "story") {
+			this.actor.autoPopulatePCs();
 		}
 	}
 	
@@ -378,6 +386,12 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 						if (changes.system) {
 							if (changes.system.wounds || changes.system.hasOwnProperty("archetype")) {
 								rerender = true;
+							}
+							
+							if (this.actor.isPrologue) {
+								if (changes.system.hasOwnProperty("archetype") || changes.system.hasOwnProperty("aspects") || changes.system.hasOwnProperty("pickedperks")) {
+									//rerender for characters for ready check mark
+								}
 							}
 						}
 					}

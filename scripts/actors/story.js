@@ -40,15 +40,47 @@ export class o13storyActor {
 		}
 	}
 	
-	async advanceAct(target) {
+	async advanceAct(target = null, force = false) {
 		const targetAct = target ?? this.activeAct + 1;
 		
 		if (targetAct > this.activeAct && targetAct <= 3 && targetAct >= 0) {
-			return this.update({system : {activeact : targetAct}});
+			if (!force) {
+				const advance = await foundry.applications.api.DialogV2.confirm({
+					window: { title: game.i18n.localize("13omens.titles.confirmAdvanceAct") },
+					content: await foundry.applications.handlebars.renderTemplate("systems/13omens/templates/dialogues/general.hbs", {
+						content : {
+							text : game.i18n.format("13omens.dialogues.confirmAdvanceAct", {act : game.i18n.localize("13omens.titles.actNames." + targetAct)})
+						}
+					}),
+					rejectClose: false // Returns false instead of rejecting the promise on window close (X or ESC)
+				});
+				
+				if (!advance) return;
+			}
+			
+			await this.update({system : {activeact : targetAct}});
+			
+			for (const pc of this.pcActors) {
+				await pc.prepareNewAct();
+			}
 		}
 	}
 	
-	async resettoPrologue() {
+	async resettoPrologue(force = false) {
+		if (!force) {
+			const resetTo = await foundry.applications.api.DialogV2.confirm({
+				window: { title: game.i18n.localize("13omens.titles.confirmResettoPrologue") },
+				content: await foundry.applications.handlebars.renderTemplate("systems/13omens/templates/dialogues/general.hbs", {
+					content : {
+						text : game.i18n.format("13omens.dialogues.confirmResettoPrologue")
+					}
+				}),
+				rejectClose: false // Returns false instead of rejecting the promise on window close (X or ESC)
+			});
+			
+			if (!resetTo) return;
+		}
+		
 		await this.update({
 			system : {
 				activeact : 0,
@@ -95,13 +127,55 @@ export class o13storyActor {
 	}
 	
 	async addPC(actor) {
-		if (actor.isPC && !actor.storyActor) {
-			this.update({system : {pcs : [...this.system.pcs, {id : actor.id}]}});
+		if (Array.isArray(actor)) {
+			const actors = actor.filter(a => a.isPC);
+			
+			if (actors.length) {
+				this.update({system : {pcs : [...this.system.pcs, ...actors.map(a => ({id : a.id}))]}});
+			}
+		}
+		else {
+			if (actor.isPC && !actor.storyActor) {
+				this.update({system : {pcs : [...this.system.pcs, {id : actor.id}]}});
+			}
 		}
 	}
 	
 	async removePC(id) {
 		this.update({system : {pcs : this.system.pcs.filter(pc => pc.id != id)}});
+	}
+	
+	async autoPopulatePCs() {
+		const tagetFolder = this.folder.id;
+		
+		const currentActors = this.pcActors;
+		
+		const currentUsers = [...game.users].filter(user => currentActors.some(actor => actor.testUserPermission(user, "OWNER")));
+		
+		console.log(currentUsers);
+		
+		const targetUsers = [...game.users].filter(user => !currentUsers.includes(user)).filter(user => !user.isGM);
+		
+		console.log(targetUsers);
+		
+		const actors = [];
+		
+		for (const user of targetUsers) {
+			const newActor = await Actor.create({
+				name : game.i18n.format("13omens.titles.newActor", {user : user.name}),
+				type : "pc",
+				ownership : {
+					default: CONST.DOCUMENT_OWNERSHIP_LEVELS.NONE,
+					[user.id] : CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER
+				},
+				folder : tagetFolder
+			});
+			actors.push(newActor)
+		}
+		
+		console.log(actors);
+		
+		return this.addPC(actors);
 	}
 	
 	//Wounds

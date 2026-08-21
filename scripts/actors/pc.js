@@ -83,6 +83,16 @@ export class o13pcActor {
 		}
 	}
 	
+	async _onCreateDescendantDocuments(parent, collection, documents, data, options, usedId) {
+		await this.superPD._onCreateDescendantDocuments(parent, collection, documents, data, options, usedId);
+
+		for (const item of documents) {
+			if (item.isPerk) {
+				await item.resetUses();
+			}
+		}
+	}
+	
 	//State
 	get prepState() {
 		const states = [this.archetypePrepState, this.aspectPrepState, this.perkPrepState, this.gearPrepState];
@@ -97,6 +107,48 @@ export class o13pcActor {
 	//Story
 	get storyActor() {
 		return [...game.actors].find(actor => actor.isStory && actor.hasPC(this))
+	}
+	
+	//Acts
+	async resettoPrologue() {
+		for (const perk of Object.values(this.getPerks())) {
+			await perk.resetUses();
+		}
+		
+		const strainlessAspects = {core : {}, story : {}};
+		
+		for (const key of Object.keys(this.system.aspects.core)) {
+			strainlessAspects.core[key] = {strain : false};
+		}
+		
+		for (const key of Object.keys(this.system.aspects.story)) {
+			strainlessAspects.story[key] = {strain : false};
+		}
+		
+		return this.update({
+			system : {
+				wounds : Array.from({length : this.system.wounds.length}, () => (EMPTYWOUND)),
+				aspects : strainlessAspects
+			}
+		});
+	}
+	
+	async prepareNewAct() {
+		for (const perk of Object.values(this.getPerks())) {
+			await perk.newAct();
+		}
+	}
+	
+	get activeAct() {
+		return this.storyActor?.activeAct || 0;
+	}
+	
+	get isPrologue() {
+		return this.storyActor?.isPrologue ?? true;
+	}
+	
+	get canPrepare() {
+		return this.isPrologue;
 	}
 	
 	//Archetypes
@@ -462,38 +514,6 @@ export class o13pcActor {
 	
 	get diceBagDice() {
 		return this.diceBag.map(die => ({type : die, face : 6}));
-	}
-	
-	//Acts
-	async resettoPrologue() {
-		const strainlessAspects = {core : {}, story : {}};
-		
-		for (const key of Object.keys(this.system.aspects.core)) {
-			strainlessAspects.core[key] = {strain : false};
-		}
-		
-		for (const key of Object.keys(this.system.aspects.story)) {
-			strainlessAspects.story[key] = {strain : false};
-		}
-		
-		return this.update({
-			system : {
-				wounds : Array.from({length : 4}, () => (EMPTYWOUND)),
-				aspects : strainlessAspects
-			}
-		});
-	}
-	
-	get activeAct() {
-		return this.storyActor?.activeAct || 0;
-	}
-	
-	get isPrologue() {
-		return this.storyActor?.isPrologue ?? true;
-	}
-	
-	get canPrepare() {
-		return this.isPrologue;
 	}
 }
 
