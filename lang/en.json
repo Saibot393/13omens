@@ -17,6 +17,8 @@
 		"13omens" : "13 Omens",
 		
 		"titles" : {
+			"systemNews" : "System news",
+			
 			"name" : "Name",
 			"traits" : "Traits",
 			"players" : "Players",
@@ -145,6 +147,13 @@
 		
 		"warnings" : {
 			"selectRating" : "Please select an aspect rating before rolling"
+		},
+		
+		"news" : {
+			"welcome_prerelease" : {
+				"title" : "Welcome to the <b>13&nbsp;Omens</b> system",
+				"text" : "It is recommended to use this system in combination with the 13&nbsp;Omens preview pdf, which you can get from the <b><a href=\"https://store.paizo.com/13-omens/\">Paizo store</a></b>"
+			}
 		}
 	}
 }
