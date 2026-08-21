@@ -412,7 +412,7 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 			}
 			
 			if (rerender) {
-				this.render(true);
+				this.render({force : false, window : {focus : false}});
 			}
 		});
 	}
