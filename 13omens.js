@@ -53,10 +53,9 @@ Hooks.once("init", () => {
 	foundry.applications.handlebars.loadTemplates(templatePaths);
 	
 	Handlebars.registerHelper("eqLoose", (a, b) => a == b);
-	
 	Handlebars.registerHelper("or", (a, b) => a || b); //how is this not a standard thing???
-	
-	Handlebars.registerHelper("and", (a, b) => a && b); //how is this not a standard thing???
+	Handlebars.registerHelper("and", (a, b) => a && b); //nor this???
+	Handlebars.registerHelper("not", (a) => !a); //or this???
 	
 	//On Hooks
 	onO13Hooks();

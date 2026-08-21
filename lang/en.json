@@ -139,7 +139,7 @@
 		"dialogues" : {
 			"confirmOmenDiceAddition" : "Omen dice addition",
 			"playerOmenFlawRoll" : "{pcName} rolled a check with {flawCount} omen flaw, do you want to add the omen die to the {storyName} dice bag?",
-			"confirmAdvanceAct" : "Do you want to advance to act {act}?",
+			"confirmAdvanceAct" : "Do you want to advance to {act}?",
 			"confirmResettoPrologue" : "Do you want to reset the story to the prologue? This will also reset all players characters to the prologue state"
 		},
 		

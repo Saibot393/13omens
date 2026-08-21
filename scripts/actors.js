@@ -113,6 +113,8 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 	async _onDrop(event) {
 		event.preventDefault();
 		
+		var handled = false;
+		
 		const data = foundry.applications.ux.TextEditor.implementation.getDragEventData(event);
 		
 		if (!data) return;
@@ -127,19 +129,22 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 					case "Actor" : 
 						if (object.isPC) {
 							this.actor.addPC(object);
+							handled = true;
 						}
 						break;
 					case "Item" :
 						if (object.type == "archetype") {
 							const archetype = await this.actor.createEmbeddedDocuments("Item", [object.toObject()]);
 							this.actor.registerArchetype(archetype);
+							handled = true;
 						}
 				}
 				break;
 			case "pc":
 				if (data.type == "Item") {
 					if (object.type == "perk" || object.type == "gear") {
-						return this.actor.createEmbeddedDocuments("Item", [object.toObject()]);
+						this.actor.createEmbeddedDocuments("Item", [object.toObject()]);
+						handled = true;
 					}
 				}
 				break;

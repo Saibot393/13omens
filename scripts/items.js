@@ -93,6 +93,8 @@ export class o13ItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
 	async _onDrop(event) {
 		event.preventDefault();
 		
+		var handled = false;
+		
 		const data = foundry.applications.ux.TextEditor.implementation.getDragEventData(event);
 		
 		if (!data) return;
@@ -106,22 +108,26 @@ export class o13ItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
 				if (data.parentArchetype == this.item.uuid) {
 					switch(dropZone.getAttribute("drop-zone")) {
 						case "guaranteedGear":
-							return this.item.markAsGuaranteedGear(data.gearID);
+							this.item.markAsGuaranteedGear(data.gearID);
+							handled = true;
 							break;
 						case "selectableGear":
-							return this.item.removeFromGuaranteedGear(data.gearID);
+							this.item.removeFromGuaranteedGear(data.gearID);
+							handled = true;
 							break;
 					}
 				}
 			}
 		}
-		else {
+		
+		if (!handled) {
 			//Default sheet drop
 			if (!object) return;
 
 			if (this.item.type == "archetype") {
 				if(data.type == "Item") {
 					this.item.addSubItem(object);
+					handled = true;
 				}
 			}
 		}
