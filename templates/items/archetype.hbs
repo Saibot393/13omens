@@ -28,7 +28,8 @@
 					<span class="o13-label"><b>{{localize "13omens.titles.guaranteedGear"}}:</b></span>
 					{{#each item.guaranteedGear}}
 						<span class="o13-label o13-inline o13-item-box draggable" draggable="true" gear-id="{{this._id}}">
-							<i class="fa-solid fa-x o13-label o13-icon o13-hover-icon o13-clickable" gear-id="{{this._id}}" data-action="removeGear"></i> <p class="o13-clickable" data-action="openGear" gear-id="{{this._id}}">{{this.name}}</p> 
+							<p class="o13-clickable" data-action="openGear" gear-id="{{this._id}}">{{this.name}}</p> 
+							<i class="fa-solid fa-x o13-label o13-icon o13-hover-icon o13-clickable" gear-id="{{this._id}}" data-action="removeGear"></i>
 						</span>
 					{{/each}}
 				</span>
@@ -37,7 +38,8 @@
 					<span class="o13-label o13-input-span"><b>{{localize "13omens.titles.selectableGear"}} (<input class="o13-input o13-underline" type="text" name="system.selectablegearcount" value="{{item.selectableGearCount}}" style="field-sizing: content;min-width: 2ch;" />):</b></span>
 					{{#each item.unguaranteedGear}}
 						<span class="o13-label o13-inline o13-item-box draggable" draggable="true" gear-id="{{this._id}}">
-							<i class="fa-solid fa-x o13-label o13-icon o13-hover-icon o13-clickable" gear-id="{{this._id}}" data-action="removeGear"></i> <p class="o13-clickable" data-action="openGear" gear-id="{{this._id}}">{{this.name}}</p> 
+							<p class="o13-clickable" data-action="openGear" gear-id="{{this._id}}">{{this.name}}</p> 
+							<i class="fa-solid fa-x o13-label o13-icon o13-hover-icon o13-clickable" gear-id="{{this._id}}" data-action="removeGear"></i>
 						</span>
 					{{/each}}
 				</span>
