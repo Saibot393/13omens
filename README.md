@@ -25,7 +25,7 @@ Once a roll is made, dice are randomly drawn from the dice bag and the result is
 ## Roadmap
 
 I have multiple additions to the system planned, the following is an incomplete list with no specific order
-- Adding active effect to perks, so that they can affect PC properties, e.g. the maximum amount of wounds
+- Adding active effects for perks, so that they can affect PC properties, e.g. the maximum amount of wounds
 - Adding inline checks for aspects, which allow for roll properties to be parsed
 - More drag and drop utility for items in sheets, including reordering
 - Dedicated tab in the Story and PC actor sheets for notes and descriptions
