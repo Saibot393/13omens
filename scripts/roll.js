@@ -224,7 +224,7 @@ export class o13Roll extends Roll {
 	}
 	
 	get canTakeConsequence() {
-		return (this.actor ?? false) && !this.consequenceTaken;
+		return (this.actor?.isOwner ?? false) && !this.consequenceTaken;
 	}
 	
 	async render() {

@@ -2,13 +2,51 @@ const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDo
 
 import {virtualItem} from "./virtualItem.js";
 
+const USESPEROPTIONS = ["passive", "act", "story", "custom"];
+
 export class o13perkItem extends virtualItem {
 	//Choose
 	get isChosen() {
+		const owner = this.parent;
+		
+		if (owner?.isPC) {
+			return owner.hasPickedPerk(this.id);
+		}
 	}
 	
 	//Use
 	resetUses() {
+		return this.update({system : {usesper : {value : this.system.usesper.max}}})
+	}
+	
+	get usesPerOptions() {
+		return USESPEROPTIONS;
+	}
+	
+	get canBeUsed() {
+		return (this.system.usesper.per != USESPEROPTIONS[0]);
+	}
+	
+	get usesMax() {
+		return this.system.usesper.max;
+	}
+	
+	get hasMax() {
+		return this.system.usesper.max != null
+	}
+	
+	get usesLeft() {
+		return this.system.usesper.value ?? 0;
+	}
+	
+	newAct() {
+		if (this.system.usesper.per == "act") {
+			this.resetUses();
+		}
+	}
+	
+	use() {
+		console.log(this.name);
 	}
 }
 
@@ -18,8 +56,8 @@ export class perkDataModel extends foundry.abstract.TypeDataModel {
 			description: new HTMLField({ required: true, initial: ""}),
 			
 			usesper:  new SchemaField({
-				filled : new StringField({ required: true, nullable: true, initial: "passive", choices: ["passive", "act", "story"]}),
-				max : new NumberField({ required: true, integer: true, nullable: true, min: 1, initial: null }),
+				per : new StringField({ required: true, nullable: true, initial: "passive", choices: USESPEROPTIONS}),
+				max : new NumberField({ required: true, integer: true, nullable: true, min: 1, initial: 1 }),
 				value : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: null })
 			}),
 			

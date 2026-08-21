@@ -54,6 +54,10 @@ Hooks.once("init", () => {
 	
 	Handlebars.registerHelper("eqLoose", (a, b) => a == b);
 	
+	Handlebars.registerHelper("or", (a, b) => a || b); //how is this not a standard thing???
+	
+	Handlebars.registerHelper("and", (a, b) => a && b); //how is this not a standard thing???
+	
 	//On Hooks
 	onO13Hooks();
 	

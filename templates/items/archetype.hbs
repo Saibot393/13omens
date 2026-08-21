@@ -13,7 +13,7 @@
 	<main class="o13-scrollable">
 		<div class="flexcol">
 			<div class="flexcol">
-				<span class="o13-label o13-header-label">{{localize "13omens.titles.perks"}}  <i class="fa-solid fa-plus o13-icon o13-clickable" data-action="createNewPerk"></i></span>
+				<span class="o13-label o13-header-label o13-input-span">{{localize "13omens.titles.perks"}} {{localize "13omens.titles.choosablePerks"}}:<input class="o13-input o13-underline" type="number" name="system.choosableperks" value="{{item.choosablePerks}}" /><i class="fa-solid fa-plus o13-icon o13-clickable" data-action="createNewPerk"></i></span>
 				<div style="display:grid;grid-template-columns: repeat(2, 1fr);gap: 1rem;">
 					{{#each item.perksData}}
 						<span class="o13-label o13-inline" perk-id="{{this._id}}">

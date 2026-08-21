@@ -154,6 +154,10 @@ export class o13archetypeItem {
 	hasPerk(id) {
 		return Boolean(this.system.perks[id]);
 	}
+	
+	get choosablePerks() {
+		return this.system.choosableperks;
+	}
 }
 
 export class archetypeDataModel extends foundry.abstract.TypeDataModel {
@@ -163,11 +167,13 @@ export class archetypeDataModel extends foundry.abstract.TypeDataModel {
 			
 			perks: new ObjectField({}),
 			
+			choosableperks : new NumberField({ required: true, integer: true, nullable: true, min: 1, initial: 2 }),
+			
 			gear: new ObjectField({}),
 			
 			guaranteedgear: new ObjectField({}), //only refer to id
 			
-			selectablegearcount: new NumberField({ required: true, integer: true, nullable: false, min: 1, initial: 4 })
+			selectablegearcount: new NumberField({ required: true, integer: true, nullable: true, min: 1, initial: 4 })
 		};
 	}
 	

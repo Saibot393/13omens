@@ -35,6 +35,8 @@
 			
 			"perks" : "Perks",
 			"perk" : "Perk",
+			"choosablePerks" : "choose",
+			"choosePerks" : "Choose {n} perks:", 
 			
 			"gears" : "Gear",
 			"gear" : "Gear",
@@ -95,13 +97,24 @@
 			
 			"selectGear" : "Select {n} pieces of gear",
 			
+			"uses" : {
+				"name" : "Uses",
+				"per" : {
+					"passive" : "passive",
+					"act" : "per act",
+					"story" : "per scene",
+					"custom" : "per custom"
+				}
+			},
+			
 			"quantity" : {
 				"name" : "Quantity"
 			}
 		},
 		
 		"actions" : {
-			"roll" : "Roll"
+			"roll" : "Roll",
+			"usePerk" : "Use"
 		},
 		
 		"tooltips" : {

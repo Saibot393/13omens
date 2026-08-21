@@ -1,3 +1,4 @@
+/* https://giphy.com/gifs/frustrated-annoyed-programming-yYSSBtDgbbRzq */
 :root {
 	--o13-ink-black: #292229;
 	--o13-ink-grey: #20232a;
@@ -87,11 +88,20 @@ select:disabled {
 	color: var(--o13-ink-black);
 }
 
+.o13-header-label .o13-input {
+	color: var(--o13-smoke-black);
+}
+
 .o13-underline {
 	display: block;
 	border: none;
 	border-radius: 0;
 	border-bottom: 2px solid var(--o13-ink-black);
+}
+
+.o13-header-label .o13-underline {
+	border-bottom: 2px solid var(--o13-smoke-grey);
+	color: var(--o13-smoke-black);
 }
 
 .o13-inline p {
@@ -186,8 +196,17 @@ select:disabled {
 	margin : 0;
 	padding : 0;
 	vertical-align: middle;
+	text-indent: 1.5px;
 }
 
+.checkmark {
+  transform: translateX(1px); /* Tweak 1px or 2px to balance optical center */
+}
+
+.o13-table {
+	margin : 0px;
+	margin-bottom : 5px;
+}
 .o13-table,
 .o13-table tr,
 .o13-table tbody tr,
@@ -220,6 +239,20 @@ select:disabled {
 	color: var(--o13-smoke-silver);
 }
 
+.o13-button{
+	background-color: var(--o13-ink-grey);
+	color: var(--o13-smoke-grey);
+	padding: 3px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	border: 1px solid var(--o13-smoke-grey);
+	border-radius: 3px;
+	white-space: nowrap;
+}
+
+.o13-button.o13-clickable:hover {
+	color: var(--o13-smoke-silver);
+}
 
 .o13-content-centered{
 	vertical-align: middle;

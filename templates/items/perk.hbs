@@ -8,6 +8,23 @@
 				<label for="item-name" class="o13-label" style="flex:0.5"><b>{{localize "13omens.titles.name"}}:</b></label>
 				<input class="o13-input o13-underline" type="text" name="name" value="{{item.name}}" />
 			</div>
+			<div class="form-group flexrow">
+				<label for="gear-uses" class="o13-label" style="flex:0.5"><b>{{localize "13omens.titles.uses.name"}}:</b></label>
+				<span class="o13-input-span o13-label">
+					{{#unless (eq "passive" item.system.usesper.per)}}
+						{{!-- probably no inpit for current uses required
+						<input class="o13-input o13-underline" type="number" name="system.usesper.value" value="{{item.system.usesper.value}}" />
+						/
+						--}}
+						<input class="o13-input o13-underline" type="number" name="system.usesper.max" value="{{item.system.usesper.max}}" />
+					{{/unless}}
+					<select class="o13-input o13-underline o13-bottom-align" name="system.usesper.per">
+					{{#each item.usesPerOptions as |perOption|}}
+						<option value="{{perOption}}" {{#if (eq perOption ../item.system.usesper.per)}}selected{{/if}}>{{localize (concat "13omens.titles.uses.per." perOption)}}</option>
+					{{/each}}
+					</select>
+				</span>
+			</div>
 		</div>
 	</header>
 	<main class="flexcol o13-scrollable" style="flex:1; min-height:0;">

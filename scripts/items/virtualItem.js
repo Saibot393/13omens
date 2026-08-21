@@ -60,6 +60,6 @@ export class virtualItem {
             return this;
 		}
 		
-		return super.update(data, options);
+		return this.superPD.update(data, options);
 	}
 }

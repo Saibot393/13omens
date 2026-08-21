@@ -78,7 +78,8 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 			cheatDeath : o13ActorSheet.cheatDeath,
 			clearWound : o13ActorSheet.clearWound,
 			advanceAct : o13ActorSheet.advanceAct,
-			resettoPrologue : o13ActorSheet.resettoPrologue
+			resettoPrologue : o13ActorSheet.resettoPrologue,
+			usePerk : o13ActorSheet.usePerk
 		}
 	});
 
@@ -342,6 +343,15 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 	static async resettoPrologue(event, target) {
 		if (this.actor.type == "story") {
 			this.actor.resettoPrologue();
+		}
+	}
+	
+	static async usePerk(event, target) {
+		if (this.actor.type == "pc") {
+			const perkID = target.getAttribute("perk-id");
+			
+			
+			this.actor.usePerk(perkID);
 		}
 	}
 	

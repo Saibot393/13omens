@@ -83,6 +83,17 @@ export class o13pcActor {
 		}
 	}
 	
+	//State
+	get prepState() {
+		const states = [this.archetypePrepState, this.aspectPrepState, this.perkPrepState, this.gearPrepState];
+		
+		if (states.some(state => state == "problem")) return "problem";
+		
+		if (states.some(state => state == "pending")) return "pending";
+		
+		return "ready";
+	}
+	
 	//Story
 	get storyActor() {
 		return [...game.actors].find(actor => actor.isStory && actor.hasPC(this))
@@ -117,6 +128,12 @@ export class o13pcActor {
 		}
 	}
 	
+	get archetypePrepState() {
+		if (this.archetype) return "ready";
+		
+		return "pending";
+	}
+	
 	//Perks
 	getPerks(filterpicked = false) {
 		let perks = this.items.filter(item => item.isPerk);
@@ -144,6 +161,32 @@ export class o13pcActor {
 		return this.getPerks(true);
 	}
 	
+	hasPickedPerk(id) {
+		return this.system.pickedperks[id];
+	}
+	
+	get choosablePerksCount() {
+		return this.archetype?.choosablePerks;
+	}
+	
+	usePerk(id) {
+		if (this.hasPickedPerk(id)) {
+			this.pickedPerks[id]?.use();
+		}
+	}
+	
+	get perkPrepState() {
+		if (isNaN(this.choosablePerksCount)) return "ready";
+		
+		const pickerPerksLength = Object.values(this.pickedPerks).length;
+		
+		if (pickerPerksLength < this.choosablePerksCount) return "pending";
+		
+		if (pickerPerksLength == this.choosablePerksCount) return "ready";
+		
+		if (pickerPerksLength > this.choosablePerksCount) return "problem";
+	}
+	
 	//Gear
 	async removeGear(id) {
 		let gear = this.items.get(id);
@@ -162,7 +205,7 @@ export class o13pcActor {
 	//Select gear (from archetype)
 	get selectableGearCount() {
 		if (this.isPC) {
-			return this.archetype?.selectableGearCount ?? 0;
+			return this.archetype?.selectableGearCount;
 		}
 	}
 	
@@ -195,6 +238,18 @@ export class o13pcActor {
 				this.createEmbeddedDocuments("Item", [gearData]);
 			}
 		}
+	}
+	
+	get gearPrepState() {
+		if (isNaN(this.selectableGearCount)) return "ready";
+		
+		const selectedGearLength = Object.values(this.selectableGearInfo).filter(gear => gear.selected).length;
+		
+		if (selectedGearLength < this.selectableGearCount) return "pending";
+		
+		if (selectedGearLength == this.selectableGearCount) return "ready";
+		
+		if (selectedGearLength > this.selectableGearCount) return "problem";
 	}
 	
 	//Aspects
@@ -239,6 +294,14 @@ export class o13pcActor {
 		else {
 			ui.notifications.warn(game.i18n.localize("13omens.warnings.selectRating"), {console : false});
 		}
+	}
+	
+	get aspectPrepState() {
+		const aspects = [...Object.values(this.system.aspects.core), ...Object.values(this.system.aspects.story)];
+		
+		if (aspects.some(aspect => aspect.rating < 0)) return "pending";
+		
+		return "ready";
 	}
 	
 	//Wounds
