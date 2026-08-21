@@ -4,8 +4,9 @@
   "description": "A Foundry VTT system fpr Paizos horror P&P 13 Omens",
   "version": "0.1.0",
   "compatibility": {
-    "minimum": 14,
-    "verified": 14
+    "minimum": 13,
+    "verified": 14,
+	"maximum" : 14
   },
   "styles": [
 	"styles/13omens.css",
