@@ -4,25 +4,27 @@
 			<img class="o13-portrait" name="img" src="{{actor.img}}" title="{{actor.name}}" alt="{{actor.name}}" data-action="choosePortrait" />
 		</div>
 		
-		<div class="form-group flexrow">
-			<label for="actor-name" class="o13-label" style="flex:0.5"><b>{{localize "13omens.titles.name"}}:</b></label>
-			<input class="o13-input o13-underline" type="text" name="name" value="{{actor.name}}" />
-		</div>
-		
-		<div class="flexrow" style="justify-content:center">
-			<span class="o13-label o13-act-title" style="display:inline-flex;justify-content:center;white-space : nowrap;">
-				<b>{{localize (concat "13omens.titles.actNames." actor.activeAct)}}</b>
-			</span>
-			{{#if actor.isHostView}}
-			<div class="flexcol {{#unless actor.isPrologue}}o13-hover-div{{/unless}}" style="flex:0.1">
-				{{#if actor.isPrologue}}
-					<i class="fa-solid fa-play o13-icon o13-clickable" style="color:var(--o13-omen-red)" data-action="advanceAct"></i>
-				{{else}}
-					<i class="fa-solid fa-rotate-left o13-icon o13-clickable" style="color:var(--o13-ink-black)" data-action="resettoPrologue"></i>
-					<i class="fa-solid fa-right-long o13-icon o13-clickable" style="color:var(--o13-omen-red)" data-action="advanceAct"></i>
+		<div class="flexcol">
+			<div class="form-group flexrow" style="margin-bottom:15px">
+				<label for="actor-name" class="o13-label" style="flex:0.25"><b>{{localize "13omens.titles.name"}}:</b></label>
+				<input class="o13-input o13-underline" type="text" name="name" value="{{actor.name}}" />
+			</div>
+			
+			<div class="flexrow" style="justify-content:center">
+				<span class="o13-label o13-act-title" style="display:inline-flex;justify-content:center;white-space : nowrap;">
+					<b>{{localize (concat "13omens.titles.actNames." actor.activeAct)}}</b>
+				</span>
+				{{#if actor.isHostView}}
+				<div class="flexcol {{#unless actor.isPrologue}}o13-hover-div{{/unless}}" style="flex:0.1">
+					{{#if actor.isPrologue}}
+						<i class="fa-solid fa-play o13-icon o13-clickable" style="color:var(--o13-omen-red)" data-action="advanceAct"></i>
+					{{else}}
+						<i class="fa-solid fa-rotate-left o13-icon o13-clickable" style="color:var(--o13-ink-black)" data-action="resettoPrologue"></i>
+						<i class="fa-solid fa-right-long o13-icon o13-clickable" style="color:var(--o13-omen-red)" data-action="advanceAct"></i>
+					{{/if}}
+				</div>
 				{{/if}}
 			</div>
-			{{/if}}
 		</div>
 	</header>
 	

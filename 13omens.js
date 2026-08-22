@@ -1,7 +1,7 @@
 import {o13Actor, o13ActorSheet, actorDMs} from "./scripts/actors.js";
 import {o13Item, o13ItemSheet, itemDMs} from "./scripts/items.js";
 
-import  { disPatcher } from "./scripts/disPatcher.js";
+import  { disPatcher } from "./scripts/meta/disPatcher.js";
 
 import {o13Roll, o13rollConfig} from "./scripts/roll.js";
 import {utils} from "./scripts/utils.js";
@@ -10,7 +10,7 @@ import {onO13Hooks} from "./scripts/hooks.js";
 
 import {CONSTANTS} from "./scripts/constants.js";
 
-import {initNews} from "./scripts/news.js";
+import {initNews} from "./scripts/meta/news.js";
 
 const templatePaths = ["actors/pc", "actors/story", "actors/components/aspects", "items/perk", "dice/dice", "dice/dicebar", "dice/dicebag", "rolls/rollConfig", "rolls/chatRoll", "dialogues/general", "dialogues/confirmOmenDiceRoll"].map((path) => `systems/13omens/templates/${path}.hbs`);
 
