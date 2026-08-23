@@ -86,9 +86,14 @@
 						<div class="flexrow">
 							<span class="o13-label o13-clickable o13-content-centered" type="text" pc-id="{{pc.id}}" data-action="openPC">{{pc.name}}</span>
 							<span class="o13-label o13-content-centered" type="text" pc-id="{{pc.id}}" >{{pc.archetype.name}}</span>
-							{{> "systems/13omens/templates/dice/dicebar.hbs" 
+							{{!--
+								{{> "systems/13omens/templates/dice/dicebar.hbs" 
+									dice=pc.woundDice
+									microdice=true
+								}}
+							--}}
+							{{> "systems/13omens/templates/dice/minidicebar.hbs" 
 								dice=pc.woundDice
-								microdice=true
 							}}
 							<i class="fa-solid fa-x o13-label o13-icon o13-clickable o13-lowflex" pc-id="{{pc.id}}" data-action="removePC"></i>
 						</div>
