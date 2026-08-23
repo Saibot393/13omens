@@ -1,3 +1,12 @@
+## v1.1.0
+- Fixed bug that prevented the last omen dice from being added to the dice bag
+- Fixed bug with take wounds/cheat death buttons on chat rolls
+- Improved color choice
+- Edges/Flaws in roll config are now clickable at the title
+- Transfer arrows in the story sheet are now pinned and have a higher distance
+- Improved wound indicator on story sheet
+- Small refactor for sheets code
+
 ## v1.0.0
 - **First full release**
 - System news framwork + welcome message
