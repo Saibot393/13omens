@@ -35,7 +35,7 @@ export function o13SheetMixin(baseSheet) {
 			
 			return {
 				main: {
-					template: `systems/13omens/templates/${directory}/${this.actor.type}.hbs`
+					template: `systems/13omens/templates/${directory}/${this.document.type}.hbs`
 				}
 			};
 		}
