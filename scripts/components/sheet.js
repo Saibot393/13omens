@@ -83,7 +83,7 @@ export function o13SheetMixin(baseSheet) {
 			}
 			
 			//tabs persistance
-			const tabCache {}
+			const tabCache = {}
 			if (this.element) {
 				const tabs = this.element.querySelectorAll("nav.o13-nav[nav-group]");
 				for (const el of tabs) {

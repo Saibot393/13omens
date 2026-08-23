@@ -2,7 +2,8 @@
 :root {
 	--o13-ink-black: #292229;
 	--o13-ink-grey: #20232a;
-	--o13-smoke-grey: #848884;
+	--o13-dark-smoke-grey: #848884;
+	--o13-smoke-grey: #c2c2c2;
 	--o13-smoke-silver: #D8D8D8;
 	--o13-omen-red: #880808;
 	--o13-cheat-blue: #5B87B9;
@@ -62,7 +63,7 @@ select:disabled {
 	display: block;
 	border: none;
 	border-radius: 0;
-	border-bottom: 4px solid var(--o13-smoke-grey);
+	border-bottom: 4px solid var(--o13-dark-smoke-grey);
 }
 
 .o13-nav a.active {
@@ -214,7 +215,7 @@ select:disabled {
 
 .o13-portrait{
 	cursor: pointer;
-	max-height: calc(var(--o13-portrait-height) - 8px);;
+	max-height: calc(var(--o13-portrait-height) - 8px);
 	width: auto;
 	object-fit: contain;
 }
@@ -271,7 +272,7 @@ select:disabled {
 }
 
 .o13-clickable:hover{
-	color: var(--o13-smoke-grey);
+	color: var(--o13-dark-smoke-grey);
 }
 
 .o13-header-label .o13-clickable:hover {
