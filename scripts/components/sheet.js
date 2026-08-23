@@ -43,6 +43,7 @@ export function o13SheetMixin(baseSheet) {
 		async _onRender(context, options) {
 			super._onRender(context, options);
 			
+			//tabs
 			const html = this.element;
 			html.querySelectorAll("nav.o13-nav").forEach(nav => {
 				const group = nav.getAttribute("nav-group");
@@ -54,6 +55,12 @@ export function o13SheetMixin(baseSheet) {
 						this._activeo13Tab(group, tab)
 					})
 				})
+				
+				if (!nav.querySelector("a[nav-tab].active")) {
+					const tab = nav.querySelector("a[nav-tab]").getAttribute("nav-tab");
+					console.log(group, tab);
+					this._activeo13Tab(group, tab);
+				}
 			})
 		}
 		
@@ -87,12 +94,10 @@ export function o13SheetMixin(baseSheet) {
 			if (this.element) {
 				const tabs = this.element.querySelectorAll("nav.o13-nav[nav-group]");
 				for (const el of tabs) {
-					const options = el.querySelectorAll("a[nav-tab]")
-					
-					const tab = (options.querySelector("a.active") || options[0])?.getAttribute("nav-tab");
+					const tab = (el.querySelector("a[nav-tab].active") || el.querySelector("a[nav-tab]"))?.getAttribute("nav-tab");
 					
 					if (tab) {
-						scrollCache[el.getAttribute("nav-group")] = tab;
+						tabCache[el.getAttribute("nav-group")] = tab;
 					}
 				}
 			}
