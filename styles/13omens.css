@@ -276,7 +276,7 @@ select:disabled {
 }
 
 .o13-header-label .o13-clickable:hover {
-	color: var(--o13-smoke-silver);
+	color: var(--o13-dark-smoke-grey);
 }
 
 .o13-selected{
@@ -285,7 +285,7 @@ select:disabled {
 }
 
 .o13-selected .o13-clickable:hover {
-	color: var(--o13-smoke-silver);
+	color: var(--o13-dark-smoke-grey);
 }
 
 .o13-button{
@@ -300,7 +300,7 @@ select:disabled {
 }
 
 .o13-button.o13-clickable:hover {
-	color: var(--o13-smoke-silver);
+	color: var(--o13-dark-smoke-grey);
 }
 
 .o13-content-centered{

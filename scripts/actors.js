@@ -341,11 +341,13 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 			if (this.actor.isPC) {
 				if (actor.isStory) {
 					if (this.actor.storyActor == actor) {
-						if (changes.system.storyaspects) {
-							rerender = true;
-						}
-						if (changes.system.hasOwnProperty("activeact")) {
-							rerender = true;
+						if (changes.system) {
+							if (changes.system.storyaspects) {
+								rerender = true;
+							}
+							if (changes.system.hasOwnProperty("activeact")) {
+								rerender = true;
+							}
 						}
 					}
 				}
