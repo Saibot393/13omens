@@ -40,8 +40,9 @@
 					</div>
 				</div>
 				{{#if actor.isHostView}}
-					<div class="flexcol o13-minflex">
-						{{#if actor.canAddOmenDice}}<i class="fa-solid fa-right-long o13-icon o13-clickable" style="color:var(--o13-omen-red);" data-action="addOmenDice"></i>{{/if}}
+					<div class="flexcol o13-minflex" style="align-self:flex-start;">
+						<div style="height:30px;"></div>
+						{{#if actor.canAddOmenDice}}<i class="fa-solid fa-right-long o13-icon o13-clickable" style="color:var(--o13-omen-red);margin-bottom:10px;" data-action="addOmenDice"></i>{{/if}}
 						{{#if actor.canRemoveOmenDice}}<i class="fa-solid fa-left-long o13-icon o13-clickable"  style="color:var(--o13-omen-red);" data-action="removeOmenDice"></i>{{/if}}
 					</div>
 				{{/if}}
@@ -86,9 +87,14 @@
 						<div class="flexrow">
 							<span class="o13-label o13-clickable o13-content-centered" type="text" pc-id="{{pc.id}}" data-action="openPC">{{pc.name}}</span>
 							<span class="o13-label o13-content-centered" type="text" pc-id="{{pc.id}}" >{{pc.archetype.name}}</span>
-							{{> "systems/13omens/templates/dice/dicebar.hbs" 
+							{{!--
+								{{> "systems/13omens/templates/dice/dicebar.hbs" 
+									dice=pc.woundDice
+									microdice=true
+								}}
+							--}}
+							{{> "systems/13omens/templates/dice/minidicebar.hbs" 
 								dice=pc.woundDice
-								microdice=true
 							}}
 							<i class="fa-solid fa-x o13-label o13-icon o13-clickable o13-lowflex" pc-id="{{pc.id}}" data-action="removePC"></i>
 						</div>

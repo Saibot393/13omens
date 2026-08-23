@@ -12,7 +12,7 @@ import {CONSTANTS} from "./scripts/constants.js";
 
 import {initNews} from "./scripts/meta/news.js";
 
-const templatePaths = ["actors/pc", "actors/story", "actors/components/aspects", "items/perk", "dice/dice", "dice/dicebar", "dice/dicebag", "rolls/rollConfig", "rolls/chatRoll", "dialogues/general", "dialogues/confirmOmenDiceRoll"].map((path) => `systems/13omens/templates/${path}.hbs`);
+const templatePaths = ["actors/pc", "actors/story", "actors/components/aspects", "items/perk", "dice/dice", "dice/dicebar", "dice/minidicebar", "dice/dicebag", "rolls/rollConfig", "rolls/chatRoll", "dialogues/general", "dialogues/confirmOmenDiceRoll"].map((path) => `systems/13omens/templates/${path}.hbs`);
 
 Hooks.once("init", () => {
 	//CONST
@@ -58,6 +58,7 @@ Hooks.once("init", () => {
 	Handlebars.registerHelper("or", (a, b) => a || b); //how is this not a standard thing???
 	Handlebars.registerHelper("and", (a, b) => a && b); //nor this???
 	Handlebars.registerHelper("not", (a) => !a); //or this???
+	Handlebars.registerHelper("array", (...args) => [...args])
 	
 	//On Hooks
 	onO13Hooks();
