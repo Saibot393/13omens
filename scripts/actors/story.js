@@ -288,7 +288,7 @@ export class o13storyActor {
 	}
 	
 	get canAddOmenDice() {
-		return this.system.hostomendice > 1;
+		return this.system.hostomendice >= 1;
 	}
 	
 	async addOmenDice(add = 1) {
