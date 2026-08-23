@@ -1,7 +1,6 @@
-const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDocumentField, DocumentIdField, BooleanField, FilePathField, ObjectField, DocumentUUIDField } = foundry.data.fields;
-
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ItemSheetV2 } = foundry.applications.sheets;
+import {o13SheetMixin} from "./components/sheet.js";
 
 import { o13archetypeItem, archetypeDataModel } from "./items/archetype.js";
 import { o13perkItem, perkDataModel } from "./items/perk.js";
@@ -32,19 +31,10 @@ export class o13Item extends Item {
 	}
 }
 
-export class o13ItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
+export class o13ItemSheet extends o13SheetMixin(HandlebarsApplicationMixin(ItemSheetV2)) {
 	static DEFAULT_OPTIONS = foundry.utils.mergeObject(super.DEFAULT_OPTIONS, {
 		classes: ["13omens", "item-sheet"],
-		tag: "form",
-		form: {
-			closeOnSubmit: false,
-			submitOnChange: true
-		},
-		window: {
-			resizable: true
-		},
 		actions: {
-			choosePortrait: o13ItemSheet.choosePortrait,
 			createNewPerk : o13ItemSheet.createNewPerk,
 			removePerk : o13ItemSheet.removePerk,
 			openPerk : o13ItemSheet.openPerk,
@@ -70,24 +60,6 @@ export class o13ItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
 				template: `systems/13omens/templates/items/${this.item.type}.hbs`
 			}
 		};
-	}
-	
-	async _prepareContext(options) {
-		const context = await super._prepareContext(options);
-		context.item = this.item;
-		
-		context.editable = true;
-
-        context.enrichedDescription = await foundry.applications.ux.TextEditor.implementation.enrichHTML(
-            this.item.system.description ?? "",
-            {
-                secrets: this.item.isOwner,
-                async: true,
-                relativeTo: this.item
-            }
-        );
-		
-		return context;
 	}
 	
 	async _onDrop(event) {

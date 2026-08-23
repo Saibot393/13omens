@@ -1,5 +1,6 @@
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
+import {o13SheetMixin} from "./components/sheet.js";
 
 import { o13pcActor, pcDataModel } from "./actors/pc.js";
 import { o13storyActor, storyDataModel } from "./actors/story.js";
@@ -42,23 +43,14 @@ export class o13Actor extends Actor {
 	}
 }
 
-export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
+export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(ActorSheetV2)) {
 	static DEFAULT_OPTIONS = foundry.utils.mergeObject(super.DEFAULT_OPTIONS, {
 		classes: ["13omens", "actor-sheet"],
-		tag: "form",
 		position: {
 			width: 600,
 			height: 800
 		},
-		form: {
-			closeOnSubmit: false,
-			submitOnChange: true
-		},
-		window: {
-			resizable: true
-		},
 		actions: {
-			choosePortrait : o13ActorSheet.choosePortrait,
 			viewStory : o13ActorSheet.viewStory,
 			rollAspect : o13ActorSheet.rollAspect,
 			createNewArchetype : o13ActorSheet.createNewArchetype,
@@ -90,24 +82,6 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 				template: `systems/13omens/templates/actors/${this.actor.type}.hbs`
 			}
 		};
-	}
-  
-	async _prepareContext(options) {
-		const context = await super._prepareContext(options);
-		context.actor = this.actor;
-		
-		context.editable = true;
-
-        context.enrichedDescription = await foundry.applications.ux.TextEditor.implementation.enrichHTML(
-            this.actor.system.description ?? "",
-            {
-                secrets: this.actor.isOwner,
-                async: true,
-                relativeTo: this.actor
-            }
-        );
-		
-		return context;
 	}
 	
 	async _onDrop(event) {
@@ -148,46 +122,6 @@ export class o13ActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 					}
 				}
 				break;
-		}
-	}
-	
-	async _replaceHTML(result, content, options) {
-		//scrollables persistance
-		const scrollCache = {};
-		if (this.element) {
-			const scrollables = this.element.querySelectorAll("[scroll-id]");
-			for (const el of scrollables) {
-				const id = el.getAttribute("scroll-id");
-				if (id) {
-					scrollCache[id] = { top: el.scrollTop, left: el.scrollLeft };
-				}
-			}
-		}
-		
-		await super._replaceHTML(result, content, options);
-		
-		if (this.element) {
-			const newScrollables = this.element.querySelectorAll("[scroll-id]");
-			for (const el of newScrollables) {
-				const id = el.getAttribute("scroll-id");
-				const saved = scrollCache[id];
-				if (saved) {
-					el.scrollTop = saved.top;
-					el.scrollLeft = saved.left;
-				}
-			}
-		}
-	}
-
-	static async choosePortrait(event, target) {
-		if (this.actor.isOwner) {
-			const picker = new foundry.applications.apps.FilePicker.implementation({
-				type: "image",
-				current: this.actor.img,
-				callback: async (path) => {
-					await this.actor.update({img : path})
-				}
-			}).render(true);
 		}
 	}
 	
