@@ -31,6 +31,13 @@ export class o13gearItem extends virtualItem {
 	get completelyBroken() {
 		return this.quantityValue <= 0;
 	}
+	
+	//data preperation
+	get enrichables() {
+		return {
+			description : this.system.description
+		}
+	}
 }
 
 export class gearDataModel extends foundry.abstract.TypeDataModel {

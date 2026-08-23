@@ -50,6 +50,13 @@ export class o13perkItem extends virtualItem {
 			this.update({system : {usesper : {value : this.usesLeft - 1}}})
 		}
 	}
+	
+	//data preperation
+	get enrichables() {
+		return {
+			description : this.system.description
+		}
+	}
 }
 
 export class perkDataModel extends foundry.abstract.TypeDataModel {

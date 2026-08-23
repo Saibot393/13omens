@@ -160,17 +160,6 @@ export function o13SheetMixin(baseSheet) {
 			}
 			
 			context.editable = true;
-
-			if (this.document.system?.description) {
-				context.enrichedDescription = await foundry.applications.ux.TextEditor.implementation.enrichHTML(
-					this.document.system.description ?? "",
-					{
-						secrets: this.document.isOwner,
-						async: true,
-						relativeTo: this.document
-					}
-				);
-			};
 			
 			const enrichables = this.document.enrichables ?? {};
 			

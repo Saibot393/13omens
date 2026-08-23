@@ -142,16 +142,6 @@ export class o13ItemSheet extends o13SheetMixin(HandlebarsApplicationMixin(ItemS
 		}
 	}
 	
-	static async choosePortrait(event, target) {
-		const picker = new foundry.applications.apps.FilePicker.implementation({
-			type: "image",
-			current: this.item.img,
-			callback: async (path) => {
-				await this.item.update({img : path})
-			}
-		}).render(true);
-	}
-	
 	static async createNewPerk(event, target) {
 		if (this.item.type == "archetype") {
 			this.item.createNewPerk();
