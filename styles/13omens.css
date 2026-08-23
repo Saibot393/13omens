@@ -19,6 +19,11 @@
 	height: 100%;
 }
 
+.o13-sheet main {
+	min-height : 0;
+	flex : 1;
+}
+
 select:disabled {
 	-webkit-appearance: none;
 	-moz-appearance: none;
@@ -31,7 +36,21 @@ select:disabled {
 	outline-offset : -5px;
 }
 
+.o13-nav a {
+	color: var(--o13-ink-black);
+	font-size: 18px;
+	text-transform: uppercase;
+}
+
+.o13-nav a.active {
+	display: block;
+	border: none;
+	border-radius: 0;
+	border-bottom: 4px solid var(--o13-ink-black);
+}
+
 .o13-scrollable {
+	flex : 1;
 	overflow-y: auto;
 	overflow-x: hidden;
 	scrollbar-color: var(--o13-ink-black) transparent !important;

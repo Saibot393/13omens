@@ -26,6 +26,9 @@
 			
 			"story" : "Story",
 			
+			"character" : "Character",
+			"background" : "Background",
+			
 			"hostomendice" : "Host omen dice",
 			"dicebag" : "Dice bag",
 			
