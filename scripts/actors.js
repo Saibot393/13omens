@@ -75,14 +75,6 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 			autoPopulatePCs : o13ActorSheet.autoPopulatePCs
 		}
 	});
-
-	_configureRenderParts(options) {
-		return {
-			main: {
-				template: `systems/13omens/templates/actors/${this.actor.type}.hbs`
-			}
-		};
-	}
 	
 	async _onDrop(event) {
 		event.preventDefault();

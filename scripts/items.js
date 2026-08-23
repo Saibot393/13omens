@@ -53,14 +53,6 @@ export class o13ItemSheet extends o13SheetMixin(HandlebarsApplicationMixin(ItemS
 		
 		return super._processSubmitData(event, form, formData);
     }
-
-	_configureRenderParts(options) {
-		return {
-			main: {
-				template: `systems/13omens/templates/items/${this.item.type}.hbs`
-			}
-		};
-	}
 	
 	async _onDrop(event) {
 		event.preventDefault();

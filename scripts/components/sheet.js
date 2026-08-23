@@ -21,6 +21,25 @@ export function o13SheetMixin(baseSheet) {
 			});
 		}
 		
+		_configureRenderParts(options) {
+			let directory = "";
+			
+			switch (this.document.documentName) {
+				case "Actor":
+					directory = "actors";
+					break;
+				case "Item":
+					directory = "items";
+					break;
+			}
+			
+			return {
+				main: {
+					template: `systems/13omens/templates/${directory}/${this.actor.type}.hbs`
+				}
+			};
+		}
+		
 		async _replaceHTML(result, content, options) {
 			//scrollables persistance
 			const scrollCache = {};
