@@ -102,6 +102,20 @@ export function o13SheetMixin(baseSheet) {
 				}
 			}
 			
+			//input focus persistance
+			const activeInputCache = {}
+			if (this.element.contains(document.activeElement)) {
+				const active = document.activeElement;
+				
+				const name = active.getAttribute("name");
+				if (name) {
+					activeInputCache.name = name;
+					activeInputCache.selectionStart = active.selectionStart;
+					activeInputCache.selectionEnd = active.selectionEnd;
+					activeInputCache.selectionDirection = active.selectionDirection;
+				}
+			}
+			
 			await super._replaceHTML(result, content, options);
 			
 			if (this.element) {
@@ -118,6 +132,18 @@ export function o13SheetMixin(baseSheet) {
 			
 			for (const group of Object.keys(tabCache)) {
 				this._activeo13Tab(group, tabCache[group]);
+			}
+			
+			if (activeInputCache.name) {
+				const toActive = this.element.querySelector(`[name="${activeInputCache.name}"]`);
+				if (toActive) {
+					toActive.focus();
+					if (activeInputCache.selectionStart != null && typeof toActive.setSelectionRange == "function") {
+						try {
+							toActive.setSelectionRange(activeInputCache.selectionStart, activeInputCache.selectionEnd, activeInputCache.selectionDirection);
+						} catch(e) {};
+					}
+				}
 			}
 		}
 		
