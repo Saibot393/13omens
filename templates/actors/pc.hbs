@@ -51,20 +51,21 @@
 	</header>
 	
 	<main class="flexcol">
-		<nav class="tabs o13-nav" nav-group="main">
+		<nav class="o13-nav" nav-group="main">
 			<a data-group="main" nav-tab="character">{{localize "13omens.titles.character"}}</a>
 			<a data-group="main" nav-tab="background">{{localize "13omens.titles.background"}}</a>
 		</nav>
 	
-		<section class="tab o13-tab o13-scrollable flexcol" nav-group="main" nav-tab="character" scroll-id="character">
+		<section class="o13-tab o13-scrollable flexcol" nav-group="main" nav-tab="character" scroll-id="character">
 			{{> "systems/13omens/templates/actors/components/pc_character.hbs" 
 				actor=actor
 			}}
 		</section>
 		
-		<section class="tab o13-tab o13-scrollable flexcol" nav-group="main" nav-tab="background" scroll-id="background">
+		<section class="o13-tab o13-scrollable flexcol" nav-group="main" nav-tab="background" scroll-id="background">
 			{{> "systems/13omens/templates/actors/components/pc_background.hbs" 
 				actor=actor
+				enriched=enriched
 			}}
 		</section>
 	</main>

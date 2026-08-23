@@ -76,16 +76,6 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 		}
 	});
 	
-	static TABS = {
-		main: {
-			initial: "character",
-			tabs: [
-				{ id: "character"},
-				{ id: "background"}
-			]
-		}
-	}
-	
 	async _onDrop(event) {
 		event.preventDefault();
 		

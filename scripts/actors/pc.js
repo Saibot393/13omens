@@ -515,6 +515,12 @@ export class o13pcActor {
 	get diceBagDice() {
 		return this.diceBag.map(die => ({type : die, face : 6}));
 	}
+	
+	//Data prep
+	get enrichables() {
+		return {
+		}
+	}
 }
 
 export class pcDataModel extends foundry.abstract.TypeDataModel {
@@ -528,7 +534,7 @@ export class pcDataModel extends foundry.abstract.TypeDataModel {
 			
 			goal : new HTMLField({ required: true, blank: true, initial: "" }),
 			
-			notes : new HTMLField({ required: true, blank: true, initial: "" }),
+			notes : new StringField({ required: true, blank: true, initial: "" }),
 			
 			wounds : new ArrayField(new SchemaField({
 				safe : new SchemaField({
