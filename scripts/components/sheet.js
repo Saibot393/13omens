@@ -40,6 +40,35 @@ export function o13SheetMixin(baseSheet) {
 			};
 		}
 		
+		async _onRender(context, options) {
+			super._onRender(context, options);
+			
+			const html = this.element;
+			html.querySelectorAll("nav.o13-nav").forEach(nav => {
+				const group = nav.getAttribute("nav-group");
+				
+				nav.querySelectorAll("a[nav-tab]").forEach(a => {
+					const tab = a.getAttribute("nav-tab");
+					
+					a.addEventListener("click", (event) => {
+						this._activeo13Tab(group, tab)
+					})
+				})
+			})
+		}
+		
+		async _activeo13Tab(group, tab) {
+			const html = this.element;
+			
+			html.querySelector(`nav.o13-nav[nav-group="${group}"]`)?.querySelectorAll("a[nav-tab]").forEach(a => {
+				a.classList.toggle("active", a.getAttribute("nav-tab") == tab);
+			})
+			
+			html.querySelectorAll(`section.o13-tab[nav-group="${group}"]`).forEach(section => {
+				section.classList.toggle("active", section.getAttribute("nav-tab") == tab);
+			})
+		}
+		
 		async _replaceHTML(result, content, options) {
 			//scrollables persistance
 			const scrollCache = {};
@@ -49,6 +78,21 @@ export function o13SheetMixin(baseSheet) {
 					const id = el.getAttribute("scroll-id");
 					if (id) {
 						scrollCache[id] = { top: el.scrollTop, left: el.scrollLeft };
+					}
+				}
+			}
+			
+			//tabs persistance
+			const tabCache {}
+			if (this.element) {
+				const tabs = this.element.querySelectorAll("nav.o13-nav[nav-group]");
+				for (const el of tabs) {
+					const options = el.querySelectorAll("a[nav-tab]")
+					
+					const tab = (options.querySelector("a.active") || options[0])?.getAttribute("nav-tab");
+					
+					if (tab) {
+						scrollCache[el.getAttribute("nav-group")] = tab;
 					}
 				}
 			}
@@ -65,6 +109,10 @@ export function o13SheetMixin(baseSheet) {
 						el.scrollLeft = saved.left;
 					}
 				}
+			}
+			
+			for (const group of Object.keys(tabCache)) {
+				this._activeo13Tab(group, tabCache[group]);
 			}
 		}
 		

@@ -50,19 +50,19 @@
 		</div>
 	</header>
 	
-	<main class="flexcol" scroll-id="main">
-		<nav class="tabs o13-nav" data-group="main">
-			<a class="{{tabs.character.cssClass}}" data-group="main" data-tab="character" data-action="tab">{{localize "13omens.titles.character"}}</a>
-			<a class="{{tabs.background.cssClass}}" data-group="main" data-tab="background" data-action="tab">{{localize "13omens.titles.background"}}</a>
+	<main class="flexcol">
+		<nav class="tabs o13-nav" nav-group="main">
+			<a data-group="main" nav-tab="character">{{localize "13omens.titles.character"}}</a>
+			<a data-group="main" nav-tab="background">{{localize "13omens.titles.background"}}</a>
 		</nav>
 	
-		<section class="tab o13-tab {{tabs.character.cssClass}} o13-scrollable" data-group="main" data-tab="character">
+		<section class="tab o13-tab o13-scrollable flexcol" nav-group="main" nav-tab="character" scroll-id="character">
 			{{> "systems/13omens/templates/actors/components/pc_character.hbs" 
 				actor=actor
 			}}
 		</section>
 		
-		<section class="tab o13-tab {{tabs.background.cssClass}} o13-scrollable" data-group="main" data-tab="background">
+		<section class="tab o13-tab o13-scrollable flexcol" nav-group="main" nav-tab="background" scroll-id="background">
 			{{> "systems/13omens/templates/actors/components/pc_background.hbs" 
 				actor=actor
 			}}
