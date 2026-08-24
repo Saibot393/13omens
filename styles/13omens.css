@@ -422,6 +422,13 @@ span.o13-input-span input {
 	border: 2px solid var(--o13-ink-black);
 }
 
+.o13-text-editor div.editor-content{
+	padding-left: 5px;
+	padding-right: 5px;
+	font-size: 18px;
+	scrollbar-color: var(--o13-ink-black) transparent !important;
+}
+
 .o13-flex-span {
 	display: flex;
 	flex-direction: row;
