@@ -24,4 +24,24 @@ export class utils {
 	static expandRollData(data) {
 		data.flaws = data.flaws.map(flaw => typeof flaw == "string" ? {name : flaw} : flaw)
 	}
+	
+	static async enrichHTMLStructure(data, options = {}) {
+		if (typeof data == "string") {
+			return await foundry.applications.ux.TextEditor.implementation.enrichHTML(data, {async : true, ...options});
+		}
+		
+		if (Array.isArray(data)) {
+			return await Promise.all(data.map(entry => utils.enrichHTMLStructure(entry, options)));
+		}
+		
+		if (typeof data == "object" && data != null) {
+			const entries = Object.entries(data);
+			
+			const enriched = await Promise.all(entries.map(async ([key, entry]) => [key, await utils.enrichHTMLStructure(entry, options)]));
+			
+			return Object.fromEntries(enriched);
+		}
+		
+		return data;
+	}
 }

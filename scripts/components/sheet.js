@@ -1,6 +1,8 @@
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { sheetV2 } = foundry.applications.sheets;
 
+import {utils} from "../utils.js";
+
 //just some basic commonality between actor and item sheets
 
 export function o13SheetMixin(baseSheet) {
@@ -163,17 +165,11 @@ export function o13SheetMixin(baseSheet) {
 			
 			const enrichables = this.document.enrichables ?? {};
 			
-			context.enriched = {};
-			for (const key of Object.keys(enrichables)) {
-				context.enriched[key] = await foundry.applications.ux.TextEditor.implementation.enrichHTML(
-					enrichables[key] ?? "",
-					{
-						secrets: this.document.isOwner,
-						async: true,
-						relativeTo: this.document
-					}
-				)
-			}
+			context.enriched = utils.enrichHTMLStructure(enrichables, {
+				secrets: this.document.isOwner,
+				async: true,
+				relativeTo: this.document
+			});
 			
 			return context;
 		}

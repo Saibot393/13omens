@@ -162,7 +162,12 @@ export class o13archetypeItem {
 	//data preperation
 	get enrichables() {
 		return {
-			description : this.system.description
+			background: {
+				description : this.system.background.description,
+				goal: this.system.background.goal,
+				traits: this.system.background.traits,
+				relations: this.system.background.map(r => ({relation : r.relation}))
+			}
 		}
 	}
 }
@@ -181,7 +186,6 @@ export class archetypeDataModel extends foundry.abstract.TypeDataModel {
 					})
 				)
 			}),
-			
 			
 			perks: new ObjectField({}),
 			
