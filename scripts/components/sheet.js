@@ -40,6 +40,42 @@ export function o13SheetMixin(baseSheet) {
 			};
 		}
 		
+		async _onRender(context, options) {
+			super._onRender(context, options);
+			
+			//tabs
+			const html = this.element;
+			html.querySelectorAll("nav.o13-nav").forEach(nav => {
+				const group = nav.getAttribute("nav-group");
+				
+				nav.querySelectorAll("a[nav-tab]").forEach(a => {
+					const tab = a.getAttribute("nav-tab");
+					
+					a.addEventListener("click", (event) => {
+						this._activeo13Tab(group, tab)
+					})
+				})
+				
+				if (!nav.querySelector("a[nav-tab].active")) {
+					const tab = nav.querySelector("a[nav-tab]").getAttribute("nav-tab");
+					console.log(group, tab);
+					this._activeo13Tab(group, tab);
+				}
+			})
+		}
+		
+		async _activeo13Tab(group, tab) {
+			const html = this.element;
+			
+			html.querySelector(`nav.o13-nav[nav-group="${group}"]`)?.querySelectorAll("a[nav-tab]").forEach(a => {
+				a.classList.toggle("active", a.getAttribute("nav-tab") == tab);
+			})
+			
+			html.querySelectorAll(`section.o13-tab[nav-group="${group}"]`).forEach(section => {
+				section.classList.toggle("active", section.getAttribute("nav-tab") == tab);
+			})
+		}
+		
 		async _replaceHTML(result, content, options) {
 			//scrollables persistance
 			const scrollCache = {};
@@ -53,6 +89,33 @@ export function o13SheetMixin(baseSheet) {
 				}
 			}
 			
+			//tabs persistance
+			const tabCache = {}
+			if (this.element) {
+				const tabs = this.element.querySelectorAll("nav.o13-nav[nav-group]");
+				for (const el of tabs) {
+					const tab = (el.querySelector("a[nav-tab].active") || el.querySelector("a[nav-tab]"))?.getAttribute("nav-tab");
+					
+					if (tab) {
+						tabCache[el.getAttribute("nav-group")] = tab;
+					}
+				}
+			}
+			
+			//input focus persistance
+			const activeInputCache = {}
+			if (this.element.contains(document.activeElement)) {
+				const active = document.activeElement;
+				
+				const name = active.getAttribute("name");
+				if (name) {
+					activeInputCache.name = name;
+					activeInputCache.selectionStart = active.selectionStart;
+					activeInputCache.selectionEnd = active.selectionEnd;
+					activeInputCache.selectionDirection = active.selectionDirection;
+				}
+			}
+			
 			await super._replaceHTML(result, content, options);
 			
 			if (this.element) {
@@ -63,6 +126,22 @@ export function o13SheetMixin(baseSheet) {
 					if (saved) {
 						el.scrollTop = saved.top;
 						el.scrollLeft = saved.left;
+					}
+				}
+			}
+			
+			for (const group of Object.keys(tabCache)) {
+				this._activeo13Tab(group, tabCache[group]);
+			}
+			
+			if (activeInputCache.name) {
+				const toActive = this.element.querySelector(`[name="${activeInputCache.name}"]`);
+				if (toActive) {
+					toActive.focus();
+					if (activeInputCache.selectionStart != null && typeof toActive.setSelectionRange == "function") {
+						try {
+							toActive.setSelectionRange(activeInputCache.selectionStart, activeInputCache.selectionEnd, activeInputCache.selectionDirection);
+						} catch(e) {};
 					}
 				}
 			}
@@ -81,17 +160,20 @@ export function o13SheetMixin(baseSheet) {
 			}
 			
 			context.editable = true;
-
-			if (this.document.system?.description) {
-				context.enrichedDescription = await foundry.applications.ux.TextEditor.implementation.enrichHTML(
-					this.document.system.description ?? "",
+			
+			const enrichables = this.document.enrichables ?? {};
+			
+			context.enriched = {};
+			for (const key of Object.keys(enrichables)) {
+				context.enriched[key] = await foundry.applications.ux.TextEditor.implementation.enrichHTML(
+					enrichables[key] ?? "",
 					{
 						secrets: this.document.isOwner,
 						async: true,
 						relativeTo: this.document
 					}
-				);
-			};
+				)
+			}
 			
 			return context;
 		}

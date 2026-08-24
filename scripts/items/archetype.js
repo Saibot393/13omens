@@ -158,6 +158,13 @@ export class o13archetypeItem {
 	get choosablePerks() {
 		return this.system.choosableperks;
 	}
+	
+	//data preperation
+	get enrichables() {
+		return {
+			description : this.system.description
+		}
+	}
 }
 
 export class archetypeDataModel extends foundry.abstract.TypeDataModel {

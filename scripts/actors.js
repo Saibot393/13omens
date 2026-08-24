@@ -288,7 +288,6 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 	}
 	
 	static async autoPopulatePCs(event, target) {
-		console.log(this.actor);
 		if (this.actor.type == "story") {
 			this.actor.autoPopulatePCs();
 		}

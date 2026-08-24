@@ -42,97 +42,31 @@
 			{{#if actor.isHostView}}
 				<div class="o13-hover-div" style="min-height: 40px;"></div>
 				<div class="flexrow o13-bordered o13-hover-div" style="margin: 0px auto;gap: min(2vw, 20px);max-width: 150px;">
-					<i class="fa-solid fa-droplet o13-icon o13-hover-field-icon o13-clickable" style="color:var(--o13-omen-red)" data-action="takeWound" data-tooltip="{{localize '13omens.tooltips.takeWound'}}"></i>
-					<i class="fa-solid fa-hourglass-half o13-icon o13-hover-field-icon o13-clickable" style="color:var(--o13-cheat-blue)" data-action="cheatDeath" data-tooltip="{{localize '13omens.tooltips.cheatDeath'}}"></i>
-					<i class="fa-solid fa-rotate-left o13-icon o13-hover-field-icon o13-clickable" style="color:var(--o13-ink-black)" data-action="clearWound" data-tooltip="{{localize '13omens.tooltips.clearWound'}}"></i>
+					<i class="fa-solid fa-droplet o13-icon o13-hover-field-icon o13-clickable" style="color:var(--o13-omen-red)" data-action="takeWound" data-tooltip="{{localize "13omens.tooltips.takeWound"}}"></i>
+					<i class="fa-solid fa-hourglass-half o13-icon o13-hover-field-icon o13-clickable" style="color:var(--o13-cheat-blue)" data-action="cheatDeath" data-tooltip="{{localize "13omens.tooltips.cheatDeath"}}"></i>
+					<i class="fa-solid fa-rotate-left o13-icon o13-hover-field-icon o13-clickable" style="color:var(--o13-ink-black)" data-action="clearWound" data-tooltip="{{localize "13omens.tooltips.clearWound"}}"></i>
 				</div>
 			{{/if}}
 		</div>
 	</header>
 	
-	<main class="o13-scrollable" style="flex:1" scroll-id="main">
-		{{> "systems/13omens/templates/actors/components/aspects.hbs" 
-			aspectsname=(localize "13omens.titles.coreAspects")
-			aspects=actor.system.aspects.core
-			availableRatings=actor.system.availableRatings.core
-			targetNumbers=actor.system.targetNumbers.core
-			namepath="system.aspects.core."
-			canPrepare=actor.canPrepare
-		}}
+	<main class="flexcol">
+		<nav class="o13-nav" nav-group="main">
+			<a data-group="main" nav-tab="character">{{localize "13omens.titles.character"}}</a>
+			<a data-group="main" nav-tab="background">{{localize "13omens.titles.background"}}</a>
+		</nav>
+	
+		<section class="o13-tab o13-scrollable flexcol" nav-group="main" nav-tab="character" scroll-id="character">
+			{{> "systems/13omens/templates/actors/components/pc_character.hbs" 
+				actor=actor
+			}}
+		</section>
 		
-		{{> "systems/13omens/templates/actors/components/aspects.hbs" 
-			aspectsname=(localize "13omens.titles.storyAspects")
-			aspects=actor.system.aspects.story
-			aspectsnames=actor.storyAspectNames
-			availableRatings=actor.system.availableRatings.story
-			targetNumbers=actor.system.targetNumbers.story
-			namepath="system.aspects.story."
-			canPrepare=actor.canPrepare
-		}}
-		
-		<div class="flexcol">
-			<span class="o13-label o13-header-label">{{localize "13omens.titles.perks"}} </span>
-			{{#if (and actor.canPrepare actor.choosablePerksCount)}}
-				<span class="o13-label o13-side-padding" style="margin-bottom:5px;"> {{localize "13omens.titles.choosePerks" n=actor.choosablePerksCount}} </span>
-			{{/if}}
-			<div class="o13-adaptive-grid-wrapper">
-				<div class="o13-adaptive-grid-23">
-					{{#each actor.perks}}
-						{{#if (or ../actor.canPrepare this.isChosen)}}
-							<div class="o13-side-padding">
-								<span class="o13-label o13-inline" perk-id="{{this._id}}">
-									<input class="o13-checkbox" type="checkbox" name="system.pickedperks.{{@key}}" {{#unless ../actor.canPrepare}}disabled{{/unless}} {{checked (lookup ../actor.system.pickedperks @key)}} /> 
-									{{#unless this.isArchetypeOrigin}}
-										{{#if ../actor.canPrepare}}
-											<i class="fa-solid fa-x o13-label o13-icon o13-hover-icon o13-clickable" perk-id="{{this._id}}" data-action="removePerk"></i>
-										{{/if}}
-									{{/unless}}
-									<b data-action="openPerk" perk-id="{{this._id}}">{{this.name}}</b> {{{this.system.description}}}
-									{{#if (and this.canBeUsed this.isChosen)}}
-										<span class="o13-button o13-clickable" data-action="usePerk" perk-id="{{this._id}}">{{localize "13omens.actions.usePerk"}} [{{this.usesLeft}}/{{this.usesMax}}]</span>
-									{{/if }}
-								</span>
-							</div>
-						{{/if}}
-					{{/each}}
-				</div>
-			</div>
-		</div>
-		
-		<div class="flexcol" style="margin-top:10px">
-			<span class="o13-label o13-header-label">{{localize "13omens.titles.gears"}} </span>
-			<div class="o13-adaptive-grid-wrapper">
-				{{#if actor.canPrepare}}
-					{{#if actor.selectableGearCount}}
-						<span class="o13-item-line" drop-zone="selectableGear">
-							<span class="o13-label"><b>{{localize "13omens.titles.selectGear" n=actor.selectableGearCount}}:</b></span>
-							{{#each actor.selectableGearInfo}}
-								<span class="o13-label o13-inline o13-item-box {{#if this.selected}}o13-selected{{/if}}" gear-id="{{this.id}}">
-									<p class="o13-clickable" data-action="toggleSelectGear" gear-id="{{this.id}}">{{this.name}}</p> 
-								</span>
-							{{/each}}
-						</span>
-					{{/if}}
-				{{/if}}
-				<div class="o13-adaptive-grid-12" style="margin-top:15px">
-					{{#each actor.gear}}
-						<div class="flexrow o13-side-padding">
-							<span class="o13-underline o13-flex-span">
-								<span class="o13-label o13-clickable o13-flex-grow" gear-id="{{this._id}}" data-action="openGear">{{this.name}}</span>
-								<span class="o13-label o13-flex-center" gear-id="{{this._id}}" style="flex:0.4">
-									<i class="fa-solid fa-burst o13-icon o13-clickable" gear-id="{{this._id}}" data-action="breakGear"></i>
-										<span class="o13-label" gear-id="{{this._id}}">{{this.quantityValue}}</span>
-										{{#if this.hasQuantityMax}}
-											/ <span class="o13-label" gear-id="{{this._id}}">{{this.quantityMax}}</span>
-										{{/if}}
-									<i class="fa-solid fa-hammer o13-icon o13-clickable" gear-id="{{this._id}}" data-action="repairGear"></i>
-								</span>
-								<i class="fa-solid fa-x o13-label o13-icon o13-clickable o13-flex-right" gear-id="{{this._id}}" data-action="removeGear"></i>
-							</span>
-						</div>
-					{{/each}}
-				</div>
-			</div>
-		</div>
+		<section class="o13-tab o13-scrollable flexcol" nav-group="main" nav-tab="background" scroll-id="background">
+			{{> "systems/13omens/templates/actors/components/pc_background.hbs" 
+				actor=actor
+				enriched=enriched
+			}}
+		</section>
 	</main>
 </div>

@@ -46,31 +46,37 @@ select:disabled {
 }
 
 .o13-nav {
+	display: flex;
+	justify-content: space-evenly;
+	gap: var(--spacer-16);
+	align-items: center;
 	line-height : 1.7;
 	border-top: 2px solid var(--o13-ink-grey);
 	border-bottom: 2px solid var(--o13-ink-grey);
 }
 
 .o13-nav a {
-	color: var(--o13-ink-black);
+	color: var(--o13-ink-grey);
 	font-size: 18px;
 	text-transform: uppercase;
 	padding-left: 10px;
 	padding-right: 10px;
+	margin-bottom: 2px;
 }
 
 .o13-nav a:hover {
 	display: block;
 	border: none;
 	border-radius: 0;
-	border-bottom: 4px solid var(--o13-dark-smoke-grey);
+	border-bottom: 3px solid var(--o13-dark-smoke-grey);
+	text-shadow: none !important;
 }
 
 .o13-nav a.active {
 	display: block;
 	border: none;
 	border-radius: 0;
-	border-bottom: 4px solid var(--o13-ink-grey);
+	border-bottom: 3px solid var(--o13-ink-grey);
 }
 
 .o13-scrollable {

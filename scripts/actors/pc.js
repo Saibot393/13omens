@@ -515,6 +515,12 @@ export class o13pcActor {
 	get diceBagDice() {
 		return this.diceBag.map(die => ({type : die, face : 6}));
 	}
+	
+	//Data prep
+	get enrichables() {
+		return {
+		}
+	}
 }
 
 export class pcDataModel extends foundry.abstract.TypeDataModel {
