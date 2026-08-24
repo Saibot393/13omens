@@ -1,0 +1,26 @@
+<div class="flexrow" style="flex:1;gap:5px;">
+	<div class="flexcol" style="flex:1;align-self:stretch;">
+		<div class="o13-notes flexcol" style="flex:1;min-height:400px;">
+			<label for="description" class="o13-label"><b>{{localize "13omens.titles.description"}}:</b></label>
+			<prose-mirror class="o13-text-editor" name="system.background.description" document-uuid="{{item.uuid}}" value="{{item.system.background.description}}" button toggled editable collaborative="false">
+				{{{enriched.background.description}}}
+			</prose-mirror>
+		</div>
+		
+		<div class="o13-notes flexcol" style="flex:0.1;min-height:100px;">
+			<label for="goal" class="o13-label"><b>{{localize "13omens.titles.goal"}}:</b></label>
+			<prose-mirror class="o13-text-editor" name="system.background.goal" document-uuid="{{item.uuid}}" value="{{item.system.background.goal}}" button toggled editable collaborative="false">
+				{{{enriched.background.goal}}}
+			</prose-mirror>
+		</div>
+	</div>
+	
+	<div class="flexcol" style="flex:1;align-self:stretch;">
+		<div class="o13-notes flexcol" style="flex:0.1;min-height:100px;">
+			<label for="traits" class="o13-label"><b>{{localize "13omens.titles.possibletraits"}}:</b></label>
+			<prose-mirror class="o13-text-editor" name="system.background.traits" document-uuid="{{item.uuid}}" value="{{item.system.background.traits}}" button toggled editable collaborative="false">
+				{{{enriched.background.traits}}}
+			</prose-mirror>
+		</div>
+	</div>
+</div>

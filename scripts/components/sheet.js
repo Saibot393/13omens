@@ -165,7 +165,7 @@ export function o13SheetMixin(baseSheet) {
 			
 			const enrichables = this.document.enrichables ?? {};
 			
-			context.enriched = utils.enrichHTMLStructure(enrichables, {
+			context.enriched = await utils.enrichHTMLStructure(enrichables, {
 				secrets: this.document.isOwner,
 				async: true,
 				relativeTo: this.document

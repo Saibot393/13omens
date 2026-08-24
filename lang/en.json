@@ -30,6 +30,10 @@
 			"background" : "Background",
 			"perksandgear" : "Perks & Gear",
 			
+			"description" : "Description",
+			"goal" : "Goal",
+			"possibletraits" : "Possible Personality Traits",
+			
 			"hostomendice" : "Host omen dice",
 			"dicebag" : "Dice bag",
 			

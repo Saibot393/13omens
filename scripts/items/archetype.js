@@ -166,7 +166,7 @@ export class o13archetypeItem {
 				description : this.system.background.description,
 				goal: this.system.background.goal,
 				traits: this.system.background.traits,
-				relations: this.system.background.map(r => ({relation : r.relation}))
+				relations: this.system.background.relations.map(r => ({relation : r.relation}))
 			}
 		}
 	}
