@@ -20,14 +20,14 @@
   }],
   "documentTypes": {
     "Actor": {
-	  "story": {},
-      "pc": {},
-	  "npc": {}
+	  "story": {"htmlFields" : []},
+      "pc": {"htmlFields" : ["background.description", "background.goal", "background.traits", "background.relations"]},
+	  "npc": {"htmlFields" : ["description"]}
     },
     "Item": {
-	  "archetype": {},
-      "perk": {},
-      "gear": {}
+	  "archetype": {"htmlFields" : ["background.description", "background.goal", "background.traits", "background.relations"]},
+      "perk": {"htmlFields" : ["description"]},
+      "gear": {"htmlFields" : ["description"]}
     }
   },
   "socket": true,

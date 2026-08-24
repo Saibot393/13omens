@@ -163,7 +163,18 @@ export class o13archetypeItem {
 export class archetypeDataModel extends foundry.abstract.TypeDataModel {
 	static defineSchema() {
 		return {
-			description: new HTMLField({ required: true, initial: ""}),
+			background : new SchemaField({
+				description: new HTMLField({ required: true, initial: ""}),
+				goal: new HTMLField({ required: true, initial: ""}),
+				traits: new HTMLField({ required: true, initial: ""}),
+				relations: new ArrayField(
+					new SchemaField({
+						archetype: new DocumentIdField({required: true, blank: true, nullable: true, readonly: false}),
+						relation: new HTMLField({ required: true, initial: ""})
+					})
+				)
+			}),
+			
 			
 			perks: new ObjectField({}),
 			

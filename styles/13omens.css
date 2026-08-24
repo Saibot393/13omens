@@ -244,6 +244,10 @@ select:disabled {
 	text-indent: 1.5px;
 }
 
+.o13-checkbox:disabled{
+	--checkbox-checkmark-color: var(--o13-ink-grey);
+}
+
 .checkmark {
   transform: translateX(1px); /* Tweak 1px or 2px to balance optical center */
 }
