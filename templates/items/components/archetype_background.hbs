@@ -16,11 +16,25 @@
 	</div>
 	
 	<div class="flexcol" style="flex:1;align-self:stretch;">
-		<div class="o13-notes flexcol" style="flex:0.1;min-height:100px;">
-			<label for="traits" class="o13-label"><b>{{localize "13omens.titles.possibletraits"}}:</b></label>
-			<prose-mirror class="o13-text-editor" name="system.background.traits" document-uuid="{{item.uuid}}" value="{{item.system.background.traits}}" button toggled editable collaborative="false">
-				{{{enriched.background.traits}}}
-			</prose-mirror>
+		<div>
+			<div class="o13-notes flexcol" style="flex:0.1;min-height:100px;">
+				<label for="traits" class="o13-label"><b>{{localize "13omens.titles.possibletraits"}}:</b></label>
+				<prose-mirror class="o13-text-editor" name="system.background.traits" document-uuid="{{item.uuid}}" value="{{item.system.background.traits}}" button toggled editable collaborative="false">
+					{{{enriched.background.traits}}}
+				</prose-mirror>
+			</div>
 		</div>
+		
+		<span for="relations" class="o13-label"><b>{{localize "13omens.titles.relationstocharacters"}}:</b></span>
+		{{#each item.siblingArchetypes}}
+			<div>
+				<div class="o13-notes flexcol" style="flex:0.1;min-height:100px;">
+					<label for="relations" class="o13-label"><b>{{this.name}}:</b></label>
+					<prose-mirror class="o13-text-editor" name="{{concat "system.background.relations." @key ".relation"}}" document-uuid="{{item.uuid}}" value="{{lookup (lookup item.system.background.relations @key) "relation"}}" button toggled editable collaborative="false">
+						{{{lookup (lookup ../enriched.background.relations this.id) "relation"}}}
+					</prose-mirror>
+				</div>
+			</div>
+		{{/each}}
 	</div>
 </div>

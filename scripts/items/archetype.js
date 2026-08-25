@@ -1,6 +1,17 @@
 const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDocumentField, DocumentIdField, BooleanField, FilePathField, ObjectField, DocumentUUIDField } = foundry.data.fields;
 
 export class o13archetypeItem {
+	//Updates & Create
+	/*
+	async _preUpdate(changed, options, user) {
+		if (changed) {
+			console.log(changed);
+		}
+		
+		await this.superPD._preUpdate(changed, options, user);
+	}
+	*/
+	
 	//Story
 	get storyActor() {
 		if (this.parent?.type == "story") {
@@ -10,6 +21,21 @@ export class o13archetypeItem {
 	
 	get archetypeAspect() {
 		return this.storyActor?.getArchetypeAspect(this);
+	}
+	
+	get siblingArchetypes() {
+		return this.storyActor?.archetypes.filter(archetype => archetype != this) ?? [];
+	}
+	
+	get organisedRelations() {
+		//use this as basis for preupdates to make sure data is available
+		const currentRelations = this.system.background.relations;
+		
+		return this.siblingArchetypes.map(archetype => ({archetype : archetype.id, relation : currentRelations.find(relation => relation.archetype == archetype.id) ?? ""}));
+	}
+	
+	async reorganizeRelations() {
+		return this.update({system : {background : {relations : this.organisedRelations}}})
 	}
 	
 	//Subitems
@@ -166,7 +192,7 @@ export class o13archetypeItem {
 				description : this.system.background.description,
 				goal: this.system.background.goal,
 				traits: this.system.background.traits,
-				relations: this.system.background.relations.map(r => ({relation : r.relation}))
+				relations: Object.fromEntries(this.system.background.relations.map(r => ([r.archetype, r.relation])))
 			}
 		}
 	}
@@ -181,7 +207,7 @@ export class archetypeDataModel extends foundry.abstract.TypeDataModel {
 				traits: new HTMLField({ required: true, initial: ""}),
 				relations: new ArrayField(
 					new SchemaField({
-						archetype: new DocumentIdField({required: true, blank: true, nullable: true, readonly: false}),
+						archetype: new DocumentIdField({required: true, blank: true, nullable: true}),
 						relation: new HTMLField({ required: true, initial: ""})
 					})
 				)

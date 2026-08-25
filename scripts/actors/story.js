@@ -232,19 +232,30 @@ export class o13storyActor {
 			name: game.i18n.localize("13omens.titles.archetype"),
 			type: "archetype"
 		}]);
-		return this.registerArchetype(archetype[0]);
+		await this.registerArchetype(archetype[0]);
+		
+		this.updateArchetypeRelations();
 	}
 	
 	async registerArchetype(archetype) {
 		if (archetype) {
 			await this.update({system : {archetypeaspects : {[archetype.id] : -1}}})
+			
+			this.updateArchetypeRelations();
 		}
 	}
 	
 	async deleteArchetype(id) {
 		if (this.items.get(id)?.type == "archetype") {
-			this.deleteEmbeddedDocuments("Item", [id]);
+			await this.deleteEmbeddedDocuments("Item", [id]);
 			
+			this.updateArchetypeRelations();
+		}
+	}
+	
+	async updateArchetypeRelations() {
+		for (const archetype of this.archetypes) {
+			await archetype.reorganiseRelations();
 		}
 	}
 	

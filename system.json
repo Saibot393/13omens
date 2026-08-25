@@ -25,7 +25,7 @@
 	  "npc": {"htmlFields" : ["description"]}
     },
     "Item": {
-	  "archetype": {"htmlFields" : ["background.description", "background.goal", "background.traits", "background.relations"]},
+	  "archetype": {"htmlFields" : ["background.description", "background.goal", "background.traits", "background.relations.*.relation"]},
       "perk": {"htmlFields" : ["description"]},
       "gear": {"htmlFields" : ["description"]}
     }

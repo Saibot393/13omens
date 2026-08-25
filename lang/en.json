@@ -33,6 +33,7 @@
 			"description" : "Description",
 			"goal" : "Goal",
 			"possibletraits" : "Possible Personality Traits",
+			"relationstocharacters" : "Relations to other Characters",
 			"notes" : "Notes",
 			
 			"hostomendice" : "Host omen dice",
