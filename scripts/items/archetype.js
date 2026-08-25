@@ -2,15 +2,18 @@ const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDo
 
 export class o13archetypeItem {
 	//Updates & Create
-	/*
+	
 	async _preUpdate(changed, options, user) {
-		if (changed) {
-			console.log(changed);
+		if (changed?.system?.background?.relations) {
+			const archetypes = this.siblingArchetypes;
+			
+			for (const index = 0; i <= siblingArchetypes.length; i++) {
+				changed?.system?.background?.relations[i].archetype = archetypes[i].id;
+			}
 		}
 		
 		await this.superPD._preUpdate(changed, options, user);
 	}
-	*/
 	
 	//Story
 	get storyActor() {
