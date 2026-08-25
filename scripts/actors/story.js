@@ -152,11 +152,7 @@ export class o13storyActor {
 		
 		const currentUsers = [...game.users].filter(user => currentActors.some(actor => actor.testUserPermission(user, "OWNER")));
 		
-		console.log(currentUsers);
-		
 		const targetUsers = [...game.users].filter(user => !currentUsers.includes(user)).filter(user => !user.isGM);
-		
-		console.log(targetUsers);
 		
 		const actors = [];
 		
