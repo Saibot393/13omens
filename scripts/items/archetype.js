@@ -5,12 +5,18 @@ export class o13archetypeItem {
 	
 	async _preUpdate(changed, options, user) {
 		if (changed?.system?.background?.relations) {
-			const archetypes = this.siblingArchetypes;
+			const currentRelations = this.organisedRelations;
 			
-			for (const index = 0; i <= siblingArchetypes.length; i++) {
-				changed?.system?.background?.relations[i].archetype = archetypes[i].id;
-				//check current archetype.id and only handle unID making sure order matches
+			const newRelations = changed.system.background.relations;
+			
+			//relations might very well be empty at this point, so organise and fill them
+			for (let i = 0; i < currentRelations.length; i++) {
+				console.log(newRelations.find(relation => relation.archetype == currentRelations[i]?.archetype));
+				console.log({archetype : currentRelations[i].archetype, relation : newRelations[i].relation});
+				currentRelations[i] = newRelations.find(relation => relation.archetype == currentRelations[i].archetype) ?? {archetype : currentRelations[i].archetype, relation : newRelations[i].relation}
 			}
+			
+			changed.system.background.relations = currentRelations;
 		}
 		
 		await this.superPD._preUpdate(changed, options, user);
@@ -35,7 +41,7 @@ export class o13archetypeItem {
 		//use this as basis for preupdates to make sure data is available
 		const currentRelations = this.system.background.relations;
 		
-		return this.siblingArchetypes.map(archetype => ({archetype : archetype.id, relation : currentRelations.find(relation => relation.archetype == archetype.id) ?? ""}));
+		return this.siblingArchetypes.map(archetype => ({archetype : archetype.id, relation : currentRelations.find(relation => relation.archetype == archetype.id)?.relation ?? ""}));
 	}
 	
 	async reorganizeRelations() {
