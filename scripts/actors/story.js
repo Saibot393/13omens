@@ -319,6 +319,27 @@ export class o13storyActor {
 			return this.update({system : {hostomendice : this.system.hostomendice + diceRemove}});
 		}
 	}
+	
+	//Data prep/handling
+	async handleDrop(data, event, prepared) {
+		let handled = false;
+		
+		const object = prepared.object;
+		if (!object) return handled;
+		
+
+		if (object.isPC) {
+			await this.addPC(object);
+			handled = true;
+		}
+		if (object.isArchetype) {
+			const archetype = await this.createEmbeddedDocuments("Item", [object.toObject()]);
+			await this.registerArchetype(archetype);
+			handled = true;
+		}
+		
+		return handled;
+	}
 }
 
 export class storyDataModel extends foundry.abstract.TypeDataModel {

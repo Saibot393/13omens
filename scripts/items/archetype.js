@@ -42,7 +42,7 @@ export class o13archetypeItem {
 		return this.siblingArchetypes.map(archetype => ({archetype : archetype.id, relation : currentRelations.find(relation => relation.archetype == archetype.id)?.relation ?? ""}));
 	}
 	
-	async reorganizeRelations() {
+	async reorganiseRelations() {
 		return this.update({system : {background : {relations : this.organisedRelations}}})
 	}
 	
@@ -193,7 +193,7 @@ export class o13archetypeItem {
 		return this.system.choosableperks;
 	}
 	
-	//data preperation
+	//data preperation/handling
 	get enrichables() {
 		return {
 			background: {
@@ -203,6 +203,42 @@ export class o13archetypeItem {
 				relations: Object.fromEntries(this.system.background.relations.map(r => ([r.archetype, r.relation])))
 			}
 		}
+	}
+	
+	async handleDrop(data, event, prepared) {
+		let handled = false;
+		
+		if (prepared.dropZone) {
+			if (data.parentArchetype == this.uuid) {
+				switch(prepared.dropZone) {
+					case "guaranteedGear":
+						await this.markAsGuaranteedGear(data.gearID);
+						handled = true;
+						break;
+					case "selectableGear":
+						await this.removeFromGuaranteedGear(data.gearID);
+						handled = true;
+						break;
+				}
+			}
+		}
+		
+		if (!handled) {
+			const object = prepared.object;
+			//Default sheet drop
+			if (!object) return handled;
+
+			if(object.isPerk || object.isGear) {
+				await this.addSubItem(object);
+				handled = true;
+			}
+		}
+		
+		return handled;
+	}
+	
+	prepareDragData(data, event) {
+		data.parentArchetype = this.uuid;
 	}
 }
 

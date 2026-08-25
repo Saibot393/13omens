@@ -562,7 +562,7 @@ export class o13pcActor {
 		return this.update({system : {background : this.archetypeSyncedBackground}});
 	}
 	
-	//Data prep
+	//Data prep/handling
 	get enrichables() {
 		return {
 			background: {
@@ -572,6 +572,20 @@ export class o13pcActor {
 				relations: Object.fromEntries(this.system.background.relations.map(r => ([r.archetype, r.relation])))
 			}
 		}
+	}
+	
+	async handleDrop(data, event, prepared) {
+		let handled = false;
+		
+		const object = prepared.object;
+		if (!object) return handled;
+		
+		if (object.isPerk || object.isGear) {
+			await this.createEmbeddedDocuments("Item", [object.toObject()]);
+			handled = true;
+		}
+		
+		return handled;
 	}
 }
 

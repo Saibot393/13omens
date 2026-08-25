@@ -76,47 +76,6 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 		}
 	});
 	
-	async _onDrop(event) {
-		event.preventDefault();
-		
-		var handled = false;
-		
-		const data = foundry.applications.ux.TextEditor.implementation.getDragEventData(event);
-		
-		if (!data) return;
-		
-		const object = await fromUuid(data.uuid);
-		
-		if (!object) return;
-
-		switch (this.actor.type) {
-			case "story":
-				switch(data.type) {
-					case "Actor" : 
-						if (object.isPC) {
-							this.actor.addPC(object);
-							handled = true;
-						}
-						break;
-					case "Item" :
-						if (object.type == "archetype") {
-							const archetype = await this.actor.createEmbeddedDocuments("Item", [object.toObject()]);
-							this.actor.registerArchetype(archetype);
-							handled = true;
-						}
-				}
-				break;
-			case "pc":
-				if (data.type == "Item") {
-					if (object.type == "perk" || object.type == "gear") {
-						this.actor.createEmbeddedDocuments("Item", [object.toObject()]);
-						handled = true;
-					}
-				}
-				break;
-		}
-	}
-	
 	static async viewStory(event, target) {
 		if (this.actor.type == "pc") {
 			this.actor.storyActor?.sheet.render(true);
