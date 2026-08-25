@@ -21,7 +21,7 @@
   "documentTypes": {
     "Actor": {
 	  "story": {"htmlFields" : []},
-      "pc": {"htmlFields" : ["background.description", "background.goal", "background.traits", "background.relations"]},
+      "pc": {"htmlFields" : ["background.description", "background.goal", "background.traits", "background.relations.*.relation"]},
 	  "npc": {"htmlFields" : ["description"]}
     },
     "Item": {

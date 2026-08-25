@@ -439,6 +439,10 @@ span.o13-input-span input {
 	scrollbar-color: var(--o13-ink-black) transparent !important;
 }
 
+.o13-text-editor div.editor-content p{
+	margin: 0.1rem 0;
+}
+
 .o13-flex-span {
 	display: flex;
 	flex-direction: row;

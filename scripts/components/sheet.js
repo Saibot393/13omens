@@ -106,7 +106,7 @@ export function o13SheetMixin(baseSheet) {
 			
 			//input focus persistance
 			const activeInputCache = {}
-			if (this.element.contains(document.activeElement)) {
+			if (this.element?.contains(document.activeElement)) {
 				const active = document.activeElement;
 				
 				const name = active.getAttribute("name");
@@ -115,6 +115,20 @@ export function o13SheetMixin(baseSheet) {
 					activeInputCache.selectionStart = active.selectionStart;
 					activeInputCache.selectionEnd = active.selectionEnd;
 					activeInputCache.selectionDirection = active.selectionDirection;
+				}
+			}
+			
+			//textarea height persistance
+			const textAreaHeights = {};
+			if (this.element) {
+				const textAreas = this.element.querySelectorAll("textarea[name]");
+				
+				for (const el of textAreas) {
+					const name = el.getAttribute("name");
+					
+					if (name && el.style?.height) {
+						textAreaHeights[name] = el.style.height;
+					}
 				}
 			}
 			
@@ -145,6 +159,14 @@ export function o13SheetMixin(baseSheet) {
 							toActive.setSelectionRange(activeInputCache.selectionStart, activeInputCache.selectionEnd, activeInputCache.selectionDirection);
 						} catch(e) {};
 					}
+				}
+			}
+			
+			for (const key of Object.keys(textAreaHeights)) {
+				const textarea = this.element.querySelector(`textarea[name="${key}"]`);
+				
+				if (textarea) {
+					textarea.style.height = textAreaHeights[key];
 				}
 			}
 		}

@@ -11,8 +11,6 @@ export class o13archetypeItem {
 			
 			//relations might very well be empty at this point, so organise and fill them
 			for (let i = 0; i < currentRelations.length; i++) {
-				console.log(newRelations.find(relation => relation.archetype == currentRelations[i]?.archetype));
-				console.log({archetype : currentRelations[i].archetype, relation : newRelations[i].relation});
 				currentRelations[i] = newRelations.find(relation => relation.archetype == currentRelations[i].archetype) ?? {archetype : currentRelations[i].archetype, relation : newRelations[i].relation}
 			}
 			

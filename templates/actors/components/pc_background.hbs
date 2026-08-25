@@ -1,11 +1,47 @@
-<div class="flexrow">
-	<div class="flexcol" style="flex:1;">
+<div class="flexrow" style="flex:1;gap:5px;">
+	<div class="flexcol" style="flex:1;align-self:stretch;">
+		<div class="o13-notes flexcol" style="flex:0.9;min-height:350px;">
+			<label for="description" class="o13-label"><b>{{localize "13omens.titles.description"}}:</b></label>
+			<prose-mirror class="o13-text-editor" name="system.background.description" document-uuid="{{actor.uuid}}" value="{{actor.system.background.description}}" button toggled editable collaborative="false">
+				{{{enriched.background.description}}}
+			</prose-mirror>
+		</div>
+		
+		<div class="o13-notes flexcol" style="flex:0.1;min-height:100px;">
+			<label for="goal" class="o13-label"><b>{{localize "13omens.titles.goal"}}:</b></label>
+			<prose-mirror class="o13-text-editor" style="min-height:100px;" name="system.background.goal" document-uuid="{{actor.uuid}}" value="{{actor.system.background.goal}}" button toggled editable collaborative="false">
+				{{{enriched.background.goal}}}
+			</prose-mirror>
+		</div>
 	</div>
 	
-	<div class="flexcol" style="flex:1;">
+	<div class="flexcol" style="flex:1;align-self:stretch;">
 		<div class="flexcol">
-			<label for="notes" class="o13-label" style="flex:0.5">{{localize "13omens.titles.notes"}}:</label>
+			<label for="notes" class="o13-label" style="flex:0.5"><b>{{localize "13omens.titles.notes"}}:</b></label>
 			<textarea  class="o13-input o13-textarea o13-bordered" name="system.notes" rows=8">{{actor.system.notes}}</textarea>
 		</div>
+	
+		{{#if actor.canPrepare}}
+			<div>
+				<div class="o13-notes flexcol" style="flex:0.1;min-height:100px;">
+					<label for="traits" class="o13-label"><b>{{localize "13omens.titles.possibletraits"}}:</b></label>
+					<prose-mirror class="o13-text-editor" style="min-height:100px;" name="system.background.traits" document-uuid="{{actor.uuid}}" value="{{actor.system.background.traits}}" toggled disabled collaborative="false">
+						{{{enriched.background.traits}}}
+					</prose-mirror>
+				</div>
+			</div>
+		{{/if}}
+		
+		<span for="relations" class="o13-label"><b>{{localize "13omens.titles.relationstocharacters"}}:</b></span>
+		{{#each actor.siblingArchetypes}}
+			<div>
+				<div class="o13-notes flexcol" style="flex:0.1;min-height:100px;">
+					<label for="relations" class="o13-label"><b>{{this.name}}:</b></label>
+					<prose-mirror class="o13-text-editor" style="min-height:100px;" name="{{concat "system.background.relations." @key ".relation"}}" document-uuid="{{actor.uuid}}" value="{{lookup (lookup ../actor.system.background.relations @key) "relation"}}" button toggled editable collaborative="false">
+						{{{lookup ../enriched.background.relations this.id}}}
+					</prose-mirror>
+				</div>
+			</div>
+		{{/each}}
 	</div>
 </div>

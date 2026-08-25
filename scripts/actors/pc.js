@@ -65,6 +65,17 @@ export class o13pcActor {
 						}
 					}
 				}
+				
+				if (changed.system.background?.relations) {
+					const currentRelations = this.system.background.relations;
+					
+					const newRelations = changed.system.background.relations;
+					
+					//updates might mess with relations archetypel links
+					for (let i = 0; i < newRelations.length; i++) {
+						newRelations[i].archetype = newRelations[i].archetype || currentRelations[i]?.archetype;
+					}
+				}
 			}
 		}
 		
@@ -72,6 +83,8 @@ export class o13pcActor {
 	}
 	
 	async _onUpdate(changed, options, userId) {
+		console.log(changed);
+		
 		await this.superPD._onUpdate(changed, options, userId);
 		
 		if (game.user.id != userId) return;
@@ -79,6 +92,7 @@ export class o13pcActor {
 		if (changed.system) {
 			if (changed.system.hasOwnProperty("archetype")) {
 				await this.updateArchetypeItems();
+				await this.synctoArchetypeBackground();
 			}
 		}
 	}
@@ -164,6 +178,10 @@ export class o13pcActor {
 		const archetype = this.storyActor?.items.get(this.system.archetype);
 		
 		return archetype?.type == "archetype" ? archetype : undefined;
+	}
+	
+	get siblingArchetypes() {
+		return this.storyActor?.archetypes.filter(archetype => archetype != this.archetype) ?? [];
 	}
 	
 	async removeArchetypeItems() {
@@ -516,9 +534,45 @@ export class o13pcActor {
 		return this.diceBag.map(die => ({type : die, face : 6}));
 	}
 	
+	//background
+	getArchetypeSyncedBackground(syncto) {
+		const syncArchetype = typeof syncto == "object" ? syncto : this.storyActor?.items.get(syncto);
+		
+		const currentBackground = this.system.background;
+		
+		const updateBackground = syncArchetype?.type == "archetype" ? (syncArchetype.system?.background || {}) : currentBackground;
+		
+		const newBackground = {};
+		
+		for (const key of ["description", "goal", "traits"]) {
+			newBackground[key] = updateBackground[key] || currentBackground[key] || "";
+		}
+
+		newBackground.relations = this.siblingArchetypes?.map(sibling => ({
+			archetype : sibling.id, 
+			relation : updateBackground.relations.find(r => r.archetype == sibling.id)?.relation || currentBackground.relations.find(r => r.archetype == sibling.id)?.relation || ""
+		})) ?? [];
+		
+		return newBackground;
+	}
+	
+	get archetypeSyncedBackground() {
+		return this.getArchetypeSyncedBackground(this.archetype);
+	}
+	
+	async synctoArchetypeBackground() {
+		return this.update({system : {background : this.archetypeSyncedBackground}});
+	}
+	
 	//Data prep
 	get enrichables() {
 		return {
+			background: {
+				description : this.system.background.description,
+				goal: this.system.background.goal,
+				traits: this.system.background.traits,
+				relations: Object.fromEntries(this.system.background.relations.map(r => ([r.archetype, r.relation])))
+			}
 		}
 	}
 }
@@ -540,7 +594,7 @@ export class pcDataModel extends foundry.abstract.TypeDataModel {
 				traits: new HTMLField({ required: true, initial: ""}),
 				relations: new ArrayField(
 					new SchemaField({
-						player: new DocumentIdField({required: true, blank: true, nullable: true, readonly: false}),
+						archetype: new DocumentIdField({required: true, blank: true, nullable: true}),
 						relation: new HTMLField({ required: true, initial: ""})
 					})
 				)
