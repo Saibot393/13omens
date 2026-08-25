@@ -9,6 +9,7 @@ export class o13archetypeItem {
 			
 			for (const index = 0; i <= siblingArchetypes.length; i++) {
 				changed?.system?.background?.relations[i].archetype = archetypes[i].id;
+				//check current archetype.id and only handle unID making sure order matches
 			}
 		}
 		
