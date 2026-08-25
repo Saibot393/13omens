@@ -83,8 +83,6 @@ export class o13pcActor {
 	}
 	
 	async _onUpdate(changed, options, userId) {
-		console.log(changed);
-		
 		await this.superPD._onUpdate(changed, options, userId);
 		
 		if (game.user.id != userId) return;
