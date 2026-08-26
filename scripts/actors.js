@@ -72,7 +72,8 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 			advanceAct : o13ActorSheet.advanceAct,
 			resettoPrologue : o13ActorSheet.resettoPrologue,
 			usePerk : o13ActorSheet.usePerk,
-			autoPopulatePCs : o13ActorSheet.autoPopulatePCs
+			autoPopulatePCs : o13ActorSheet.autoPopulatePCs,
+			createNewGear : o13ActorSheet.createNewGear
 		}
 	});
 	
@@ -249,6 +250,12 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 	static async autoPopulatePCs(event, target) {
 		if (this.actor.type == "story") {
 			this.actor.autoPopulatePCs();
+		}
+	}
+	
+	static async createNewGear(event, target) {
+		if (this.actor.type == "pc") {
+			this.actor.createNewGear();
 		}
 	}
 	

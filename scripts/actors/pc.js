@@ -270,6 +270,12 @@ export class o13pcActor {
 		return Object.fromEntries(gear.map(item => [item.id, item]));
 	}
 	
+	async createNewGear(data) {
+		const gear = {name : game.i18n.localize("13omens.titles.gear"), ...data, type : "gear"};
+		
+		return this.createEmbeddedDocuments("Item", [gear]);
+	}
+	
 	//Select gear (from archetype)
 	get selectableGearCount() {
 		if (this.isPC) {
