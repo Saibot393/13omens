@@ -248,6 +248,8 @@ select:disabled {
 	padding : 0;
 	vertical-align: middle;
 	text-indent: 1.5px;
+	
+	flex: 0 0 auto;
 }
 
 .o13-checkbox:disabled{
