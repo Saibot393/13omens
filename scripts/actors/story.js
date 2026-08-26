@@ -17,6 +17,10 @@ export class o13storyActor {
 		}
 	}
 	
+	async _preUpdate(changed, options, user) {
+		console.log(changed);
+	}
+	
 	async _onUpdate(changed, options, userId) {
 		await this.superPD._onUpdate(changed, options, userId);
 		
@@ -31,11 +35,13 @@ export class o13storyActor {
 	
 	//Acts
 	async checkAct() {
-		if (!this.isPrologue) {
+		if (!this.isPrologue && this.autoProgressActs) {
 			const hostOmenDice = CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE - this.system.hostomendice;
 
-			const targetAct = Math.max(...Object.keys(CONFIG["13OMENS"].DEFAULTACTOMENDCIETHRESHOLD).filter(id => CONFIG["13OMENS"].DEFAULTACTOMENDCIETHRESHOLD[id] <= hostOmenDice));
-
+			const thresholds = this.actOmenDiceThresholds;
+			console.log(thresholds);
+			const targetAct = Math.max(...thresholds.filter(thresh => thresh <= hostOmenDice).map((thresh, index) => index));
+			console.log(targetAct);
 			return this.advanceAct(targetAct);
 		}
 	}
@@ -58,7 +64,13 @@ export class o13storyActor {
 				if (!advance) return;
 			}
 			
+			const omenDicetoAdd = Math.min(targetAct - Math.max(this.activeAct, 1), 0);
+			
 			await this.update({system : {activeact : targetAct}});
+			
+			if (omenDicetoAdd != 0 && this.addOmenDiceonActStart) {
+				this.addOmenDice(omenDicetoAdd);
+			}
 			
 			for (const pc of this.pcActors) {
 				await pc.prepareNewAct();
@@ -107,6 +119,20 @@ export class o13storyActor {
 	
 	get addOmenDiceonActStart() {
 		return this.system.addomendiceonactstart;
+	}
+	
+	actOmenDiceThresholds() {
+		return this.system.act.map(act => act.omenDiceThreshold);
+	}
+	
+	getActOmenDiceThreshold(act) {
+		if (act >= 0 && act <= this.system.acts.length) {
+			return this.system.acts[act].omenDiceThreshold;
+		}
+	}
+	
+	get actOmenDiceThreshold() {
+		return this.getActOmenDiceThreshold(this.activeAct);
 	}
 	
 	//PCs
