@@ -578,7 +578,7 @@ export class o13pcActor {
 		let handled = false;
 		
 		const object = prepared.object;
-		if (!object) return handled;
+		if (!object || prepared.selfOrigin) return handled;
 		
 		if (object.isPerk || object.isGear) {
 			await this.createEmbeddedDocuments("Item", [object.toObject()]);
@@ -586,6 +586,17 @@ export class o13pcActor {
 		}
 		
 		return handled;
+	}
+	
+	prepareDragData(data, event) {
+		if (data.gearID) {
+			const item = this.items.get(data.gearID);
+			
+			if (item) {
+				data.type = "Item",
+				data.uuid = item.uuid;
+			}
+		}
 	}
 }
 

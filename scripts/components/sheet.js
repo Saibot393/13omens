@@ -60,7 +60,7 @@ export function o13SheetMixin(baseSheet) {
 				
 				if (!nav.querySelector("a[nav-tab].active")) {
 					const tab = nav.querySelector("a[nav-tab]").getAttribute("nav-tab");
-					console.log(group, tab);
+
 					this._activeo13Tab(group, tab);
 				}
 			})
@@ -205,9 +205,10 @@ export function o13SheetMixin(baseSheet) {
 			if (!data) return;
 			
 			const object = await fromUuid(data.uuid);
+			const selfOrigin = object?.parent == this.document;
 			const dropZone = event.target.closest("[drop-zone]")?.getAttribute("drop-zone");
 			
-			await this.document.handleDrop(data, event, {object : object, dropZone : dropZone});
+			await this.document.handleDrop(data, event, {object : object, dropZone : dropZone, selfOrigin: selfOrigin});
 		}
 		
 		_onDragStart(event) {
