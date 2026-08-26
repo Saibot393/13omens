@@ -18,7 +18,42 @@ export class o13storyActor {
 	}
 	
 	async _preUpdate(changed, options, user) {
-		console.log(changed);
+		if (changed.system) {
+			if (changed.system.acts) {
+				//prevent null overrides
+				changed.system.acts = changed.system.acts.map((info, index) => ({
+					...info,
+					omenDiceThreshold : info.omenDiceThreshold ?? this.system.acts[index].omenDiceThreshold ?? CONFIG["13OMENS"].DEFAULTACTOMENDCIETHRESHOLD[index]
+				}))
+				
+				//logic safety
+				const min = 0;
+				const max = CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE;
+				
+				for (let i = 0; i < changed.system.acts.length; i++) {
+					changed.system.acts[i].omenDiceThreshold = Math.clamp(changed.system.acts[i].omenDiceThreshold, min, max);
+				}
+				
+				let newmin = min;
+				let newmax = max;
+				
+				if (changed.system.acts[0] > newmax - changed.system.acts.length + 1) changed.system.acts[0] = newmax - changed.system.acts.length + 1;
+				for (let i = 0; i < changed.system.acts.length - 1; i++) {
+					newmax = changed.system.acts[i+1].omenDiceThreshold - 1;
+					
+					if (changed.system.acts[i].omenDiceThreshold < newmin) changed.system.acts[i].omenDiceThreshold = newmin;
+					
+					if (changed.system.acts[i].omenDiceThreshold > newmax) {
+						if (changed.system.acts[i].omenDiceThreshold - 1 >= newmin) changed.system.acts[i].omenDiceThreshold -= 1
+						else changed.system.acts[i+1].omenDiceThreshold += 1;
+					}
+					
+					newmin = changed.system.acts[i].omenDiceThreshold + 1;
+				}
+			}
+		}
+		
+		await this.superPD._preUpdate(changed, options, user);
 	}
 	
 	async _onUpdate(changed, options, userId) {
@@ -36,13 +71,16 @@ export class o13storyActor {
 	//Acts
 	async checkAct() {
 		if (!this.isPrologue && this.autoProgressActs) {
-			const hostOmenDice = CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE - this.system.hostomendice;
+			const hostOmenDice = CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE - this.system.hostomendice + CONFIG["13OMENS"].DEFAULTDICEBAGCOUNT.omen;
 
 			const thresholds = this.actOmenDiceThresholds;
-			console.log(thresholds);
+
 			const targetAct = Math.max(...thresholds.filter(thresh => thresh <= hostOmenDice).map((thresh, index) => index));
-			console.log(targetAct);
+
 			return this.advanceAct(targetAct);
+		}
+		if (this.isPrologue) {
+			return this.advanceAct(1);
 		}
 	}
 	
@@ -58,18 +96,18 @@ export class o13storyActor {
 							text : game.i18n.format("13omens.dialogues.confirmAdvanceAct", {act : game.i18n.localize("13omens.titles.actNames." + targetAct)})
 						}
 					}),
-					rejectClose: false // Returns false instead of rejecting the promise on window close (X or ESC)
+					rejectClose: false
 				});
 				
 				if (!advance) return;
 			}
 			
-			const omenDicetoAdd = Math.min(targetAct - Math.max(this.activeAct, 1), 0);
-			
+			const omenDicetoAdd = Math.max(targetAct - Math.max(this.activeAct, 1), 0); //prologue->act1 does not add dice
+
 			await this.update({system : {activeact : targetAct}});
-			
+
 			if (omenDicetoAdd != 0 && this.addOmenDiceonActStart) {
-				this.addOmenDice(omenDicetoAdd);
+				await this.addOmenDice(omenDicetoAdd);
 			}
 			
 			for (const pc of this.pcActors) {
@@ -121,13 +159,13 @@ export class o13storyActor {
 		return this.system.addomendiceonactstart;
 	}
 	
-	actOmenDiceThresholds() {
-		return this.system.act.map(act => act.omenDiceThreshold);
+	get actOmenDiceThresholds() {
+		return this.system.acts.map(act => act.omenDiceThreshold);
 	}
 	
 	getActOmenDiceThreshold(act) {
 		if (act >= 0 && act <= this.system.acts.length) {
-			return this.system.acts[act].omenDiceThreshold;
+			return this.system.acts[act].omenDiceThreshold ?? CONFIG["13OMENS"].DEFAULTACTOMENDCIETHRESHOLD[act];
 		}
 	}
 	
@@ -194,8 +232,6 @@ export class o13storyActor {
 			});
 			actors.push(newActor)
 		}
-		
-		console.log(actors);
 		
 		return this.addPC(actors);
 	}
