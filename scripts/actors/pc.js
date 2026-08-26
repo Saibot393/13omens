@@ -415,6 +415,8 @@ export class o13pcActor {
 				}
 			}
 			
+			die.skulled = this.isDead;
+			
 			return die;
 		});
 	}
