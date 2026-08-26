@@ -165,7 +165,7 @@ export class o13storyActor {
 	
 	getActOmenDiceThreshold(act) {
 		if (act >= 0 && act <= this.system.acts.length) {
-			return this.system.acts[act].omenDiceThreshold ?? CONFIG["13OMENS"].DEFAULTACTOMENDCIETHRESHOLD[act];
+			return this.system.acts[act].omenDiceThreshold;
 		}
 	}
 	
@@ -386,17 +386,17 @@ export class o13storyActor {
 export class storyDataModel extends foundry.abstract.TypeDataModel {
 	static defineSchema() {
 		return {
-			activeact: new NumberField({ required: true, integer: true, nullable: true, min: 0, max : 3, initial: 0 }),
+			activeact: new NumberField({ required: true, integer: true, nullable: false, min: 0, max : 3, initial: 0 }),
 			
 			acts: new ArrayField(new SchemaField({
-				omenDiceThreshold : new NumberField({ required: true, integer: true, nullable: true, min: 0, max : 14, initial: null })
+				omenDiceThreshold : new NumberField({ required: true, integer: true, nullable: false, min: 0, max : 14, initial: null })
 			}), { initial : () => Array.from({length : 4}, (_, index) => ({omenDiceThreshold : CONFIG["13OMENS"].DEFAULTACTOMENDCIETHRESHOLD[index]}))}),
 			
 			autoprogressacts : new BooleanField({ required : true, initial : true}),
 			
 			addomendiceonactstart : new BooleanField({ required : true, initial : true}),
 			
-			hostomendice: new NumberField({ required: true, integer: true, nullable: true, initial: CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE }),
+			hostomendice: new NumberField({ required: true, integer: true, nullable: false, initial: CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE }),
 			
 			storyaspects: new ArrayField(new SchemaField({
 				name: new StringField({ required: true, initial: ""})
