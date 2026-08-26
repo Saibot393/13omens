@@ -140,6 +140,7 @@ export class o13pcActor {
 		return this.update({
 			system : {
 				wounds : Array.from({length : this.system.wounds.length}, () => (EMPTYWOUND)),
+				death : {isdead : false},
 				aspects : strainlessAspects
 			}
 		});
@@ -471,7 +472,7 @@ export class o13pcActor {
 		if (nextEmpty >= 0 && nextEmpty < wounds.length) {
 			wounds[nextEmpty] = EMPTYWOUND;
 			
-			return this.update({system : {wounds : wounds}});
+			return this.update({system : {wounds : wounds, death : {isdead : false}}});
 		}
 	}
 	
