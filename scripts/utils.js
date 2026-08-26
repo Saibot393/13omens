@@ -44,4 +44,19 @@ export class utils {
 		
 		return data;
 	}
+	
+	static async createHBSChatMessage(hbsData, messageData, HBS) {
+		const preparedHBS = {...hbsData};
+		
+		if (preparedHBS.enrichables) {
+			preparedHBS.enriched = await utils.enrichHTMLStructure(preparedHBS.enrichables);
+		}
+		
+		const template = await renderTemplate(`systems/13omens/templates/${HBS}.hbs`, preparedHBS);
+
+		return ChatMessage.create({
+			...messageData,
+			content : template
+		})
+	}
 }
