@@ -146,7 +146,7 @@ export class o13storyActor {
 	}
 	
 	async autoPopulatePCs() {
-		const tagetFolder = this.folder.id;
+		const tagetFolder = this.folder?.id;
 		
 		const currentActors = this.pcActors;
 		
