@@ -73,7 +73,9 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 			resettoPrologue : o13ActorSheet.resettoPrologue,
 			usePerk : o13ActorSheet.usePerk,
 			autoPopulatePCs : o13ActorSheet.autoPopulatePCs,
-			createNewGear : o13ActorSheet.createNewGear
+			createNewGear : o13ActorSheet.createNewGear,
+			kill : o13ActorSheet.kill,
+			revive : o13ActorSheet.revive
 		}
 	});
 	
@@ -256,6 +258,18 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 	static async createNewGear(event, target) {
 		if (this.actor.type == "pc") {
 			this.actor.createNewGear();
+    }
+  }
+  
+	static async kill(event, target) {
+		if (this.actor.type == "pc") {
+			this.actor.kill();
+		}
+	}
+	
+	static async revive(event, target) {
+		if (this.actor.type == "pc") {
+			this.actor.revive();
 		}
 	}
 	
@@ -280,7 +294,7 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 						}
 						
 						if (changes.system) {
-							if (changes.system.wounds || changes.system.hasOwnProperty("archetype")) {
+							if (changes.system.wounds || changes.system.hasOwnProperty("archetype") || changes.system.death) {
 								rerender = true;
 							}
 							
