@@ -146,7 +146,7 @@ export class o13storyActor {
 	}
 	
 	async autoPopulatePCs() {
-		const tagetFolder = this.folder.id;
+		const tagetFolder = this.folder?.id;
 		
 		const currentActors = this.pcActors;
 		
@@ -318,6 +318,27 @@ export class o13storyActor {
 		if (diceRemove > 0) {
 			return this.update({system : {hostomendice : this.system.hostomendice + diceRemove}});
 		}
+	}
+	
+	//Data prep/handling
+	async handleDrop(data, event, prepared) {
+		let handled = false;
+		
+		const object = prepared.object;
+		if (!object) return handled;
+		
+
+		if (object.isPC) {
+			await this.addPC(object);
+			handled = true;
+		}
+		if (object.isArchetype) {
+			const archetype = await this.createEmbeddedDocuments("Item", [object.toObject()]);
+			await this.registerArchetype(archetype);
+			handled = true;
+		}
+		
+		return handled;
 	}
 }
 

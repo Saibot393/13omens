@@ -60,7 +60,7 @@ export function o13SheetMixin(baseSheet) {
 				
 				if (!nav.querySelector("a[nav-tab].active")) {
 					const tab = nav.querySelector("a[nav-tab]").getAttribute("nav-tab");
-					console.log(group, tab);
+
 					this._activeo13Tab(group, tab);
 				}
 			})
@@ -194,6 +194,33 @@ export function o13SheetMixin(baseSheet) {
 			});
 			
 			return context;
+		}
+		
+		async _onDrop(event) {
+			event.preventDefault();
+			
+			if (!this.document.handleDrop) return;
+			
+			const data = foundry.applications.ux.TextEditor.implementation.getDragEventData(event);
+			if (!data) return;
+			
+			const object = await fromUuid(data.uuid);
+			const selfOrigin = object?.parent == this.document;
+			const dropZone = event.target.closest("[drop-zone]")?.getAttribute("drop-zone");
+			
+			await this.document.handleDrop(data, event, {object : object, dropZone : dropZone, selfOrigin: selfOrigin});
+		}
+		
+		_onDragStart(event) {
+			const element = event.currentTarget;
+
+			const IDdata = ["story", "pc", "npc", "archetype", "perk", "gear"].map(type => ([`${type}ID`, element.getAttribute(`${type}-id`)]));
+			
+			const dragData = Object.fromEntries(IDdata);
+			
+			if (this.document.prepareDragData) this.document.prepareDragData(dragData, event);
+
+			event.dataTransfer.setData("text/plain", JSON.stringify(dragData));
 		}
 		
 		static async choosePortrait(event, target) {

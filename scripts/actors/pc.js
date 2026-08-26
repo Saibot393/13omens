@@ -275,6 +275,12 @@ export class o13pcActor {
 		return Object.fromEntries(gear.map(item => [item.id, item]));
 	}
 	
+	async createNewGear(data) {
+		const gear = {name : game.i18n.localize("13omens.titles.gear"), ...data, type : "gear"};
+		
+		return this.createEmbeddedDocuments("Item", [gear]);
+	}
+	
 	//Select gear (from archetype)
 	get selectableGearCount() {
 		if (this.isPC) {
@@ -591,7 +597,7 @@ export class o13pcActor {
 		return this.update({system : {background : this.archetypeSyncedBackground}});
 	}
 	
-	//Data prep
+	//Data prep/handling
 	get enrichables() {
 		return {
 			background: {
@@ -599,6 +605,31 @@ export class o13pcActor {
 				goal: this.system.background.goal,
 				traits: this.system.background.traits,
 				relations: Object.fromEntries(this.system.background.relations.map(r => ([r.archetype, r.relation])))
+			}
+		}
+	}
+	
+	async handleDrop(data, event, prepared) {
+		let handled = false;
+		
+		const object = prepared.object;
+		if (!object || prepared.selfOrigin) return handled;
+		
+		if (object.isPerk || object.isGear) {
+			await this.createEmbeddedDocuments("Item", [object.toObject()]);
+			handled = true;
+		}
+		
+		return handled;
+	}
+	
+	prepareDragData(data, event) {
+		if (data.gearID) {
+			const item = this.items.get(data.gearID);
+			
+			if (item) {
+				data.type = "Item",
+				data.uuid = item.uuid;
 			}
 		}
 	}

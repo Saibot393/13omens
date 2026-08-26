@@ -82,7 +82,7 @@
 					</div>
 				</div>
 				<div class="flexcol">
-					<span class="o13-label o13-header-label o13-flex-span">{{localize "13omens.titles.players"}} <i class="fa-solid fa-people-group o13-flex-right o13-icon o13-clickable" data-action="autoPopulatePCs" style="flex:1" data-tooltip="{{localize '13omens.tooltips.createPCs'}}"></i></span>
+					<span class="o13-label o13-header-label o13-flex-span">{{localize "13omens.titles.players"}} <div style="flex:1"></div><i class="fa-solid fa-people-group o13-flex-right o13-icon o13-clickable" data-action="autoPopulatePCs" data-tooltip="{{localize '13omens.tooltips.createPCs'}}"></i></span>
 					{{#each actor.pcActors as |pc|}}
 						<div class="flexrow">
 							<span class="o13-label o13-clickable o13-content-centered" type="text" pc-id="{{pc.id}}" data-action="openPC">{{pc.name}}</span>
