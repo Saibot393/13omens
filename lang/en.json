@@ -139,9 +139,8 @@
 			"cheatDeath" : "Cheat death",
 			"takeStrain" : "Take strain",
 			"clearWound" : "Clear wound",
-			"createPCs" : "Create player characters",
-			"revive" : "Revive",
-			"kill" : "Kill"
+			"createPCs" : "Create player characters"
+			
 		},
 		
 		"chats" : {

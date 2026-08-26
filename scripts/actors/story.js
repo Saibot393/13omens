@@ -192,7 +192,7 @@ export class o13storyActor {
 	}
 	
 	get woundDiceCount() {
-		const pcwoundcounts = this.pcActors.filter(actor => !actor.isDead).map(actor => actor.woundDiceCount);
+		const pcwoundcounts = this.pcActors.map(actor => actor.woundDiceCount);
 		
 		return {safe : pcwoundcounts.reduce((acc, cur) => acc + cur.safe, 0), omen : pcwoundcounts.reduce((acc, cur) => acc + cur.omen, 0)}
 	}
