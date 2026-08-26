@@ -71,7 +71,7 @@ export class o13storyActor {
 	//Acts
 	async checkAct() {
 		if (!this.isPrologue && this.autoProgressActs) {
-			const hostOmenDice = CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE - this.system.hostomendice + CONFIG["13OMENS"].DEFAULTDICEBAGCOUNT.omen;
+			const hostOmenDice = this.omenDiceinPlay;
 
 			const thresholds = this.actOmenDiceThresholds;
 
@@ -336,6 +336,10 @@ export class o13storyActor {
 		const max = CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE;
 		
 		return Array.from({length : max}).map((v, i) => i + 1).map(i => ({type : i <= current ? "omen" : "blank", face : 6}));
+	}
+	
+	get omenDiceinPlay() {
+		return CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE - this.system.hostomendice + CONFIG["13OMENS"].DEFAULTDICEBAGCOUNT.omen;
 	}
 	
 	get diceBagCount() {
