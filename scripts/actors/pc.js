@@ -92,6 +92,10 @@ export class o13pcActor {
 				await this.updateArchetypeItems();
 				await this.synctoArchetypeBackground();
 			}
+			
+			if (changed.system.death) {
+				await this.storyActor?.updateMaxWounds();
+			}
 		}
 	}
 	
@@ -140,6 +144,7 @@ export class o13pcActor {
 		return this.update({
 			system : {
 				wounds : Array.from({length : this.system.wounds.length}, () => (EMPTYWOUND)),
+				death : {isdead : false},
 				aspects : strainlessAspects
 			}
 		});
@@ -387,6 +392,22 @@ export class o13pcActor {
 		}
 	}
 	
+	get woundsFilled() { //sounds worse than it is
+		return !this.system.wounds.find(wound => !wound.omen.filled);
+	}
+	
+	async revive() {
+		if (this.isDead) {
+			return this.update({system : {death : {isdead : false}}})
+		}
+	}
+	
+	async kill(checkWoundsFilled = true) {
+		if (this.woundsFilled || !checkWoundsFilled) {
+			return this.update({system : {death : {isdead : true, act : this.activeAct}}})
+		}
+	}
+	
 	get woundDiceCount() {
 		return {safe : this.system.wounds.filter(wound => wound.safe.filled).length, omen : this.isDead ? 0 : this.system.wounds.filter(wound => wound.omen.filled).length};
 	}
@@ -414,6 +435,8 @@ export class o13pcActor {
 				}
 			}
 			
+			die.skulled = this.isDead;
+			
 			return die;
 		});
 	}
@@ -438,7 +461,7 @@ export class o13pcActor {
 		}
 	}
 	
-	async takeWound(options = {face : 6, cheatDeath : false}) {
+	async takeWound(options = {face : 6, cheatDeath : false}, checkDeath = true) {
 		const wounds = this.system.wounds;
 		
 		const nextEmpty = wounds.indexOf(wounds.find(wound => {
@@ -457,7 +480,13 @@ export class o13pcActor {
 				wounds[nextEmpty].omen.act = this.activeAct;
 			}
 			
-			return this.update({system : {wounds : wounds}});
+			const update = {system : {wounds : wounds}};
+			
+			if (checkDeath) {
+				if (!wounds.find(wound => !wound.omen.filled)) update.system.death = {isdead : true, act : this.activeAct};
+			}
+			console.log(update);
+			return this.update(update);
 		}
 	}
 	
@@ -471,12 +500,12 @@ export class o13pcActor {
 		if (nextEmpty >= 0 && nextEmpty < wounds.length) {
 			wounds[nextEmpty] = EMPTYWOUND;
 			
-			return this.update({system : {wounds : wounds}});
+			return this.update({system : {wounds : wounds, death : {isdead : false}}});
 		}
 	}
 	
 	async checkDeath() {
-		const isDead = !this.system.wounds.find(wound => !wound.omen.filled);
+		const isDead = this.woundsFilled;
 		
 		if (isDead && !this.system.death.isdead) {
 			await this.update({system : {death : {isdead : true, act : this.activeAct}}})
