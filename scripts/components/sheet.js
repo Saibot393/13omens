@@ -58,7 +58,6 @@ export function o13SheetMixin(baseSheet) {
 				
 				if (!nav.querySelector("a[nav-tab].active")) {
 					const tab = nav.querySelector("a[nav-tab]").getAttribute("nav-tab");
-					console.log(group, tab);
 					this._activeo13Tab(group, tab);
 				}
 			})
