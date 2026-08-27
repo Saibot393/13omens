@@ -8,11 +8,9 @@ import {utils} from "./scripts/utils.js";
 
 import {onO13Hooks} from "./scripts/hooks.js";
 
-import {CONSTANTS} from "./scripts/constants.js";
+import {CONSTANTS, templatePaths} from "./scripts/constants.js";
 
 import {initNews} from "./scripts/meta/news.js";
-
-const templatePaths = ["actors/pc", "actors/components/pc_character", "actors/components/pc_background", "actors/story", "actors/components/aspects", "items/perk", "dice/dice", "dice/dicebar", "dice/minidicebar", "dice/dicebag", "rolls/rollConfig", "rolls/chatRoll", "dialogues/general", "dialogues/confirmOmenDiceRoll"].map((path) => `systems/13omens/templates/${path}.hbs`);
 
 Hooks.once("init", () => {
 	//CONST

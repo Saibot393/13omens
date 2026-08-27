@@ -1,6 +1,25 @@
 const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDocumentField, DocumentIdField, BooleanField, FilePathField, ObjectField, DocumentUUIDField } = foundry.data.fields;
 
 export class o13archetypeItem {
+	//Updates & Create
+	
+	async _preUpdate(changed, options, user) {
+		if (changed?.system?.background?.relations) {
+			const currentRelations = this.organisedRelations;
+			
+			const newRelations = changed.system.background.relations;
+			
+			//relations might very well be empty at this point, so organise and fill them
+			for (let i = 0; i < currentRelations.length; i++) {
+				currentRelations[i] = newRelations.find(relation => relation.archetype == currentRelations[i].archetype) ?? {archetype : currentRelations[i].archetype, relation : newRelations[i].relation}
+			}
+			
+			changed.system.background.relations = currentRelations;
+		}
+		
+		await this.superPD._preUpdate(changed, options, user);
+	}
+	
 	//Story
 	get storyActor() {
 		if (this.parent?.type == "story") {
@@ -10,6 +29,21 @@ export class o13archetypeItem {
 	
 	get archetypeAspect() {
 		return this.storyActor?.getArchetypeAspect(this);
+	}
+	
+	get siblingArchetypes() {
+		return this.storyActor?.archetypes.filter(archetype => archetype != this) ?? [];
+	}
+	
+	get organisedRelations() {
+		//use this as basis for preupdates to make sure data is available
+		const currentRelations = this.system.background.relations;
+		
+		return this.siblingArchetypes.map(archetype => ({archetype : archetype.id, relation : currentRelations.find(relation => relation.archetype == archetype.id)?.relation ?? ""}));
+	}
+	
+	async reorganiseRelations() {
+		return this.update({system : {background : {relations : this.organisedRelations}}})
 	}
 	
 	//Subitems
@@ -159,11 +193,52 @@ export class o13archetypeItem {
 		return this.system.choosableperks;
 	}
 	
-	//data preperation
+	//data preperation/handling
 	get enrichables() {
 		return {
-			description : this.system.description
+			background: {
+				description : this.system.background.description,
+				goal: this.system.background.goal,
+				traits: this.system.background.traits,
+				relations: Object.fromEntries(this.system.background.relations.map(r => ([r.archetype, r.relation])))
+			}
 		}
+	}
+	
+	async handleDrop(data, event, prepared) {
+		let handled = false;
+		
+		if (prepared.dropZone) {
+			if (data.parentArchetype == this.uuid) {
+				switch(prepared.dropZone) {
+					case "guaranteedGear":
+						await this.markAsGuaranteedGear(data.gearID);
+						handled = true;
+						break;
+					case "selectableGear":
+						await this.removeFromGuaranteedGear(data.gearID);
+						handled = true;
+						break;
+				}
+			}
+		}
+		
+		if (!handled) {
+			const object = prepared.object;
+			//Default sheet drop
+			if (!object) return handled;
+
+			if(object.isPerk || object.isGear) {
+				await this.addSubItem(object);
+				handled = true;
+			}
+		}
+		
+		return handled;
+	}
+	
+	prepareDragData(data, event) {
+		data.parentArchetype = this.uuid;
 	}
 }
 
@@ -176,12 +251,11 @@ export class archetypeDataModel extends foundry.abstract.TypeDataModel {
 				traits: new HTMLField({ required: true, initial: ""}),
 				relations: new ArrayField(
 					new SchemaField({
-						archetype: new DocumentIdField({required: true, blank: true, nullable: true, readonly: false}),
+						archetype: new DocumentIdField({required: true, blank: true, nullable: true}),
 						relation: new HTMLField({ required: true, initial: ""})
 					})
 				)
 			}),
-			
 			
 			perks: new ObjectField({}),
 			

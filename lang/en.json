@@ -30,6 +30,12 @@
 			"background" : "Background",
 			"perksandgear" : "Perks & Gear",
 			
+			"description" : "Description",
+			"goal" : "Goal",
+			"possibletraits" : "Possible Personality Traits",
+			"relationstocharacters" : "Relations to other Characters",
+			"notes" : "Notes",
+			
 			"hostomendice" : "Host omen dice",
 			"dicebag" : "Dice bag",
 			
@@ -63,6 +69,10 @@
 				"2" : "Act II",
 				"3" : "Act III"
 			},
+			
+			"autoProgressActs" : "Auto progress",
+			"addOmenDiceonActStart" : "Add die on act start",
+			"thresholds" : "Thresholds",
 			
 			"edge" : "Edge",
 			"flaw" : "Flaw",
@@ -133,8 +143,9 @@
 			"cheatDeath" : "Cheat death",
 			"takeStrain" : "Take strain",
 			"clearWound" : "Clear wound",
-			"createPCs" : "Create player characters"
-			
+			"createPCs" : "Create player characters",
+			"revive" : "Revive",
+			"kill" : "Kill"
 		},
 		
 		"chats" : {

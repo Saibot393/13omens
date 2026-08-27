@@ -29,15 +29,7 @@
 	</header>
 	<main class="flexcol o13-scrollable" style="flex:1; min-height:0;">
 		<div class="o13-notes flexcol">
-			<prose-mirror
-				class="o13-text-editor"
-				name="system.description"
-				document-uuid="{{item.uuid}}"
-				value="{{item.system.description}}"
-				button
-				toggled
-				editable
-				collaborative="false"
+			<prose-mirror class="o13-text-editor" name="system.description" document-uuid="{{item.uuid}}" value="{{item.system.description}}" button toggled editable collaborative="false">
 				{{{enriched.description}}}
 			</prose-mirror>
 		</div>
