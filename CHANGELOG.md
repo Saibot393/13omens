@@ -1,3 +1,15 @@
+## v1.2.0
+- Added backstory tabs to archetype and pc sheets
+  - PC backstory will be filled in from archetype upon selection
+- Improved "is dead" logic for pcs
+- Death will now be shown by skulls over/replacing the wound dice
+- Hosts can now revive or kill player pcs in the wound-hover-over menu
+- Added act menu to set omen dice threshold or if dice should be added when a new act start (menu shows when hovering over prologue)
+- Gear can now be send to the chat by clicking the icon next to the name
+- Gear can now be dragged from the pc sheet
+- Gear can now be created directly from the pc sheet
+- Improved/refactored drag and drop logic
+  
 ## v1.1.0
 - Fixed bug that prevented the last omen dice from being added to the dice bag
 - Fixed bug with take wounds/cheat death buttons on chat rolls
