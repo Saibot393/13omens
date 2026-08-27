@@ -643,6 +643,29 @@ export class o13pcActor {
 			}
 		}
 	}
+	
+	prepareBaseData() { //pre AE
+		this.superPD.prepareBaseData();
+		
+		this.system.perks = {
+				maxwounds: this.storyActor?.getmaxWounds(this) || CONFIG["13OMENS"].DEFAULTMAXWOUNDS,
+				
+				omenwoundthreshold : this.activeAct,
+				
+				noflawwoundcount: null,
+								
+				selectablegearcount: this.archetype?.selectableGearCount ?? 0,
+				
+				cheatdeathamount: {
+					peract: 1,
+					perstory: 0 //these are in addition to the per act
+				}
+		}
+	}
+	
+	prepareDerivedData() {
+		this.superPD.prepareDerivedData();
+	}
 }
 
 export class pcDataModel extends foundry.abstract.TypeDataModel {
@@ -702,24 +725,6 @@ export class pcDataModel extends foundry.abstract.TypeDataModel {
 			}),
 			
 			pickedperks: new ObjectField({}) //refer to id
-			
-			//mainly for active affects
-			/*
-			perks : new SchemaField({
-				maxwounds: new NumberField({ required: false, integer: true, nullable: true, min: 1, initial: null }),
-				
-				maxwoundschange: new NumberField({ required: false, integer: true, nullable: true, min: 1, initial: null }),
-				
-				omenwoundthreshold : new NumberField({ required: false, integer: true, nullable: true, min: 1, max : 6, initial: null }),
-				
-				noflawwoundcount: new NumberField({ required: false, integer: true, nullable: true, min: 1, initial: null }),
-								
-				chooseableitems: new NumberField({ required: false, integer: true, nullable: true, min: 1, initial: null }),
-				
-				cheatdeathamount: new NumberField({ required: false, integer: true, nullable: true, min: 1, initial: null })
-			})
-			*/
-			
 		};
 	}
 	

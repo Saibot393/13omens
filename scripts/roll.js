@@ -216,7 +216,7 @@ export class o13Roll extends Roll {
 	}
 	
 	get canCheatDeath() {
-		return this.actor?.canCheatDeath;
+		return this.diceResults.some(die => die.type == "safe") && this.actor?.canCheatDeath;
 	}
 	
 	get consequenceTaken() {
