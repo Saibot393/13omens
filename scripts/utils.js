@@ -52,7 +52,7 @@ export class utils {
 			preparedHBS.enriched = await utils.enrichHTMLStructure(preparedHBS.enrichables);
 		}
 		
-		const template = await renderTemplate(`systems/13omens/templates/${HBS}.hbs`, preparedHBS);
+		const template = await foundry.applications.handlebars.renderTemplate(`systems/13omens/templates/${HBS}.hbs`, preparedHBS);
 
 		return ChatMessage.create({
 			...messageData,
