@@ -501,7 +501,7 @@ export class o13pcActor {
 			if (checkDeath) {
 				if (!wounds.find(wound => !wound.omen.filled)) update.system.death = {isdead : true, act : this.activeAct};
 			}
-			console.log(update);
+
 			return this.update(update);
 		}
 	}
