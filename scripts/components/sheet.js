@@ -134,14 +134,19 @@ export function o13SheetMixin(baseSheet) {
 			
 			await super._replaceHTML(result, content, options);
 			
+			console.log(scrollCache);
 			if (this.element) {
 				const newScrollables = this.element.querySelectorAll("[scroll-id]");
 				for (const el of newScrollables) {
+					console.log(el);
 					const id = el.getAttribute("scroll-id");
 					const saved = scrollCache[id];
+					console.log(saved);
 					if (saved) {
-						el.scrollTop = saved.top;
-						el.scrollLeft = saved.left;
+						requestAnimationFrame(() => {
+							el.scrollTop = saved.top;
+							el.scrollLeft = saved.left;
+						});
 					}
 				}
 			}

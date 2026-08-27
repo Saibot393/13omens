@@ -18,7 +18,7 @@
 	<div class="flexcol" style="flex:1;align-self:stretch;">
 		<div class="flexcol">
 			<label for="notes" class="o13-label" style="flex:0.5"><b>{{localize "13omens.titles.notes"}}:</b></label>
-			<textarea  class="o13-input o13-textarea o13-bordered" name="system.notes" rows=8">{{actor.system.notes}}</textarea>
+			<textarea  class="o13-input o13-textarea o13-bordered o13-scrollable" name="system.notes" rows=8" scroll-id="background_notes" style="flex:none;">{{actor.system.notes}}</textarea>
 		</div>
 	
 		{{#if actor.canPrepare}}

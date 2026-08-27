@@ -102,9 +102,11 @@ export class o13pcActor {
 	async _onCreateDescendantDocuments(parent, collection, documents, data, options, usedId) {
 		await this.superPD._onCreateDescendantDocuments(parent, collection, documents, data, options, usedId);
 
-		for (const item of documents) {
-			if (item.isPerk) {
-				await item.resetUses();
+		if (game.user.id == usedId) {
+			for (const item of documents) {
+				if (item.isPerk) {
+					await item.resetUses();
+				}
 			}
 		}
 	}
