@@ -47,7 +47,7 @@
 </div>
 
 <div class="flexcol" style="margin-top:10px">
-	<span class="o13-label o13-header-label">{{localize "13omens.titles.gears"}} </span>
+	<span class="o13-label o13-header-label">{{localize "13omens.titles.gears"}} <i class="fa-solid fa-plus o13-icon o13-clickable" data-action="createNewGear"></i> </span>
 	<div class="o13-adaptive-grid-wrapper">
 		{{#if actor.canPrepare}}
 			{{#if actor.selectableGearCount}}
@@ -63,9 +63,12 @@
 		{{/if}}
 		<div class="o13-adaptive-grid-12" style="margin-top:15px">
 			{{#each actor.gear}}
-				<div class="flexrow o13-side-padding">
+				<div class="flexrow o13-side-padding draggable" draggable="true" gear-id="{{this._id}}">
 					<span class="o13-underline o13-flex-span">
-						<span class="o13-label o13-clickable o13-flex-grow" gear-id="{{this._id}}" data-action="openGear">{{this.name}}</span>
+						<span class="o13-label o13-clickable o13-flex-grow" gear-id="{{this._id}}" data-action="openGear">
+							{{this.name}}
+							<i class="fa-solid fa-message o13-icon o13-clickable o13-hover-icon" gear-id="{{this._id}}" data-action="posttoChat"></i>
+						</span>
 						<span class="o13-label o13-flex-center" gear-id="{{this._id}}" style="flex:0.4">
 							<i class="fa-solid fa-burst o13-icon o13-clickable" gear-id="{{this._id}}" data-action="breakGear"></i>
 								<span class="o13-label" gear-id="{{this._id}}">{{this.quantityValue}}</span>

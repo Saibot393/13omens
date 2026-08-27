@@ -17,43 +17,16 @@
 		</nav>
 	
 		<section class="o13-tab o13-scrollable flexcol" nav-group="main" nav-tab="perksandgear" scroll-id="perksandgear">
-			<div class="flexcol">
-				<div class="flexcol">
-					<span class="o13-label o13-header-label o13-input-span">{{localize "13omens.titles.perks"}} {{localize "13omens.titles.choosablePerks"}}:<input class="o13-input o13-underline" type="number" name="system.choosableperks" value="{{item.choosablePerks}}" /><i class="fa-solid fa-plus o13-icon o13-clickable" data-action="createNewPerk"></i></span>
-					<div style="display:grid;grid-template-columns: repeat(2, 1fr);gap: 1rem;">
-						{{#each item.perksData}}
-							<span class="o13-label o13-inline" perk-id="{{this._id}}">
-								<i class="fa-solid fa-x o13-label o13-icon o13-hover-icon o13-clickable" perk-id="{{this._id}}" data-action="removePerk"></i> <b class="o13-clickable" data-action="openPerk" perk-id="{{this._id}}">{{this.name}}</b> {{{this.system.description}}}
-							</span>
-						{{/each}}
-					</div>
-				</div>
-				<div class="flexcol">
-					<span class="o13-label o13-header-label">{{localize "13omens.titles.gears"}}  <i class="fa-solid fa-plus o13-icon o13-clickable" data-action="createNewGear"></i></span>
-					<span class="o13-item-line" drop-zone="guaranteedGear">
-						<span class="o13-label"><b>{{localize "13omens.titles.guaranteedGear"}}:</b></span>
-						{{#each item.guaranteedGear}}
-							<span class="o13-label o13-inline o13-item-box draggable" draggable="true" gear-id="{{this._id}}">
-								<p class="o13-clickable" data-action="openGear" gear-id="{{this._id}}">{{this.name}}</p> 
-								<i class="fa-solid fa-x o13-label o13-icon o13-hover-icon o13-clickable" gear-id="{{this._id}}" data-action="removeGear"></i>
-							</span>
-						{{/each}}
-					</span>
-					<br>
-					<span class="o13-item-line" drop-zone="selectableGear">
-						<span class="o13-label o13-input-span"><b>{{localize "13omens.titles.selectableGear"}} (<input class="o13-input o13-underline" type="text" name="system.selectablegearcount" value="{{item.selectableGearCount}}" style="field-sizing: content;min-width: 2ch;" />):</b></span>
-						{{#each item.unguaranteedGear}}
-							<span class="o13-label o13-inline o13-item-box draggable" draggable="true" gear-id="{{this._id}}">
-								<p class="o13-clickable" data-action="openGear" gear-id="{{this._id}}">{{this.name}}</p> 
-								<i class="fa-solid fa-x o13-label o13-icon o13-hover-icon o13-clickable" gear-id="{{this._id}}" data-action="removeGear"></i>
-							</span>
-						{{/each}}
-					</span>
-				</div>
-			</div>
+			{{> "systems/13omens/templates/items/components/archetype_perksngear.hbs" 
+				item=item
+			}}
 		</section>
 		
 		<section class="o13-tab o13-scrollable flexcol" nav-group="main" nav-tab="background" scroll-id="background">
+			{{> "systems/13omens/templates/items/components/archetype_background.hbs" 
+				item=item
+				enriched=enriched
+			}}
 		</section>
 	</main>
 </div>

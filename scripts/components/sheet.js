@@ -1,6 +1,8 @@
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { sheetV2 } = foundry.applications.sheets;
 
+import {utils} from "../utils.js";
+
 //just some basic commonality between actor and item sheets
 
 export function o13SheetMixin(baseSheet) {
@@ -58,7 +60,7 @@ export function o13SheetMixin(baseSheet) {
 				
 				if (!nav.querySelector("a[nav-tab].active")) {
 					const tab = nav.querySelector("a[nav-tab]").getAttribute("nav-tab");
-					console.log(group, tab);
+
 					this._activeo13Tab(group, tab);
 				}
 			})
@@ -104,7 +106,7 @@ export function o13SheetMixin(baseSheet) {
 			
 			//input focus persistance
 			const activeInputCache = {}
-			if (this.element.contains(document.activeElement)) {
+			if (this.element?.contains(document.activeElement)) {
 				const active = document.activeElement;
 				
 				const name = active.getAttribute("name");
@@ -116,16 +118,35 @@ export function o13SheetMixin(baseSheet) {
 				}
 			}
 			
+			//textarea height persistance
+			const textAreaHeights = {};
+			if (this.element) {
+				const textAreas = this.element.querySelectorAll("textarea[name]");
+				
+				for (const el of textAreas) {
+					const name = el.getAttribute("name");
+					
+					if (name && el.style?.height) {
+						textAreaHeights[name] = el.style.height;
+					}
+				}
+			}
+			
 			await super._replaceHTML(result, content, options);
 			
+			console.log(scrollCache);
 			if (this.element) {
 				const newScrollables = this.element.querySelectorAll("[scroll-id]");
 				for (const el of newScrollables) {
+					console.log(el);
 					const id = el.getAttribute("scroll-id");
 					const saved = scrollCache[id];
+					console.log(saved);
 					if (saved) {
-						el.scrollTop = saved.top;
-						el.scrollLeft = saved.left;
+						requestAnimationFrame(() => {
+							el.scrollTop = saved.top;
+							el.scrollLeft = saved.left;
+						});
 					}
 				}
 			}
@@ -143,6 +164,14 @@ export function o13SheetMixin(baseSheet) {
 							toActive.setSelectionRange(activeInputCache.selectionStart, activeInputCache.selectionEnd, activeInputCache.selectionDirection);
 						} catch(e) {};
 					}
+				}
+			}
+			
+			for (const key of Object.keys(textAreaHeights)) {
+				const textarea = this.element.querySelector(`textarea[name="${key}"]`);
+				
+				if (textarea) {
+					textarea.style.height = textAreaHeights[key];
 				}
 			}
 		}
@@ -163,19 +192,40 @@ export function o13SheetMixin(baseSheet) {
 			
 			const enrichables = this.document.enrichables ?? {};
 			
-			context.enriched = {};
-			for (const key of Object.keys(enrichables)) {
-				context.enriched[key] = await foundry.applications.ux.TextEditor.implementation.enrichHTML(
-					enrichables[key] ?? "",
-					{
-						secrets: this.document.isOwner,
-						async: true,
-						relativeTo: this.document
-					}
-				)
-			}
+			context.enriched = await utils.enrichHTMLStructure(enrichables, {
+				secrets: this.document.isOwner,
+				async: true,
+				relativeTo: this.document
+			});
 			
 			return context;
+		}
+		
+		async _onDrop(event) {
+			event.preventDefault();
+			
+			if (!this.document.handleDrop) return;
+			
+			const data = foundry.applications.ux.TextEditor.implementation.getDragEventData(event);
+			if (!data) return;
+			
+			const object = await fromUuid(data.uuid);
+			const selfOrigin = object?.parent == this.document;
+			const dropZone = event.target.closest("[drop-zone]")?.getAttribute("drop-zone");
+			
+			await this.document.handleDrop(data, event, {object : object, dropZone : dropZone, selfOrigin: selfOrigin});
+		}
+		
+		_onDragStart(event) {
+			const element = event.currentTarget;
+
+			const IDdata = ["story", "pc", "npc", "archetype", "perk", "gear"].map(type => ([`${type}ID`, element.getAttribute(`${type}-id`)]));
+			
+			const dragData = Object.fromEntries(IDdata);
+			
+			if (this.document.prepareDragData) this.document.prepareDragData(dragData, event);
+
+			event.dataTransfer.setData("text/plain", JSON.stringify(dragData));
 		}
 		
 		static async choosePortrait(event, target) {

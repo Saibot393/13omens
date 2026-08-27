@@ -248,6 +248,8 @@ select:disabled {
 	padding : 0;
 	vertical-align: middle;
 	text-indent: 1.5px;
+	
+	flex: 0 0 auto;
 }
 
 .o13-checkbox:disabled{
@@ -437,6 +439,10 @@ span.o13-input-span input {
 	padding-right: 5px;
 	font-size: 18px;
 	scrollbar-color: var(--o13-ink-black) transparent !important;
+}
+
+.o13-text-editor div.editor-content p{
+	margin: 0.1rem 0;
 }
 
 .o13-flex-span {

@@ -72,50 +72,13 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 			advanceAct : o13ActorSheet.advanceAct,
 			resettoPrologue : o13ActorSheet.resettoPrologue,
 			usePerk : o13ActorSheet.usePerk,
-			autoPopulatePCs : o13ActorSheet.autoPopulatePCs
+			autoPopulatePCs : o13ActorSheet.autoPopulatePCs,
+			createNewGear : o13ActorSheet.createNewGear,
+			kill : o13ActorSheet.kill,
+			revive : o13ActorSheet.revive,
+			posttoChat : o13ActorSheet.posttoChat
 		}
 	});
-	
-	async _onDrop(event) {
-		event.preventDefault();
-		
-		var handled = false;
-		
-		const data = foundry.applications.ux.TextEditor.implementation.getDragEventData(event);
-		
-		if (!data) return;
-		
-		const object = await fromUuid(data.uuid);
-		
-		if (!object) return;
-
-		switch (this.actor.type) {
-			case "story":
-				switch(data.type) {
-					case "Actor" : 
-						if (object.isPC) {
-							this.actor.addPC(object);
-							handled = true;
-						}
-						break;
-					case "Item" :
-						if (object.type == "archetype") {
-							const archetype = await this.actor.createEmbeddedDocuments("Item", [object.toObject()]);
-							this.actor.registerArchetype(archetype);
-							handled = true;
-						}
-				}
-				break;
-			case "pc":
-				if (data.type == "Item") {
-					if (object.type == "perk" || object.type == "gear") {
-						this.actor.createEmbeddedDocuments("Item", [object.toObject()]);
-						handled = true;
-					}
-				}
-				break;
-		}
-	}
 	
 	static async viewStory(event, target) {
 		if (this.actor.type == "pc") {
@@ -293,6 +256,39 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 		}
 	}
 	
+	static async createNewGear(event, target) {
+		if (this.actor.type == "pc") {
+			this.actor.createNewGear();
+    }
+  }
+  
+	static async kill(event, target) {
+		if (this.actor.type == "pc") {
+			this.actor.kill();
+		}
+	}
+	
+	static async revive(event, target) {
+		if (this.actor.type == "pc") {
+			this.actor.revive();
+		}
+	}
+	
+	static async posttoChat(event, target) {
+		if (this.actor.type == "pc") {
+			const perkID = target.getAttribute("perk-id");
+			const gearID = target.getAttribute("gear-id");
+			
+			if (perkID) {
+				
+			}
+			
+			if (gearID) {
+				this.actor.geartoChatMessage(gearID);
+			}
+		}
+	}
+	
 	async _onRender(context, options) {
 		await super._onRender(context, options);
 		
@@ -314,7 +310,7 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 						}
 						
 						if (changes.system) {
-							if (changes.system.wounds || changes.system.hasOwnProperty("archetype")) {
+							if (changes.system.wounds || changes.system.hasOwnProperty("archetype") || changes.system.death) {
 								rerender = true;
 							}
 							

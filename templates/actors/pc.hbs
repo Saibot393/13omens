@@ -42,8 +42,17 @@
 			{{#if actor.isHostView}}
 				<div class="o13-hover-div" style="min-height: 40px;"></div>
 				<div class="flexrow o13-bordered o13-hover-div" style="margin: 0px auto;gap: min(2vw, 20px);max-width: 150px;">
-					<i class="fa-solid fa-droplet o13-icon o13-hover-field-icon o13-clickable" style="color:var(--o13-omen-red)" data-action="takeWound" data-tooltip="{{localize "13omens.tooltips.takeWound"}}"></i>
-					<i class="fa-solid fa-hourglass-half o13-icon o13-hover-field-icon o13-clickable" style="color:var(--o13-cheat-blue)" data-action="cheatDeath" data-tooltip="{{localize "13omens.tooltips.cheatDeath"}}"></i>
+					{{#unless actor.isDead}}
+						{{#unless actor.woundsFilled}}
+							<i class="fa-solid fa-droplet o13-icon o13-hover-field-icon o13-clickable" style="color:var(--o13-omen-red)" data-action="takeWound" data-tooltip="{{localize "13omens.tooltips.takeWound"}}"></i>
+							<i class="fa-solid fa-hourglass-half o13-icon o13-hover-field-icon o13-clickable" style="color:var(--o13-cheat-blue)" data-action="cheatDeath" data-tooltip="{{localize "13omens.tooltips.cheatDeath"}}"></i>
+						{{else}}
+							<i class="fa-solid fa-skull o13-icon o13-hover-field-icon o13-clickable" style="color:var(--o13-omen-red)" data-action="kill" data-tooltip="{{localize "13omens.tooltips.kill"}}"></i>
+						{{/unless}}
+					{{/unless}}
+					{{#if actor.isDead}}
+						<i class="fa-solid fa-skull o13-icon o13-hover-field-icon o13-clickable" style="color:var(--o13-cheat-blue)" data-action="revive" data-tooltip="{{localize "13omens.tooltips.revive"}}"></i>
+					{{/if}}
 					<i class="fa-solid fa-rotate-left o13-icon o13-hover-field-icon o13-clickable" style="color:var(--o13-ink-black)" data-action="clearWound" data-tooltip="{{localize "13omens.tooltips.clearWound"}}"></i>
 				</div>
 			{{/if}}

@@ -65,6 +65,17 @@ export class o13pcActor {
 						}
 					}
 				}
+				
+				if (changed.system.background?.relations) {
+					const currentRelations = this.system.background.relations;
+					
+					const newRelations = changed.system.background.relations;
+					
+					//updates might mess with relations archetypel links
+					for (let i = 0; i < newRelations.length; i++) {
+						newRelations[i].archetype = newRelations[i].archetype || currentRelations[i]?.archetype;
+					}
+				}
 			}
 		}
 		
@@ -79,6 +90,11 @@ export class o13pcActor {
 		if (changed.system) {
 			if (changed.system.hasOwnProperty("archetype")) {
 				await this.updateArchetypeItems();
+				await this.synctoArchetypeBackground();
+			}
+			
+			if (changed.system.death) {
+				if (game.user.isActiveGM) await this.storyActor?.updateMaxWounds();
 			}
 		}
 	}
@@ -86,9 +102,11 @@ export class o13pcActor {
 	async _onCreateDescendantDocuments(parent, collection, documents, data, options, usedId) {
 		await this.superPD._onCreateDescendantDocuments(parent, collection, documents, data, options, usedId);
 
-		for (const item of documents) {
-			if (item.isPerk) {
-				await item.resetUses();
+		if (game.user.id == usedId) {
+			for (const item of documents) {
+				if (item.isPerk) {
+					await item.resetUses();
+				}
 			}
 		}
 	}
@@ -128,6 +146,7 @@ export class o13pcActor {
 		return this.update({
 			system : {
 				wounds : Array.from({length : this.system.wounds.length}, () => (EMPTYWOUND)),
+				death : {isdead : false},
 				aspects : strainlessAspects
 			}
 		});
@@ -164,6 +183,10 @@ export class o13pcActor {
 		const archetype = this.storyActor?.items.get(this.system.archetype);
 		
 		return archetype?.type == "archetype" ? archetype : undefined;
+	}
+	
+	get siblingArchetypes() {
+		return this.storyActor?.archetypes.filter(archetype => archetype != this.archetype) ?? [];
 	}
 	
 	async removeArchetypeItems() {
@@ -252,6 +275,20 @@ export class o13pcActor {
 		let gear = this.items.filter(item => item.isGear);
 		
 		return Object.fromEntries(gear.map(item => [item.id, item]));
+	}
+	
+	async createNewGear(data) {
+		const gear = {name : game.i18n.localize("13omens.titles.gear"), ...data, type : "gear"};
+		
+		return this.createEmbeddedDocuments("Item", [gear]);
+	}
+	
+	async geartoChatMessage(id, messageData = {}) {
+		const gear = this.items.get(id);
+		
+		if (gear?.isGear) {
+			gear.toChatMessage(messageData);
+		}
 	}
 	
 	//Select gear (from archetype)
@@ -371,6 +408,22 @@ export class o13pcActor {
 		}
 	}
 	
+	get woundsFilled() { //sounds worse than it is
+		return !this.system.wounds.find(wound => !wound.omen.filled);
+	}
+	
+	async revive() {
+		if (this.isDead) {
+			return this.update({system : {death : {isdead : false}}})
+		}
+	}
+	
+	async kill(checkWoundsFilled = true) {
+		if (this.woundsFilled || !checkWoundsFilled) {
+			return this.update({system : {death : {isdead : true, act : this.activeAct}}})
+		}
+	}
+	
 	get woundDiceCount() {
 		return {safe : this.system.wounds.filter(wound => wound.safe.filled).length, omen : this.isDead ? 0 : this.system.wounds.filter(wound => wound.omen.filled).length};
 	}
@@ -398,6 +451,8 @@ export class o13pcActor {
 				}
 			}
 			
+			die.skulled = this.isDead;
+			
 			return die;
 		});
 	}
@@ -422,7 +477,7 @@ export class o13pcActor {
 		}
 	}
 	
-	async takeWound(options = {face : 6, cheatDeath : false}) {
+	async takeWound(options = {face : 6, cheatDeath : false}, checkDeath = true) {
 		const wounds = this.system.wounds;
 		
 		const nextEmpty = wounds.indexOf(wounds.find(wound => {
@@ -441,7 +496,13 @@ export class o13pcActor {
 				wounds[nextEmpty].omen.act = this.activeAct;
 			}
 			
-			return this.update({system : {wounds : wounds}});
+			const update = {system : {wounds : wounds}};
+			
+			if (checkDeath) {
+				if (!wounds.find(wound => !wound.omen.filled)) update.system.death = {isdead : true, act : this.activeAct};
+			}
+			console.log(update);
+			return this.update(update);
 		}
 	}
 	
@@ -455,12 +516,12 @@ export class o13pcActor {
 		if (nextEmpty >= 0 && nextEmpty < wounds.length) {
 			wounds[nextEmpty] = EMPTYWOUND;
 			
-			return this.update({system : {wounds : wounds}});
+			return this.update({system : {wounds : wounds, death : {isdead : false}}});
 		}
 	}
 	
 	async checkDeath() {
-		const isDead = !this.system.wounds.find(wound => !wound.omen.filled);
+		const isDead = this.woundsFilled;
 		
 		if (isDead && !this.system.death.isdead) {
 			await this.update({system : {death : {isdead : true, act : this.activeAct}}})
@@ -516,9 +577,70 @@ export class o13pcActor {
 		return this.diceBag.map(die => ({type : die, face : 6}));
 	}
 	
-	//Data prep
+	//background
+	getArchetypeSyncedBackground(syncto) {
+		const syncArchetype = typeof syncto == "object" ? syncto : this.storyActor?.items.get(syncto);
+		
+		const currentBackground = this.system.background;
+		
+		const updateBackground = syncArchetype?.type == "archetype" ? (syncArchetype.system?.background || {}) : currentBackground;
+		
+		const newBackground = {};
+		
+		for (const key of ["description", "goal", "traits"]) {
+			newBackground[key] = updateBackground[key] || currentBackground[key] || "";
+		}
+
+		newBackground.relations = this.siblingArchetypes?.map(sibling => ({
+			archetype : sibling.id, 
+			relation : updateBackground.relations.find(r => r.archetype == sibling.id)?.relation || currentBackground.relations.find(r => r.archetype == sibling.id)?.relation || ""
+		})) ?? [];
+		
+		return newBackground;
+	}
+	
+	get archetypeSyncedBackground() {
+		return this.getArchetypeSyncedBackground(this.archetype);
+	}
+	
+	async synctoArchetypeBackground() {
+		return this.update({system : {background : this.archetypeSyncedBackground}});
+	}
+	
+	//Data prep/handling
 	get enrichables() {
 		return {
+			background: {
+				description : this.system.background.description,
+				goal: this.system.background.goal,
+				traits: this.system.background.traits,
+				relations: Object.fromEntries(this.system.background.relations.map(r => ([r.archetype, r.relation])))
+			}
+		}
+	}
+	
+	async handleDrop(data, event, prepared) {
+		let handled = false;
+		
+		const object = prepared.object;
+		if (!object || prepared.selfOrigin) return handled;
+		
+		if (object.isPerk || object.isGear) {
+			await this.createEmbeddedDocuments("Item", [object.toObject()]);
+			handled = true;
+		}
+		
+		return handled;
+	}
+	
+	prepareDragData(data, event) {
+		if (data.gearID) {
+			const item = this.items.get(data.gearID);
+			
+			if (item) {
+				data.type = "Item",
+				data.uuid = item.uuid;
+			}
 		}
 	}
 }
@@ -540,7 +662,7 @@ export class pcDataModel extends foundry.abstract.TypeDataModel {
 				traits: new HTMLField({ required: true, initial: ""}),
 				relations: new ArrayField(
 					new SchemaField({
-						player: new DocumentIdField({required: true, blank: true, nullable: true, readonly: false}),
+						archetype: new DocumentIdField({required: true, blank: true, nullable: true}),
 						relation: new HTMLField({ required: true, initial: ""})
 					})
 				)
