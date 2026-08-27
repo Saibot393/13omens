@@ -8,6 +8,7 @@
 - Gear can now be send to the chat by clicking the icon next to the name
 - Gear can now be dragged from the pc sheet
 - Gear can now be created directly from the pc sheet
+- Input focus will now persist between sheet rerenders
 - Improved/refactored drag and drop logic
   
 ## v1.1.0
