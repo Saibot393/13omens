@@ -75,7 +75,8 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 			autoPopulatePCs : o13ActorSheet.autoPopulatePCs,
 			createNewGear : o13ActorSheet.createNewGear,
 			kill : o13ActorSheet.kill,
-			revive : o13ActorSheet.revive
+			revive : o13ActorSheet.revive,
+			posttoChat : o13ActorSheet.posttoChat
 		}
 	});
 	
@@ -270,6 +271,21 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 	static async revive(event, target) {
 		if (this.actor.type == "pc") {
 			this.actor.revive();
+		}
+	}
+	
+	static async posttoChat(event, target) {
+		if (this.actor.type == "pc") {
+			const perkID = target.getAttribute("perk-id");
+			const gearID = target.getAttribute("gear-id");
+			
+			if (perkID) {
+				
+			}
+			
+			if (gearID) {
+				this.actor.geartoChatMessage(gearID);
+			}
 		}
 	}
 	
