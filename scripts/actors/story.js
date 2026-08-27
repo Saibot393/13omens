@@ -276,6 +276,10 @@ export class o13storyActor {
 		return !this.pcActors.some(actor => actor.hasCheatedDeath());
 	}
 	
+	get cheatedDeathCountinAct() {
+		return this.pcActors.map(actor => actor.cheatedDeathCount()).reduce((sum, value) => sum + value, 0)
+	}
+	
 	//Archetypes
 	get archetypes() {
 		return [...this.items].filter(item => item.type == "archetype");
