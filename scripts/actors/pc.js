@@ -94,7 +94,7 @@ export class o13pcActor {
 			}
 			
 			if (changed.system.death) {
-				(if game.user.isActiveGM ) await this.storyActor?.updateMaxWounds();
+				if (game.user.isActiveGM) await this.storyActor?.updateMaxWounds();
 			}
 		}
 	}
