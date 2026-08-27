@@ -2,6 +2,8 @@ const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDo
 
 import {virtualItem} from "./virtualItem.js";
 
+import {utils} from "../utils.js";
+
 export class o13gearItem extends virtualItem {
 	//Quantity
 	get quantityValue() {
@@ -30,6 +32,11 @@ export class o13gearItem extends virtualItem {
 	
 	get completelyBroken() {
 		return this.quantityValue <= 0;
+	}
+	
+	//chat
+	async toChatMessage(chatMessageData = {}) {
+		return utils.createHBSChatMessage({item : this, enrichables : this.enrichables}, chatMessageData, "chat/gear");
 	}
 	
 	//data preperation

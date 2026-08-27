@@ -281,6 +281,14 @@ export class o13pcActor {
 		return this.createEmbeddedDocuments("Item", [gear]);
 	}
 	
+	async geartoChatMessage(id, messageData = {}) {
+		const gear = this.items.get(id);
+		
+		if (gear?.isGear) {
+			gear.toChatMessage(messageData);
+		}
+	}
+	
 	//Select gear (from archetype)
 	get selectableGearCount() {
 		if (this.isPC) {
