@@ -1,3 +1,6 @@
+## v1.2.1
+- remove console spam
+
 ## v1.2.0
 - Added backstory tabs to archetype and pc sheets
   - PC backstory will be filled in from archetype upon selection
