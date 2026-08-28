@@ -1,4 +1,26 @@
 export class utils {
+	static lowest(numbers, n) {
+		return [...numbers].sort((a, b) => a-b).slice(0, n);
+	}
+
+	static highest(numbers, n) {
+		return [...numbers].sort((a, b) => b-a).slice(0, n);
+	}
+	
+	static indexesof(number, search) {
+		const buffer = [...number];
+		
+		const indexes = [];
+		
+		for (const s of search) {
+			const index = buffer.indexOf(s);		
+			indexes.push(index);
+			buffer[index] = Symbol("checked");
+		}
+		
+		return indexes;
+	}
+	
 	static randomPermut(array) {
 		for (let i = array.length - 1; i > 0; i--) {
 			const j = Math.floor(Math.random() * (i + 1));
@@ -69,10 +91,10 @@ export class utils {
 			combine.nostrain = Boolean(combine.nostrain || modifier.nostrain);
 			combine.woundthreshold = modifier.woundthreshold ?? combine.woundthreshold;
 			combine.strainthreshold = modifier.strainthreshold ?? combine.strainthreshold;
-			combine.rollbehaviours = {
-				redrawomendice : combine.rollbehaviours.redrawomendice + modifier.rollbehaviours.redrawomendice,
-				rerolls : combine.rollbehaviours.rerolls + modifier.rollbehaviours.rerolls,
-				flawhnl : combine.rollbehaviours.flawhnl || modifier.rollbehaviours.flawhnl//use highest and lowest dice when rolling with flaw
+			combine.rollbehaviour = {
+				redrawomendice : combine.rollbehaviour.redrawomendice + modifier.rollbehaviour.redrawomendice,
+				rerolls : combine.rollbehaviour.rerolls + modifier.rollbehaviour.rerolls,
+				flawhnl : combine.rollbehaviour.flawhnl || modifier.rollbehaviour.flawhnl//use highest and lowest dice when rolling with flaw
 			}
 		}
 		

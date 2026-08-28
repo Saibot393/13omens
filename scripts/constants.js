@@ -32,7 +32,7 @@ const DEFAULTROLLMODIFIERS = {
 	nostrain : false,
 	woundthreshold : null,
 	strainthreshold : null,
-	rollbehaviours : {
+	rollbehaviour : {
 		redrawomendice : 0,
 		rerolls : 0,
 		flawhnl : false //use highest and lowest dice when rolling with flaw

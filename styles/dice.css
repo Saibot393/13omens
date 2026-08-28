@@ -95,6 +95,14 @@
 .o13-die[die-face="5"] .pip-bot-right,
 .o13-die[die-face="6"] .pip-bot-right {display : block}
 
+.o13-die[mystery] .pip-top-left,
+.o13-die[mystery] .pip-top-right,
+.o13-die[mystery] .pip-mid-left,
+.o13-die[mystery] .pip-mid-mid,
+.o13-die[mystery] .pip-mid-right,
+.o13-die[mystery] .pip-bot-left,
+.o13-die[mystery] .pip-bot-right {display : none}
+
 .o13-dice-bar{
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));

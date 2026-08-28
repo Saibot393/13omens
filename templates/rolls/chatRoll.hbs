@@ -6,6 +6,10 @@
 				dice=roll.diceResults
 			}}
 		</div>
+		<span class="o13-label o13-content-centered">
+			{{#if roll.hasRerolls}}<i class="fa-solid fa-dice" data-tooltip="{{localize '13omens.tooltips.reroll'}}" style="margin:10px;color:var(--o13-antique-gold);" data-action="rerollDice"></i>{{/if}}
+			{{#if roll.canOmenRedraw}}<i class="fa-solid fa-sack-xmark" data-tooltip="{{localize '13omens.tooltips.redrawomen'}}" style="margin:10px;color:var(--o13-antique-gold);" data-action="redrawOmenDice"></i>{{/if}}
+		</span>
 		<span class="o13-label o13-content-centered o13-header-label" style="margin-top:5px">
 			{{{localize "13omens.chats.rollResult" taskrisk=(localize (concat "13omens.titles.taskrisks." roll.taskRisk)) outcome=(localize (concat "13omens.titles.outcomes." roll.outcome))}}}
 			{{#if roll.isOwner}}
