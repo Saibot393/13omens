@@ -364,6 +364,27 @@ export class o13pcActor {
 		}
 	}
 	
+	getAspectRollModifiers(aspect, combined = true) {
+		const RMs = [this.system.aspectrollmodifiers.general];
+		
+		let groupkey = "";
+		
+		if (CONFIG["13OMENS"].COREASPECTSIDS.includes(aspect)) groupkey = "core";
+		
+		if (!isNaN(aspect)) groupkey = "story";
+
+		if (groupkey) {
+			RMs.push(this.system.aspectrollmodifiers[groupkey].general);
+			
+			if (this.system.aspectrollmodifiers[groupkey][aspect]) {
+				RMs.push(this.system.aspectrollmodifiers[groupkey][aspect]);
+			}
+		}
+		
+		if (combined) return utils.combineRollModifiers(RMs)
+		else return RMs;
+	}
+	
 	get storyAspectNames() {
 		return this.storyActor?.storyAspectNames || Array.from({length : 5}, () => "");
 	}
@@ -647,19 +668,29 @@ export class o13pcActor {
 	prepareBaseData() { //pre AE
 		this.superPD.prepareBaseData();
 		
-		this.system.perks = {
-				maxwounds: this.storyActor?.getmaxWounds(this) || CONFIG["13OMENS"].DEFAULTMAXWOUNDS,
-				
-				omenwoundthreshold : this.activeAct,
-				
-				noflawwoundcount: null,
-								
-				selectablegearcount: this.archetype?.selectableGearCount ?? 0,
-				
-				cheatdeathamount: {
-					peract: 1,
-					perstory: 0 //these are in addition to the per act
-				}
+		this.system.maxwounds = this.storyActor?.getmaxWounds(this) || CONFIG["13OMENS"].DEFAULTMAXWOUNDS;
+			
+		this.system.omenwoundthreshold = this.activeAct;
+			
+		this.system.noflawwoundcount = null;
+							
+		this.system.selectablegearcount = this.archetype?.selectableGearCount ?? 0;
+			
+		this.system.cheatdeathamount = {
+			peract: 1,
+			perstory: 0 //these are in addition to the per act
+		};
+		
+		const defaultRollModifiers = CONFIG["13OMENS"].DEFAULTROLLMODIFIERS;
+		
+		this.system.aspectrollmodifiers = {general : foundry.utils.deepClone(defaultRollModifiers)};
+		
+		for (const groupkey of Object.keys(this.system.aspects)) {
+			this.system.aspectrollmodifiers[groupkey] = {general : foundry.utils.deepClone(defaultRollModifiers)};
+			
+			for (const subkey of Object.keys(this.system.aspects[groupkey])) {
+				this.system.aspectrollmodifiers[groupkey][subkey] = foundry.utils.deepClone(defaultRollModifiers);
+			}
 		}
 	}
 	

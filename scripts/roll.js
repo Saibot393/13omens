@@ -1,4 +1,4 @@
-const DEFAULTROLLOPTIONS = {dicePermut : [], flaws : [], edges : [], strain : null, ignoreStrain : false, targetNumber : null, taskDifficulty : 0, taskRisk : "normal", woundThreshold : null, strainThreshold : null};
+const DEFAULTROLLOPTIONS = {dicePermut : [], flaws : [], edges : [], strain : null, ignoreStrain : false, targetNumber : null, taskDifficulty : 0, taskRisk : "normal", woundThreshold : null, strainThreshold : null, rollbehaviour : {}};
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 import { utils } from "./utils.js";

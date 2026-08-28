@@ -59,4 +59,21 @@ export class utils {
 			content : template
 		})
 	}
+	
+	static combineRollModifiers(modifiers) {
+		const combine = foundry.utils.deepClone(CONFIG["13OMENS"].DEFAULTROLLMODIFIERS)
+		
+		for (const modifier of modifiers) {
+			combine.addflaws = [...combine.addflaws, ...modifier.addflaws];
+			combine.addedges = [...combine.addedges, ...modifier.addedges];
+			combine.nostrain = combine.nostrain || modifier.nostrain;
+			combine.rollbehaviours = {
+				redrawomendice : combine.rollbehaviours.redrawomendice + modifier.rollbehaviours.redrawomendice,
+				rerolls : combine.rollbehaviours.rerolls + modifier.rollbehaviours.rerolls,
+				flawhnl : combine.rollbehaviours.flawhnl || modifier.rollbehaviours.flawhnl//use highest and lowest dice when rolling with flaw
+			}
+		}
+		
+		return combine;
+	}
 }
