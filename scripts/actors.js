@@ -29,8 +29,7 @@ export class o13Actor extends Actor {
 		
 		const adddiff = foundry.utils.diffObject(this._lastAROverrides, currentAEOverrides);
 		const remdiff = foundry.utils.diffObject(currentAEOverrides, this._lastAROverrides);
-		console.log(adddiff);
-		console.log(remdiff);
+
 		this._lastAROverrides = currentAEOverrides;
 		
 		if (!foundry.utils.isEmpty(adddiff) || !foundry.utils.isEmpty(remdiff)) {
@@ -39,8 +38,7 @@ export class o13Actor extends Actor {
 	}
 	
 	_onAROverrideChange(adddiff, remdiff) {
-		console.log(adddiff);
-		console.log(remdiff);
+
 	}
 	
 	get isPC() {

@@ -85,8 +85,6 @@ export class o13pcActor {
 	async _onUpdate(changed, options, userId) {
 		await this.superPD._onUpdate(changed, options, userId);
 		
-		console.log(changed);
-		
 		if (game.user.id != userId) return;
 		
 		if (changed.system) {
@@ -562,9 +560,8 @@ export class o13pcActor {
 	
 	//Cheat death
 	cheatedDeathCount(act = null) {
-		const lookupact = act ?? this.activeAct;
-			
-		return Object.values(this.system.wounds).filter(wound => wound.safe?.filled && wound.safe?.act == lookupact).length;
+		if (act != null) return Object.values(this.system.wounds).filter(wound => wound.safe?.filled && wound.safe?.act == act).length
+		else return Object.values(this.system.wounds).filter(wound => wound.safe?.filled).length
 	}
 	
 	hasCheatedDeath(act = null) {
@@ -572,7 +569,10 @@ export class o13pcActor {
 	}
 	
 	get canCheatDeath() {
-		return this.storyActor?.canCheatDeath;
+		const canCheatinStory = this.cheatedDeathCount() < this.system.cheatdeathamount.perstory;
+		const canCheatinAct = (this.storyActor?.canCheatDeath && this.system.cheatdeathamount.peract > 0) || (!this.storyActor?.canCheatDeath && this.cheatedDeathCount(this.activeAct) < this.system.cheatdeathamount.peract - 1);
+		
+		return canCheatinStory && canCheatinAct;
 	}
 	
 	//strain
@@ -685,9 +685,9 @@ export class o13pcActor {
 							
 		this.system.selectablegearcount = this.archetype?.selectableGearCount ?? 0;
 			
-		this.system.cheatdeathamount = {
-			peract: 1,
-			perstory: 0 //these are in addition to the per act
+		this.system.cheatdeathamount = { //these give the maximum
+			perstory: 1,
+			peract: 1
 		};
 		
 		const defaultRollModifiers = CONFIG["13OMENS"].DEFAULTROLLMODIFIERS;
