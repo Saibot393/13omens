@@ -59,11 +59,11 @@ export class o13Roll extends Roll {
 	}
 	
 	get woundThreshold() {
-		return this._rollData.woundthreshold ?? this.act;
+		return this._rollData.woundThreshold ?? this.act;
 	}
 	
 	get strainThreshold() {
-		return this._rollData.strainthreshold ?? this.act;
+		return this._rollData.strainThreshold ?? this.act;
 	}
 	
 	get aspect() {

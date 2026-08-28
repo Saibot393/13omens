@@ -162,6 +162,8 @@ export class o13pcActor {
 		for (const perk of Object.values(this.getPerks())) {
 			await perk.newAct();
 		}
+		
+		this.prepareData();
 	}
 	
 	get activeAct() {
@@ -678,10 +680,6 @@ export class o13pcActor {
 		this.superPD.prepareBaseData();
 		
 		this.system.maxwounds = this.storyActor?.getmaxWounds(this) || CONFIG["13OMENS"].DEFAULTMAXWOUNDS;
-			
-		//this.system.omenwoundthreshold = this.activeAct;
-			
-		//this.system.noflawwoundcount = null;
 							
 		this.system.selectablegearcount = this.archetype?.selectableGearCount ?? 0;
 			
