@@ -85,6 +85,8 @@ export class o13pcActor {
 	async _onUpdate(changed, options, userId) {
 		await this.superPD._onUpdate(changed, options, userId);
 		
+		console.log(changed);
+		
 		if (game.user.id != userId) return;
 		
 		if (changed.system) {
@@ -96,6 +98,12 @@ export class o13pcActor {
 			if (changed.system.death) {
 				if (game.user.isActiveGM) await this.storyActor?.updateMaxWounds();
 			}
+		}
+	}
+	
+	_onAROverrideChange(adddiff, remdiff) {
+		if (adddiff.system?.hasOwnProperty("maxwounds") || remdiff.system?.hasOwnProperty("maxwounds")) {
+			this.updateMaxWounds();
 		}
 	}
 	
@@ -293,9 +301,7 @@ export class o13pcActor {
 	
 	//Select gear (from archetype)
 	get selectableGearCount() {
-		if (this.isPC) {
-			return this.archetype?.selectableGearCount;
-		}
+		return this.system.selectablegearcount;//this.archetype?.selectableGearCount;
 	}
 	
 	hasGearSelected(originid) {
@@ -393,12 +399,15 @@ export class o13pcActor {
 		return !isNaN(this.getAspectData(aspect,true).targetNumber);
 	}
 	
-	async rollAspect(aspectName, rollDialogue = false, toChat = true) {
+	async rollAspect(aspectName, options = {}) {
 		if (this.canRollAspect(aspectName)) {
 			const aspectData = this.getAspectData(aspectName, true);
+			const aspectModifiers = this.getAspectRollModifiers(aspectName);
+
+			const config = utils.combineRollOptions([utils.rollOptionsFromModifiers(aspectModifiers), options]);
 			
 			if (aspectData) {
-				new o13rollConfig(this, {aspect : aspectName}).render(true);
+				new o13rollConfig(this, {...config, aspect : aspectName}).render(true);
 			}
 		}
 		else {
@@ -416,7 +425,7 @@ export class o13pcActor {
 	
 	//Wounds
 	getmaxWounds(actor = undefined) {
-		return this.storyActor?.getmaxWounds(this) || CONFIG["13OMENS"].DEFAULTMAXWOUNDS;
+		return this.system.maxwounds;//return this.storyActor?.getmaxWounds(this) || CONFIG["13OMENS"].DEFAULTMAXWOUNDS;
 	}
 	
 	get maxWounds() {
@@ -670,9 +679,9 @@ export class o13pcActor {
 		
 		this.system.maxwounds = this.storyActor?.getmaxWounds(this) || CONFIG["13OMENS"].DEFAULTMAXWOUNDS;
 			
-		this.system.omenwoundthreshold = this.activeAct;
+		//this.system.omenwoundthreshold = this.activeAct;
 			
-		this.system.noflawwoundcount = null;
+		//this.system.noflawwoundcount = null;
 							
 		this.system.selectablegearcount = this.archetype?.selectableGearCount ?? 0;
 			

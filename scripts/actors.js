@@ -18,6 +18,31 @@ export class o13Actor extends Actor {
 		superPD : ["update", "_preCreate", "_preUpdate", "_onUpdate", "_onCreateDescendantDocuments", "prepareBaseData", "prepareEmbeddedDocuments", "prepareDerivedData"]
 	}
 	
+	prepareDerivedData() {
+        super.prepareDerivedData();
+		
+		const currentAEOverrides = foundry.utils.deepClone(this.overrides ?? {});
+		
+		if (!this._lastAROverrides) {
+			this._lastAROverrides = {};
+		}
+		
+		const adddiff = foundry.utils.diffObject(this._lastAROverrides, currentAEOverrides);
+		const remdiff = foundry.utils.diffObject(currentAEOverrides, this._lastAROverrides);
+		console.log(adddiff);
+		console.log(remdiff);
+		this._lastAROverrides = currentAEOverrides;
+		
+		if (!foundry.utils.isEmpty(adddiff) || !foundry.utils.isEmpty(remdiff)) {
+			this._onAROverrideChange(adddiff, remdiff);
+		}
+	}
+	
+	_onAROverrideChange(adddiff, remdiff) {
+		console.log(adddiff);
+		console.log(remdiff);
+	}
+	
 	get isPC() {
 		return this.type == "pc";
 	}
@@ -59,6 +84,7 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 			openPC : o13ActorSheet.openPC,
 			removePC : o13ActorSheet.removePC,
 			removePerk : o13ActorSheet.removePerk,
+			openPerk : o13ActorSheet.openPerk,
 			removeGear : o13ActorSheet.removeGear,
 			addOmenDice : o13ActorSheet.addOmenDice,
 			removeOmenDice : o13ActorSheet.removeOmenDice,
@@ -144,6 +170,18 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 			const perkID = target.getAttribute("perk-id");
 			
 			return this.actor.removePerk(perkID);
+		}
+	}
+	
+	static async openPerk(event, target) {
+		if (this.actor.type == "pc") {
+			const perkid = target.getAttribute("perk-id");
+			
+			const perk = this.actor.items.get(perkid);
+			
+			if (perk?.isPerk) {
+				perk.sheet.render(true);
+			}
 		}
 	}
 	

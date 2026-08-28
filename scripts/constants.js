@@ -30,6 +30,8 @@ const DEFAULTROLLMODIFIERS = {
 	addflaws : [],
 	addedges : [],
 	nostrain : false,
+	woundthreshold : null,
+	strainthreshold : null,
 	rollbehaviours : {
 		redrawomendice : 0,
 		rerolls : 0,

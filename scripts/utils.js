@@ -66,7 +66,9 @@ export class utils {
 		for (const modifier of modifiers) {
 			combine.addflaws = [...combine.addflaws, ...modifier.addflaws];
 			combine.addedges = [...combine.addedges, ...modifier.addedges];
-			combine.nostrain = combine.nostrain || modifier.nostrain;
+			combine.nostrain = Boolean(combine.nostrain || modifier.nostrain);
+			combine.woundthreshold = modifier.woundthreshold ?? combine.woundthreshold;
+			combine.strainthreshold = modifier.strainthreshold ?? combine.strainthreshold;
 			combine.rollbehaviours = {
 				redrawomendice : combine.rollbehaviours.redrawomendice + modifier.rollbehaviours.redrawomendice,
 				rerolls : combine.rollbehaviours.rerolls + modifier.rollbehaviours.rerolls,
@@ -78,14 +80,16 @@ export class utils {
 	}
 	
 	static rollOptionsFromModifiers(modifiers) {
-		const base =  foundry.utils.deepClone(CONFIG["13OMENS"].DEFAULTROLLOPTIONS);
+		const base = foundry.utils.deepClone(CONFIG["13OMENS"].DEFAULTROLLOPTIONS);
 		
 		base.flaws = modifiers.addflaws ?? base.flaws;
 		base.edges = modifiers.addedges ?? base.edges;
-		base.ignoreStrain = combine.nostrain ?? base.ignoreStrain;
-		base.rollbehaviour = {...base.rollbehaviour, ...combine.rollbehaviour};
+		base.ignoreStrain = modifiers.nostrain ?? base.ignoreStrain;
+		base.woundThreshold = modifiers.woundthreshold ?? base.woundThreshold;
+		base.strainThreshold = modifiers.strainthreshold ?? base.strainThreshold;
+		base.rollbehaviour = {...base.rollbehaviour, ...modifiers.rollbehaviour};
 		
-		return 
+		return base;
 	}
 	
 	static combineRollOptions(configs) {
@@ -93,10 +97,10 @@ export class utils {
 		
 		for (const config of configs) {
 			combine.dicePermut = config.dicePermut ?? combine.dicePermut;
-			if (config.flaws) combine.flaws = [...combine.flaws, config.flaws]
-			if (config.edges) combine.edges = [...combine.edges, config.edges]
+			if (config.flaws) combine.flaws = [...combine.flaws, ...config.flaws]
+			if (config.edges) combine.edges = [...combine.edges, ...config.edges]
 			combine.strain = config.strain ?? combine.strain;
-			combine.ignoreStrain = combine.ignoreStrain || config.ignoreStrain;
+			combine.ignoreStrain = Boolean(combine.ignoreStrain || config.ignoreStrain);
 			combine.targetNumber = config.targetNumber ?? combine.targetNumber;
 			if (!isNaN(config.taskDifficulty)) combine.taskDifficulty = combine.taskDifficulty + config.taskDifficulty;
 			combine.taskRisk = config.taskRisk ?? combine.taskRisk;

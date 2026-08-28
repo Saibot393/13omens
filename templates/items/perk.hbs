@@ -30,7 +30,7 @@
 	<main class="flexcol o13-scrollable" style="flex:1; min-height:0;">
 		<nav class="o13-nav" nav-group="main" style="margin-bottom:2px">
 			<a data-group="main" nav-tab="description">{{localize "13omens.titles.description"}}</a>
-			<a data-group="main" nav-tab="activeeffects">{{localize "13omens.titles.activeeffects"}}</a>
+			<a data-group="main" nav-tab="activeeffects">{{localize "DOCUMENT.ActiveEffects"}}</a>
 		</nav>
 		
 		<section class="o13-tab o13-scrollable flexcol" nav-group="main" nav-tab="description" scroll-id="description">
@@ -42,6 +42,19 @@
 		</section>
 		
 		<section class="o13-tab o13-scrollable flexcol" nav-group="main" nav-tab="activeeffects" scroll-id="description">
+			<div>
+				<span class="o13-label o13-header-label">{{localize "DOCUMENT.ActiveEffects"}} <i class="fa-solid fa-plus o13-icon o13-clickable" data-action="createNewEffect"></i> </span>
+				{{#each item.effects}}
+					<div class="flexrow o13-side-padding draggable" draggable="true" effect-id="{{this._id}}">
+						<span class="o13-underline o13-flex-span">
+							<span class="o13-label o13-clickable o13-flex-grow" effect-id="{{this._id}}" data-action="openEffect">
+								{{this.name}}
+							</span>
+							<i class="fa-solid fa-x o13-label o13-icon o13-clickable o13-flex-right" effect-id="{{this._id}}" data-action="removeEffect"></i>
+						</span>
+					</div>
+				{{/each}}
+			</div>
 		</section>
 	</main>
 </div>
