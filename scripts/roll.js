@@ -23,12 +23,17 @@ export class o13Roll extends Roll {
 		if (!this._rollData.dicePermut || this._rollData.dicePermut.length == 0) this.drawDice();
 		
 		this._canvaliantsacrifice = this.actor?.canValiantSacrifice;
+		this._hasvaliantlysacrificed = false;
 		
 		this._formula = this.formula;
 		this.terms = this.constructor.parse(this.formula, this.data);
 	}
 	
 	get outcome() {
+		if (this.hasValiantlySacrificed) {
+			return 2;
+		}
+		
 		if (this.total > this.totalDifficulty) {
 			return 1;
 		}
@@ -50,6 +55,14 @@ export class o13Roll extends Roll {
 	
 	get actorName() {
 		return this._actorName || this.actor?.name;
+	}
+	
+	get canValiantSacrifice() {
+		return (this.actor?.isOwner ?? false) && this._canvaliantsacrifice && this.rollsOmenDice;
+	}
+	
+	get hasValiantlySacrificed() {
+		return this._hasvaliantlysacrificed;
 	}
 	
 	get act() {
@@ -209,7 +222,17 @@ export class o13Roll extends Roll {
 		
 		const dicePermutOmenApplied = this.dicePermutOmenApplied;
 		
-		return this.terms[0].results.map((result, index) => ({face : result.result, type : dicePermutOmenApplied[index], crossed : result.discarded}))
+		return this.terms[0].results.map((result, index) => ({face : result.result, type : dicePermutOmenApplied[index], crossed : result.discarded, mystery : this.canValiantSacrifice}))
+	}
+	
+	get rollsOmenDice() {
+		const dicePermutOmenApplied = this.dicePermutOmenApplied;
+		return this.terms[0]?.results?.some((result, index) => dicePermutOmenApplied[index] == "omen");
+	}
+	
+	get rollsSafeDice() {
+		const dicePermutOmenApplied = this.dicePermutOmenApplied;
+		return this.terms[0]?.results?.some((result, index) => dicePermutOmenApplied[index] == "safe");
 	}
 	
 	rerollDiceSelection(indices) {
@@ -243,7 +266,7 @@ export class o13Roll extends Roll {
 	}
 	
 	get canCheatDeath() {
-		return this.diceResults.some(die => die.type == "safe") && this.actor?.canCheatDeath;
+		return this.rollsSafeDice && this.actor?.canCheatDeath;
 	}
 	
 	get consequenceTaken() {
@@ -251,7 +274,7 @@ export class o13Roll extends Roll {
 	}
 	
 	get canTakeConsequence() {
-		return (this.actor?.isOwner ?? false) && !this.consequenceTaken;
+		return (this.actor?.isOwner ?? false) && !this.consequenceTaken && !this.hasValiantlySacrificed;
 	}
 	
 	applyDiceSelection() {
@@ -324,7 +347,8 @@ export class o13Roll extends Roll {
 			act: this._act,
 			storyID : this._storyID,
 			consequenceTaken: this._consequenceTaken,
-			canvaliantsacrifice: this._canvaliantsacrifice
+			canvaliantsacrifice: this._canvaliantsacrifice,
+			hasvaliantlysacrificed : this._hasvaliantlysacrificed
         };
 		
         return json;
@@ -342,6 +366,7 @@ export class o13Roll extends Roll {
 		roll._storyID = o13Data.storyID;
 		roll._consequenceTaken = o13Data.consequenceTaken;
 		roll._canvaliantsacrifice = o13Data.canvaliantsacrifice;
+		roll._hasvaliantlysacrificed = o13Data.hasvaliantlysacrificed;
 		
         if (data.terms) {
             roll.terms = data.terms.map(term => foundry.dice.terms.RollTerm.fromData(term));
@@ -362,6 +387,8 @@ export class o13Roll extends Roll {
 				case "takeStrain" : await this.takeStrain(); break;
 				case "rerollDice" : await this.rerollDice(); break;
 				case "redrawOmenDice" : await this.redrawOmenDice(); break;
+				case "valiantlysacrifice" : await this.valiantlySacrifice(); break;
+				case "refusevaliantsacrifice" : await this.refuseValiantSacrifice(); break;
 			}
 			
 			message.update({
@@ -435,6 +462,21 @@ export class o13Roll extends Roll {
 			this._rollData.dicePermut = [...usedDice, ...unusedDice];
 			
 			this._evaluateTotal();
+		}
+	}
+	
+	async valiantlySacrifice() {
+		if (this.canValiantSacrifice) {
+			this._canvaliantsacrifice = false;
+			this._hasvaliantlysacrificed = true;
+			
+			await this.actor.takeWound({face : 6});
+		}
+	}
+	
+	async refuseValiantSacrifice() {
+		if (this.canValiantSacrifice) {
+			this._canvaliantsacrifice = false;
 		}
 	}
 }

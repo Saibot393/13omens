@@ -489,6 +489,8 @@ export class o13pcActor {
 	
 	async updateMaxWounds(forceupdate = false) {
 		if (!this.isDead || forceupdate) {
+			this.prepareData();
+			
 			const maxWounds = this.maxWounds;
 			
 			let currentWounds = this.system.wounds;
@@ -558,6 +560,10 @@ export class o13pcActor {
 		}
 		
 		return isDead;
+	}
+	
+	get canValiantSacrifice() {
+		return this.woundDiceCount.omen == this.maxWounds - 1; //rules are a bit unclear here, but this seems right
 	}
 	
 	//Cheat death
