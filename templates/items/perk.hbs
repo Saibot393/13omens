@@ -28,10 +28,20 @@
 		</div>
 	</header>
 	<main class="flexcol o13-scrollable" style="flex:1; min-height:0;">
-		<div class="o13-notes flexcol">
-			<prose-mirror class="o13-text-editor" name="system.description" document-uuid="{{item.uuid}}" value="{{item.system.description}}" button toggled editable collaborative="false">
-				{{{enriched.description}}}
-			</prose-mirror>
-		</div>
+		<nav class="o13-nav" nav-group="main" style="margin-bottom:2px">
+			<a data-group="main" nav-tab="description">{{localize "13omens.titles.description"}}</a>
+			<a data-group="main" nav-tab="activeeffects">{{localize "13omens.titles.activeeffects"}}</a>
+		</nav>
+		
+		<section class="o13-tab o13-scrollable flexcol" nav-group="main" nav-tab="description" scroll-id="description">
+			<div class="o13-notes flexcol">
+				<prose-mirror class="o13-text-editor" name="system.description" document-uuid="{{item.uuid}}" value="{{item.system.description}}" button toggled editable collaborative="false">
+					{{{enriched.description}}}
+				</prose-mirror>
+			</div>
+		</section>
+		
+		<section class="o13-tab o13-scrollable flexcol" nav-group="main" nav-tab="activeeffects" scroll-id="description">
+		</section>
 	</main>
 </div>

@@ -76,4 +76,35 @@ export class utils {
 		
 		return combine;
 	}
+	
+	static rollOptionsFromModifiers(modifiers) {
+		const base =  foundry.utils.deepClone(CONFIG["13OMENS"].DEFAULTROLLOPTIONS);
+		
+		base.flaws = modifiers.addflaws ?? base.flaws;
+		base.edges = modifiers.addedges ?? base.edges;
+		base.ignoreStrain = combine.nostrain ?? base.ignoreStrain;
+		base.rollbehaviour = {...base.rollbehaviour, ...combine.rollbehaviour};
+		
+		return 
+	}
+	
+	static combineRollOptions(configs) {
+		const combine = foundry.utils.deepClone(CONFIG["13OMENS"].DEFAULTROLLOPTIONS);
+		
+		for (const config of configs) {
+			combine.dicePermut = config.dicePermut ?? combine.dicePermut;
+			if (config.flaws) combine.flaws = [...combine.flaws, config.flaws]
+			if (config.edges) combine.edges = [...combine.edges, config.edges]
+			combine.strain = config.strain ?? combine.strain;
+			combine.ignoreStrain = combine.ignoreStrain || config.ignoreStrain;
+			combine.targetNumber = config.targetNumber ?? combine.targetNumber;
+			if (!isNaN(config.taskDifficulty)) combine.taskDifficulty = combine.taskDifficulty + config.taskDifficulty;
+			combine.taskRisk = config.taskRisk ?? combine.taskRisk;
+			combine.woundThreshold = config.woundThreshold ?? combine.woundThreshold;
+			combine.strainThreshold = config.strainThreshold ?? combine.strainThreshold;
+			combine.rollbehaviour = {...combine.rollbehaviour, ...config.rollbehaviour}
+		}
+		
+		return combine;
+	}
 }

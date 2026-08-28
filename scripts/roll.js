@@ -1,16 +1,15 @@
-const DEFAULTROLLOPTIONS = {dicePermut : [], flaws : [], edges : [], strain : null, ignoreStrain : false, targetNumber : null, taskDifficulty : 0, taskRisk : "normal", woundThreshold : null, strainThreshold : null, rollbehaviour : {}};
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 import { utils } from "./utils.js";
 
 export class o13Roll extends Roll {
-	constructor(actor, aspect, options = DEFAULTROLLOPTIONS) {
+	constructor(actor, aspect, options = CONFIG["13OMENS"].DEFAULTROLLOPTIONS) {
 		super("0");
 		
 		this._actor = actor;
 		this._aspect = aspect;
 		
-		this._rollData = ({...DEFAULTROLLOPTIONS, ...options});
+		this._rollData = ({...CONFIG["13OMENS"].DEFAULTROLLOPTIONS, ...options});
 		
 		utils.expandRollData(this._rollData);
 		
@@ -327,7 +326,7 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 		this._actor = actor;
 		
 		this._data = {
-			...DEFAULTROLLOPTIONS,
+			...CONFIG["13OMENS"].DEFAULTROLLOPTIONS,
 			...data
 		}
 		
