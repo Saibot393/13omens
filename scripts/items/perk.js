@@ -51,6 +51,21 @@ export class o13perkItem extends virtualItem {
 		}
 	}
 	
+	//Effects
+	async createNewEffect(data) {
+		const effect = {name : game.i18n.localize("DOCUMENT.ActiveEffect"), ...data};
+		
+		return this.createEmbeddedDocuments("ActiveEffect", [effect]);
+	}
+	
+	async removeEffect(id) {
+		let effect = this.effects.get(id);
+		
+		if (effect) {
+			return this.deleteEmbeddedDocuments("ActiveEffect", [id]);
+		}
+	}
+	
 	//data preperation
 	get enrichables() {
 		return {

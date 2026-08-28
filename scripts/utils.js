@@ -1,4 +1,26 @@
 export class utils {
+	static lowest(numbers, n) {
+		return [...numbers].sort((a, b) => a-b).slice(0, n);
+	}
+
+	static highest(numbers, n) {
+		return [...numbers].sort((a, b) => b-a).slice(0, n);
+	}
+	
+	static indexesof(number, search) {
+		const buffer = [...number];
+		
+		const indexes = [];
+		
+		for (const s of search) {
+			const index = buffer.indexOf(s);		
+			indexes.push(index);
+			buffer[index] = Symbol("checked");
+		}
+		
+		return indexes;
+	}
+	
 	static randomPermut(array) {
 		for (let i = array.length - 1; i > 0; i--) {
 			const j = Math.floor(Math.random() * (i + 1));
@@ -66,12 +88,47 @@ export class utils {
 		for (const modifier of modifiers) {
 			combine.addflaws = [...combine.addflaws, ...modifier.addflaws];
 			combine.addedges = [...combine.addedges, ...modifier.addedges];
-			combine.nostrain = combine.nostrain || modifier.nostrain;
-			combine.rollbehaviours = {
-				redrawomendice : combine.rollbehaviours.redrawomendice + modifier.rollbehaviours.redrawomendice,
-				rerolls : combine.rollbehaviours.rerolls + modifier.rollbehaviours.rerolls,
-				flawhnl : combine.rollbehaviours.flawhnl || modifier.rollbehaviours.flawhnl//use highest and lowest dice when rolling with flaw
+			combine.nostrain = Boolean(combine.nostrain || modifier.nostrain);
+			combine.woundthreshold = modifier.woundthreshold ?? combine.woundthreshold;
+			combine.strainthreshold = modifier.strainthreshold ?? combine.strainthreshold;
+			combine.rollbehaviour = {
+				redrawomendice : combine.rollbehaviour.redrawomendice + modifier.rollbehaviour.redrawomendice,
+				rerolls : combine.rollbehaviour.rerolls + modifier.rollbehaviour.rerolls,
+				flawhnl : combine.rollbehaviour.flawhnl || modifier.rollbehaviour.flawhnl//use highest and lowest dice when rolling with flaw
 			}
+		}
+		
+		return combine;
+	}
+	
+	static rollOptionsFromModifiers(modifiers) {
+		const base = foundry.utils.deepClone(CONFIG["13OMENS"].DEFAULTROLLOPTIONS);
+		
+		base.flaws = modifiers.addflaws ?? base.flaws;
+		base.edges = modifiers.addedges ?? base.edges;
+		base.ignoreStrain = modifiers.nostrain ?? base.ignoreStrain;
+		base.woundThreshold = modifiers.woundthreshold ?? base.woundThreshold;
+		base.strainThreshold = modifiers.strainthreshold ?? base.strainThreshold;
+		base.rollbehaviour = {...base.rollbehaviour, ...modifiers.rollbehaviour};
+		
+		return base;
+	}
+	
+	static combineRollOptions(configs) {
+		const combine = foundry.utils.deepClone(CONFIG["13OMENS"].DEFAULTROLLOPTIONS);
+		
+		for (const config of configs) {
+			combine.dicePermut = config.dicePermut ?? combine.dicePermut;
+			if (config.flaws) combine.flaws = [...combine.flaws, ...config.flaws]
+			if (config.edges) combine.edges = [...combine.edges, ...config.edges]
+			combine.strain = config.strain ?? combine.strain;
+			combine.ignoreStrain = Boolean(combine.ignoreStrain || config.ignoreStrain);
+			combine.targetNumber = config.targetNumber ?? combine.targetNumber;
+			if (!isNaN(config.taskDifficulty)) combine.taskDifficulty = combine.taskDifficulty + config.taskDifficulty;
+			combine.taskRisk = config.taskRisk ?? combine.taskRisk;
+			combine.woundThreshold = config.woundThreshold ?? combine.woundThreshold;
+			combine.strainThreshold = config.strainThreshold ?? combine.strainThreshold;
+			combine.rollbehaviour = {...combine.rollbehaviour, ...config.rollbehaviour}
 		}
 		
 		return combine;

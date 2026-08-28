@@ -95,6 +95,7 @@
 			},
 			
 			"outcomes" : {
+				"2" : "Valiant Success",
 				"1" : "Success",
 				"0" : "Partial success",
 				"-1" : "Failure"
@@ -145,12 +146,18 @@
 			"clearWound" : "Clear wound",
 			"createPCs" : "Create player characters",
 			"revive" : "Revive",
-			"kill" : "Kill"
+			"kill" : "Kill",
+			"takeValiantSacrifice" : "Take valiant sacrifice",
+			"refuseValiantSacrifice" : "Refuse valiant sacrifice",
+			"reroll" : "Reroll",
+			"redrawomen" : "Redraw omen dice"
 		},
 		
 		"chats" : {
 			"actorRolled" : "{actor} rolled a <b>{aspect}</b> check {with}(TN:{tn})",
-			"rollResult" : "Outcome: {taskrisk} <b>{outcome}</b>"
+			"rollResult" : "Outcome: {taskrisk} <b>{outcome}</b>",
+			"hasValiantlySacrificed" : "Valiant Sacrifice",
+			"sacrificeValiantly" : "Do you want to valiantly sacrifice yourself?"
 		},
 		
 		"dialogues" : {

@@ -99,6 +99,12 @@ export class o13pcActor {
 		}
 	}
 	
+	_onAROverrideChange(adddiff, remdiff) {
+		if (adddiff.system?.hasOwnProperty("maxwounds") || remdiff.system?.hasOwnProperty("maxwounds")) {
+			this.updateMaxWounds();
+		}
+	}
+	
 	async _onCreateDescendantDocuments(parent, collection, documents, data, options, usedId) {
 		await this.superPD._onCreateDescendantDocuments(parent, collection, documents, data, options, usedId);
 
@@ -156,6 +162,8 @@ export class o13pcActor {
 		for (const perk of Object.values(this.getPerks())) {
 			await perk.newAct();
 		}
+		
+		this.prepareData();
 	}
 	
 	get activeAct() {
@@ -293,9 +301,7 @@ export class o13pcActor {
 	
 	//Select gear (from archetype)
 	get selectableGearCount() {
-		if (this.isPC) {
-			return this.archetype?.selectableGearCount;
-		}
+		return this.system.selectablegearcount;//this.archetype?.selectableGearCount;
 	}
 	
 	hasGearSelected(originid) {
@@ -393,12 +399,15 @@ export class o13pcActor {
 		return !isNaN(this.getAspectData(aspect,true).targetNumber);
 	}
 	
-	async rollAspect(aspectName, rollDialogue = false, toChat = true) {
+	async rollAspect(aspectName, options = {}) {
 		if (this.canRollAspect(aspectName)) {
 			const aspectData = this.getAspectData(aspectName, true);
+			const aspectModifiers = this.getAspectRollModifiers(aspectName);
+
+			const config = utils.combineRollOptions([utils.rollOptionsFromModifiers(aspectModifiers), options]);
 			
 			if (aspectData) {
-				new o13rollConfig(this, {aspect : aspectName}).render(true);
+				new o13rollConfig(this, {...config, aspect : aspectName}).render(true);
 			}
 		}
 		else {
@@ -416,7 +425,7 @@ export class o13pcActor {
 	
 	//Wounds
 	getmaxWounds(actor = undefined) {
-		return this.storyActor?.getmaxWounds(this) || CONFIG["13OMENS"].DEFAULTMAXWOUNDS;
+		return this.system.maxwounds;//return this.storyActor?.getmaxWounds(this) || CONFIG["13OMENS"].DEFAULTMAXWOUNDS;
 	}
 	
 	get maxWounds() {
@@ -480,6 +489,8 @@ export class o13pcActor {
 	
 	async updateMaxWounds(forceupdate = false) {
 		if (!this.isDead || forceupdate) {
+			this.prepareData();
+			
 			const maxWounds = this.maxWounds;
 			
 			let currentWounds = this.system.wounds;
@@ -551,11 +562,14 @@ export class o13pcActor {
 		return isDead;
 	}
 	
+	get canValiantSacrifice() {
+		return this.woundDiceCount.omen == this.maxWounds - 1; //rules are a bit unclear here, but this seems right
+	}
+	
 	//Cheat death
 	cheatedDeathCount(act = null) {
-		const lookupact = act ?? this.activeAct;
-			
-		return Object.values(this.system.wounds).filter(wound => wound.safe?.filled && wound.safe?.act == lookupact).length;
+		if (act != null) return Object.values(this.system.wounds).filter(wound => wound.safe?.filled && wound.safe?.act == act).length
+		else return Object.values(this.system.wounds).filter(wound => wound.safe?.filled).length
 	}
 	
 	hasCheatedDeath(act = null) {
@@ -563,7 +577,10 @@ export class o13pcActor {
 	}
 	
 	get canCheatDeath() {
-		return this.storyActor?.canCheatDeath;
+		const canCheatinStory = this.cheatedDeathCount() < this.system.cheatdeathamount.perstory;
+		const canCheatinAct = (this.storyActor?.canCheatDeath && this.system.cheatdeathamount.peract > 0) || (!this.storyActor?.canCheatDeath && this.cheatedDeathCount(this.activeAct) < this.system.cheatdeathamount.peract - 1);
+		
+		return canCheatinStory && canCheatinAct;
 	}
 	
 	//strain
@@ -669,16 +686,12 @@ export class o13pcActor {
 		this.superPD.prepareBaseData();
 		
 		this.system.maxwounds = this.storyActor?.getmaxWounds(this) || CONFIG["13OMENS"].DEFAULTMAXWOUNDS;
-			
-		this.system.omenwoundthreshold = this.activeAct;
-			
-		this.system.noflawwoundcount = null;
 							
 		this.system.selectablegearcount = this.archetype?.selectableGearCount ?? 0;
 			
-		this.system.cheatdeathamount = {
-			peract: 1,
-			perstory: 0 //these are in addition to the per act
+		this.system.cheatdeathamount = { //these give the maximum
+			perstory: 1,
+			peract: 1
 		};
 		
 		const defaultRollModifiers = CONFIG["13OMENS"].DEFAULTROLLMODIFIERS;

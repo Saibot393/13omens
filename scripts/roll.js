@@ -1,17 +1,16 @@
-const DEFAULTROLLOPTIONS = {dicePermut : [], flaws : [], edges : [], strain : null, ignoreStrain : false, targetNumber : null, taskDifficulty : 0, taskRisk : "normal", woundThreshold : null, strainThreshold : null, rollbehaviour : {}};
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 import { utils } from "./utils.js";
 
 export class o13Roll extends Roll {
-	constructor(actor, aspect, options = DEFAULTROLLOPTIONS) {
+	constructor(actor, aspect, options = CONFIG["13OMENS"].DEFAULTROLLOPTIONS) {
 		super("0");
 		
 		this._actor = actor;
 		this._aspect = aspect;
 		
-		this._rollData = ({...DEFAULTROLLOPTIONS, ...options});
-		
+		this._rollData = ({...CONFIG["13OMENS"].DEFAULTROLLOPTIONS, ...foundry.utils.deepClone(options)});
+
 		utils.expandRollData(this._rollData);
 		
 		this._rollData.targetNumber = this.targetNumber;
@@ -23,11 +22,18 @@ export class o13Roll extends Roll {
 		
 		if (!this._rollData.dicePermut || this._rollData.dicePermut.length == 0) this.drawDice();
 		
+		this._canvaliantsacrifice = this.actor?.canValiantSacrifice;
+		this._hasvaliantlysacrificed = false;
+		
 		this._formula = this.formula;
 		this.terms = this.constructor.parse(this.formula, this.data);
 	}
 	
 	get outcome() {
+		if (this.hasValiantlySacrificed) {
+			return 2;
+		}
+		
 		if (this.total > this.totalDifficulty) {
 			return 1;
 		}
@@ -51,6 +57,14 @@ export class o13Roll extends Roll {
 		return this._actorName || this.actor?.name;
 	}
 	
+	get canValiantSacrifice() {
+		return this._canvaliantsacrifice && this.rollsOmenDice;
+	}
+	
+	get hasValiantlySacrificed() {
+		return this._hasvaliantlysacrificed;
+	}
+	
 	get act() {
 		return this._act || this.actor?.activeAct;
 	}
@@ -60,11 +74,11 @@ export class o13Roll extends Roll {
 	}
 	
 	get woundThreshold() {
-		return this._rollData.woundthreshold ?? this.act;
+		return this._rollData.woundThreshold ?? this.act;
 	}
 	
 	get strainThreshold() {
-		return this._rollData.strainthreshold ?? this.act;
+		return this._rollData.strainThreshold ?? this.act;
 	}
 	
 	get aspect() {
@@ -129,8 +143,28 @@ export class o13Roll extends Roll {
 		return Math.abs(this.FEDifference);
 	}
 	
+	get rollBehaviour() {
+		return this._rollData.rollbehaviour ?? {};
+	}
+	
+	get hasRerolls() {
+		return this.rollBehaviour.rerolls > 0;
+	}
+	
+	get canReroll() {
+		return this.hasRerolls && this.isOwner;
+	}
+	
+	get hasOmenRedraws() {
+		return this.rollBehaviour.redrawomendice > 0;
+	}
+	
+	get canOmenRedraw() {
+		return this.hasOmenRedraws && this.diceResults.filter(result => result.type == "omen").length > this.omenflaws && this.isOwner;
+	}
+	
 	get FERollMod() {
-		return this.FEDifference == 0 ? "" : this.FEDifference > 0 ? "kh2" : "kl2";
+		return this.FEDifference == 0 ? "" : this.FEDifference > 0 ? "kh2" : (this.rollBehaviour.flawhnl ? "klh" : "kl2");
 	}	
 	
 	get FEDescription() {
@@ -182,7 +216,7 @@ export class o13Roll extends Roll {
 	}
 	
 	get formula() {
-		return `${this.totalDice}d6${this.FERollMod}`
+		return `${this.totalDice}d6`
 	}
 	
 	get diceResults() {
@@ -192,7 +226,27 @@ export class o13Roll extends Roll {
 		
 		const dicePermutOmenApplied = this.dicePermutOmenApplied;
 		
-		return this._terms[0].results.map((result, index) => ({face : result.result, type : dicePermutOmenApplied[index], crossed : result.discarded}))
+		return this.terms[0].results.map((result, index) => ({face : result.result, type : dicePermutOmenApplied[index], crossed : result.discarded, mystery : this.canValiantSacrifice}))
+	}
+	
+	get rollsOmenDice() {
+		const dicePermutOmenApplied = this.dicePermutOmenApplied;
+		return this.terms[0]?.results?.some((result, index) => dicePermutOmenApplied[index] == "omen");
+	}
+	
+	get rollsSafeDice() {
+		const dicePermutOmenApplied = this.dicePermutOmenApplied;
+		return this.terms[0]?.results?.some((result, index) => dicePermutOmenApplied[index] == "safe");
+	}
+	
+	rerollDiceSelection(indices) {
+		if (this.terms[0]?.results) {
+			for (const index of indices) {
+				if (this.terms[0].results[index]?.result) {
+					this.terms[0].results[index].result = Math.floor(Math.random() * 6) + 1
+				}
+			}
+		}
 	}
 	
 	get firstOmenDice() {
@@ -216,7 +270,7 @@ export class o13Roll extends Roll {
 	}
 	
 	get canCheatDeath() {
-		return this.diceResults.some(die => die.type == "safe") && this.actor?.canCheatDeath;
+		return this.rollsSafeDice && this.actor?.canCheatDeath;
 	}
 	
 	get consequenceTaken() {
@@ -224,7 +278,52 @@ export class o13Roll extends Roll {
 	}
 	
 	get canTakeConsequence() {
-		return (this.actor?.isOwner ?? false) && !this.consequenceTaken;
+		return (this.actor?.isOwner ?? false) && !this.consequenceTaken && !this.hasValiantlySacrificed;
+	}
+	
+	applyDiceSelection() {
+		const termResults = this.terms[0].results;
+		
+		const numbers = termResults.map(r => r.result);
+
+		if (termResults && termResults.length > 2) {
+			let selectors = [...numbers];
+			
+			switch (this.FERollMod) {
+				case "kl2":
+					selectors = utils.lowest(numbers, 2);
+					break;
+				case "kh2":
+					selectors = utils.highest(numbers, 2);
+					break;
+				case "klh":
+					selectors = [...utils.lowest(numbers, 1), ...utils.highest(numbers, 1)];
+					break;
+			}
+			
+			const selectIndexes = utils.indexesof(numbers, selectors);
+			
+			for (let i = 0; i < termResults.length; i++) {
+				termResults[i].active = selectIndexes.includes(i);
+				termResults[i].discarded = !termResults[i].active;
+			}
+		}
+	}
+	
+	async _evaluate(options = {}) {
+		await super._evaluate(options);
+		
+		this.applyDiceSelection();
+
+		this._total = this._evaluateTotal();
+		
+		return this;
+	}
+
+	_evaluateTotal() {
+		this.applyDiceSelection();
+		
+		return super._evaluateTotal();
 	}
 	
 	async render() {
@@ -251,8 +350,9 @@ export class o13Roll extends Roll {
 			actorName: this._actorName,
 			act: this._act,
 			storyID : this._storyID,
-			consequenceTaken: this._consequenceTaken
-			
+			consequenceTaken: this._consequenceTaken,
+			canvaliantsacrifice: this._canvaliantsacrifice,
+			hasvaliantlysacrificed : this._hasvaliantlysacrificed
         };
 		
         return json;
@@ -269,9 +369,11 @@ export class o13Roll extends Roll {
 		roll._act = o13Data.act;
 		roll._storyID = o13Data.storyID;
 		roll._consequenceTaken = o13Data.consequenceTaken;
+		roll._canvaliantsacrifice = o13Data.canvaliantsacrifice;
+		roll._hasvaliantlysacrificed = o13Data.hasvaliantlysacrificed;
 		
         if (data.terms) {
-            roll._terms = data.terms.map(term => foundry.dice.terms.RollTerm.fromData(term));
+            roll.terms = data.terms.map(term => foundry.dice.terms.RollTerm.fromData(term));
         }
 		
 		roll._evaluated = data.evaluated;
@@ -287,6 +389,10 @@ export class o13Roll extends Roll {
 				case "takeWound" : await this.takeWound(); break;
 				case "cheatDeath" : await this.cheatDeath(); break;
 				case "takeStrain" : await this.takeStrain(); break;
+				case "rerollDice" : await this.rerollDice(); break;
+				case "redrawOmenDice" : await this.redrawOmenDice(); break;
+				case "valiantlysacrifice" : await this.valiantlySacrifice(); break;
+				case "refusevaliantsacrifice" : await this.refuseValiantSacrifice(); break;
 			}
 			
 			message.update({
@@ -318,6 +424,65 @@ export class o13Roll extends Roll {
 			await this.actor.takeStrain(this.aspect);
 		}
 	}
+	
+	async rerollDice() {
+		if (this.canReroll) {
+			this._rollData.rollbehaviour.rerolls -= 1;
+			
+			const rollcopy = new o13Roll(this.actor, this.aspect, this._rollData);
+
+			await rollcopy.evaluate();
+			await rollcopy.toMessage();
+		}
+	}
+	
+	async redrawOmenDice() {
+		if (this.canOmenRedraw) {
+			this._rollData.rollbehaviour.redrawomendice -= 1;
+			
+			const drawndice = this.totalDice;
+			
+			const currentPermut = [...this._rollData.dicePermut];
+			
+			const usedDice = currentPermut.slice(0, drawndice);
+			const unusedDice = utils.randomPermut(currentPermut.slice(drawndice));
+			
+			let redrawndice = 0;
+			
+			const redrawn = [];
+			
+			for (let i = 0; i < usedDice.length; i++) {
+				if (usedDice[i] == "omen" && redrawndice < unusedDice.length) {
+					redrawn.push(i);
+					usedDice[i] = unusedDice[redrawndice];
+					unusedDice[redrawndice] = "omen";
+					
+					redrawndice = redrawndice + 1;
+				}
+			}
+			
+			this.rerollDiceSelection(redrawn);
+			
+			this._rollData.dicePermut = [...usedDice, ...unusedDice];
+			
+			this._evaluateTotal();
+		}
+	}
+	
+	async valiantlySacrifice() {
+		if (this.canValiantSacrifice && this.isOwner) {
+			this._canvaliantsacrifice = false;
+			this._hasvaliantlysacrificed = true;
+			
+			await this.actor.takeWound({face : 6});
+		}
+	}
+	
+	async refuseValiantSacrifice() {
+		if (this.canValiantSacrifice  && this.isOwner) {
+			this._canvaliantsacrifice = false;
+		}
+	}
 }
 
 export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
@@ -327,7 +492,7 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 		this._actor = actor;
 		
 		this._data = {
-			...DEFAULTROLLOPTIONS,
+			...CONFIG["13OMENS"].DEFAULTROLLOPTIONS,
 			...data
 		}
 		
@@ -560,7 +725,7 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 		const roll = new o13Roll(this.actor, this.aspect, this._data);
 
 		await roll.evaluate();
-		roll.toMessage();
+		await roll.toMessage();
 		
 		this.close();
 		

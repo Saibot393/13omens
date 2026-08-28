@@ -273,11 +273,11 @@ export class o13storyActor {
 	
 	//Cheat death
 	get canCheatDeath() {
-		return !this.pcActors.some(actor => actor.hasCheatedDeath());
+		return !this.pcActors.some(actor => actor.hasCheatedDeath(this.activeAct));
 	}
 	
-	get cheatedDeathCountinAct() {
-		return this.pcActors.map(actor => actor.cheatedDeathCount()).reduce((sum, value) => sum + value, 0)
+	cheatedDeathCount(act = null) {
+		return this.pcActors.map(actor => actor.cheatedDeathCount(act)).reduce((sum, value) => sum + value, 0)
 	}
 	
 	//Archetypes
