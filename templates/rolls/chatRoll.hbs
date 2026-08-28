@@ -9,7 +9,7 @@
 		{{#unless roll.canValiantSacrifice}}
 			{{#unless roll.hasValiantlySacrificed}}
 				<span class="o13-label o13-content-centered">
-					{{#if roll.hasRerolls}}<i class="fa-solid fa-dice" data-tooltip="{{localize '13omens.tooltips.reroll'}}" style="margin:10px;color:var(--o13-antique-gold);" data-action="rerollDice"></i>{{/if}}
+					{{#if roll.canReroll}}<i class="fa-solid fa-dice" data-tooltip="{{localize '13omens.tooltips.reroll'}}" style="margin:10px;color:var(--o13-antique-gold);" data-action="rerollDice"></i>{{/if}}
 					{{#if roll.canOmenRedraw}}<i class="fa-solid fa-sack-xmark" data-tooltip="{{localize '13omens.tooltips.redrawomen'}}" style="margin:10px;color:var(--o13-antique-gold);" data-action="redrawOmenDice"></i>{{/if}}
 				</span>
 			{{/unless}}
@@ -30,11 +30,13 @@
 				{{/if}}
 			</span>
 		{{else}}
-			<span class="o13-label o13-content-centered o13-header-label" style="margin-top:5px">
-				{{localize "13omens.chats.sacrificeValiantly"}}
-				<i class="fa-solid fa-skull" style="color:var(--o13-omen-red)" data-action="valiantlysacrifice" data-tooltip="{{localize '13omens.tooltips.takeValiantSacrifice'}}"></i>
-				<i class="fa-solid fa-dice" style="color:var(--o13-cheat-blue)" data-action="refusevaliantsacrifice" data-tooltip="{{localize '13omens.tooltips.refuseValiantSacrifice'}}"></i>
-			</span>
+			{{#if roll.isOwner}}
+				<span class="o13-label o13-content-centered o13-header-label" style="margin-top:5px">
+					{{localize "13omens.chats.sacrificeValiantly"}}
+					<i class="fa-solid fa-skull" style="color:var(--o13-omen-red)" data-action="valiantlysacrifice" data-tooltip="{{localize '13omens.tooltips.takeValiantSacrifice'}}"></i>
+					<i class="fa-solid fa-dice" style="color:var(--o13-cheat-blue)" data-action="refusevaliantsacrifice" data-tooltip="{{localize '13omens.tooltips.refuseValiantSacrifice'}}"></i>
+				</span>
+			{{/if}}
 		{{/unless}}
 	</div>
 </div>

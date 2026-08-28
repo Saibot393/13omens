@@ -58,7 +58,7 @@ export class o13Roll extends Roll {
 	}
 	
 	get canValiantSacrifice() {
-		return (this.actor?.isOwner ?? false) && this._canvaliantsacrifice && this.rollsOmenDice;
+		return this._canvaliantsacrifice && this.rollsOmenDice;
 	}
 	
 	get hasValiantlySacrificed() {
@@ -151,12 +151,16 @@ export class o13Roll extends Roll {
 		return this.rollBehaviour.rerolls > 0;
 	}
 	
+	get canReroll() {
+		return this.hasRerolls && this.isOwner;
+	}
+	
 	get hasOmenRedraws() {
 		return this.rollBehaviour.redrawomendice > 0;
 	}
 	
 	get canOmenRedraw() {
-		return this.hasOmenRedraws && this.diceResults.filter(result => result.type == "omen").length > this.omenflaws;
+		return this.hasOmenRedraws && this.diceResults.filter(result => result.type == "omen").length > this.omenflaws && this.isOwner;
 	}
 	
 	get FERollMod() {
@@ -422,7 +426,7 @@ export class o13Roll extends Roll {
 	}
 	
 	async rerollDice() {
-		if (this.hasRerolls) {
+		if (this.canReroll) {
 			this._rollData.rollbehaviour.rerolls -= 1;
 			
 			const rollcopy = new o13Roll(this.actor, this.aspect, this._rollData);
@@ -466,7 +470,7 @@ export class o13Roll extends Roll {
 	}
 	
 	async valiantlySacrifice() {
-		if (this.canValiantSacrifice) {
+		if (this.canValiantSacrifice && this.isOwner) {
 			this._canvaliantsacrifice = false;
 			this._hasvaliantlysacrificed = true;
 			
@@ -475,7 +479,7 @@ export class o13Roll extends Roll {
 	}
 	
 	async refuseValiantSacrifice() {
-		if (this.canValiantSacrifice) {
+		if (this.canValiantSacrifice  && this.isOwner) {
 			this._canvaliantsacrifice = false;
 		}
 	}
