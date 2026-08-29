@@ -1,7 +1,7 @@
-import {showBanner} from "./banner.js";
+import {showBanner} from "./components/banner.js";
 
 const ACTIONS = {
-	"showBanner" : showBanner
+	showBanner
 }
 
 export function callSocket(action, data) {

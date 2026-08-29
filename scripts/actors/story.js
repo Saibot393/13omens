@@ -2,7 +2,7 @@ const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDo
 
 import {utils} from "../utils.js";
 
-import {showBanner} from "../banner.js";
+import {showBanner} from "../components/banner.js";
 
 export class o13storyActor {
 	//Updates % Create

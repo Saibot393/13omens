@@ -14,7 +14,7 @@ import {registerEnrichments} from "./scripts/components/enrichments.js";
 
 import {initNews} from "./scripts/meta/news.js";
 
-import {showBanner} from "./scripts/banner.js";
+import {showBanner} from "./scripts/components/banner.js";
 
 Hooks.once("init", () => {
 	//CONST
