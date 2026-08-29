@@ -11,7 +11,7 @@ export const enrichments = {
 				try {
 					rollConfig = utils.tolerantJSONparse(rollConfigString);
 				} catch(error) {
-					if (CONFIG.debug.o13?.enrichment) console.error(`Failed to parse string ${rollConfigString} during 13 omens enrichment, error:`, error);
+					if (CONFIG.debug.o13?.enrichments) console.error(`Failed to parse string ${rollConfigString} during 13 omens enrichment, error:`, error);
 				}
 			}
 			
@@ -48,7 +48,7 @@ export const enrichments = {
 				try {
 					rollConfig = utils.tolerantJSONparse(rollConfigString);
 				} catch(error) {
-					if (CONFIG.debug.o13?.enrichment) console.error(`Failed to parse string ${rollConfigString} during 13 omens enrichment, error:`, error);
+					if (CONFIG.debug.o13?.enrichments) console.error(`Failed to parse string ${rollConfigString} during 13 omens enrichment, error:`, error);
 				}
 			}
 			

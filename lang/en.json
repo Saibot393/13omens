@@ -78,6 +78,7 @@
 			"flaw" : "Flaw",
 			"flaws" : "Flaws",
 			"edges" : "Edges",
+			"omenflaw" : "Omen flaw",
 			
 			"ratings" : {
 				"-1" : "-",
