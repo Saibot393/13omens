@@ -270,6 +270,12 @@ export class o13pcActor {
 		if (pickerPerksLength > this.choosablePerksCount) return "problem";
 	}
 	
+	async checkPerkEffectActivation(localonly = false) {
+		for (const perk of Object.values(this.perks)) {
+			await perk.checkEffectActivation(localonly);
+		}
+	}
+	
 	//Gear
 	async removeGear(id) {
 		let gear = this.items.get(id);
@@ -707,8 +713,10 @@ export class o13pcActor {
 		}
 	}
 	
-	prepareDerivedData() {
-		this.superPD.prepareDerivedData();
+	prepareEmbeddedDocuments() {
+		this.superPD.prepareEmbeddedDocuments();
+		
+		//this.checkPerkEffectActivation(true);
 	}
 }
 
