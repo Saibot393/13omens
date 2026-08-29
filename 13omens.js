@@ -7,10 +7,13 @@ import {o13Roll, o13rollConfig} from "./scripts/roll.js";
 import {utils} from "./scripts/utils.js";
 
 import {onO13Hooks} from "./scripts/hooks.js";
+import {onO13Sockets} from "./scripts/sockets.js";
 
 import {CONSTANTS, templatePaths} from "./scripts/constants.js";
 
 import {initNews} from "./scripts/meta/news.js";
+
+import {showBanner} from "./scripts/banner.js";
 
 Hooks.once("init", () => {
 	//CONST
@@ -60,12 +63,14 @@ Hooks.once("init", () => {
 	
 	//On Hooks
 	onO13Hooks();
+	onO13Sockets();
 	
 	//API
 	game.system.api = {
 		o13rollConfig,
 		o13Roll,
-		utils
+		utils,
+		showBanner
 	}
 	
 	//News

@@ -2,6 +2,8 @@ const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDo
 
 import {utils} from "../utils.js";
 
+import {showBanner} from "../banner.js";
+
 export class o13storyActor {
 	//Updates % Create
 	async _preCreate(data, options, user) {
@@ -104,6 +106,9 @@ export class o13storyActor {
 			
 			const omenDicetoAdd = Math.max(targetAct - Math.max(this.activeAct, 1), 0); //prologue->act1 does not add dice
 
+			if (targetAct > 0) {
+				showBanner({content : {title : game.i18n.localize("13omens.titles.actNames." + targetAct)}, duration : 3.5})
+			}
 			await this.update({system : {activeact : targetAct}});
 
 			if (omenDicetoAdd != 0 && this.addOmenDiceonActStart) {
