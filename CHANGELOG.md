@@ -1,3 +1,16 @@
+## v1.3.0
+- Perk can now apply active effects to change attributes (maximum wounds, selectable gear, cheat death amout) and roll modifiers (cheat death threshold, additional (omen)flaws, rerolls, redraws, ...) (detailed explanations/examples will follow shortly)
+  - Perks will automatically deactive their active effects if not chosen or if used up
+  - Active effects can be copied between perks via drag & drop
+- Improved cheat death logic
+- Added valiant sacrifice mechanic
+- Roll config can now be skipped by holding SHIFT when clicking an aspect
+- Added change act banner
+  - Added setting to disbale change act banner
+- Added inline rolling (`@check[aspect_name|{config : here, for : example, taskDifficulty : hard}](check name here)`, detailed explanations/examples will follow shortly)
+- Headers in enriched text will now have a more readable color
+- Improved perk description enrichment
+
 ## v1.2.1
 - remove console spam
 
