@@ -217,7 +217,7 @@ export function o13SheetMixin(baseSheet) {
 		_onDragStart(event) {
 			const element = event.currentTarget;
 
-			const IDdata = ["story", "pc", "npc", "archetype", "perk", "gear"].map(type => ([`${type}ID`, element.getAttribute(`${type}-id`)]));
+			const IDdata = ["story", "pc", "npc", "archetype", "perk", "gear", "effect"].map(type => ([`${type}ID`, element.getAttribute(`${type}-id`)]));
 			
 			const dragData = Object.fromEntries(IDdata);
 			

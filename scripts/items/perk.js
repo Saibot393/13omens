@@ -89,10 +89,36 @@ export class o13perkItem extends virtualItem {
 		return change;
 	}
 	
-	//data preperation
+	//data preperation/handling
 	get enrichables() {
 		return {
 			description : this.system.description
+		}
+	}
+	
+	async handleDrop(data, event, prepared) {
+		let handled = false;
+		
+		const object = prepared.object;
+		//Default sheet drop
+		if (!object) return handled;
+
+		if(object.documentName == "ActiveEffect") {
+			await this.createNewEffect(object.toObject());
+			handled = true;
+		}
+		
+		return handled;
+	}
+	
+	prepareDragData(data, event) {
+		if (data.effectID) {
+			const effect = this.effects.get(data.effectID);
+			
+			if (effect) {
+				data.type = "ActiveEffect",
+				data.uuid = effect.uuid;
+			}
 		}
 	}
 }
