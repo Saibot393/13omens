@@ -44,7 +44,8 @@ export class utils {
 	}
 	
 	static expandRollData(data) {
-		data.flaws = data.flaws.map(flaw => typeof flaw == "string" ? {name : flaw} : flaw);
+		if (data.flaws) data.flaws = data.flaws.map(flaw => typeof flaw == "string" ? {name : flaw} : flaw);
+		if (data.omenflaws) data.flaws = [...(data.flaws || []), ...data.omenflaws.map(flaw => typeof flaw == "string" ? {name : flaw, isomen : true} : flaw)]
 		if (typeof data.taskDifficulty == "string") {
 			switch (data.taskDifficulty.toLowerCase().replaceAll(" ", "")) {
 				case "veryeasy": data.taskDifficulty = -2; break;
@@ -55,6 +56,7 @@ export class utils {
 				default: data.taskDifficulty = 0;
 			}
 		}
+		return data; //no return necessary as data is mutated directly
 	}
 	
 	static async enrichHTMLStructure(data, options = {}) {
@@ -96,8 +98,8 @@ export class utils {
 		const combine = foundry.utils.deepClone(CONFIG["13OMENS"].DEFAULTROLLMODIFIERS)
 		
 		for (const modifier of modifiers) {
-			combine.addflaws = [...combine.addflaws, ...modifier.addflaws];
-			combine.addedges = [...combine.addedges, ...modifier.addedges];
+			combine.addflaws = [...combine.addflaws, ...(modifier.addflaws ?? [])];
+			combine.addedges = [...combine.addedges, ...(modifier.addedges ?? [])];
 			combine.nostrain = Boolean(combine.nostrain || modifier.nostrain);
 			combine.woundthreshold = modifier.woundthreshold ?? combine.woundthreshold;
 			combine.strainthreshold = modifier.strainthreshold ?? combine.strainthreshold;
@@ -119,7 +121,7 @@ export class utils {
 		base.ignoreStrain = modifiers.nostrain ?? base.ignoreStrain;
 		base.woundThreshold = modifiers.woundthreshold ?? base.woundThreshold;
 		base.strainThreshold = modifiers.strainthreshold ?? base.strainThreshold;
-		base.rollbehaviour = {...base.rollbehaviour, ...modifiers.rollbehaviour};
+		base.rollbehaviour = {...base.rollbehaviour, ...(modifiers.rollbehaviour ?? {})};
 		
 		return base;
 	}
@@ -129,8 +131,8 @@ export class utils {
 		
 		for (const config of configs) {
 			combine.dicePermut = config.dicePermut ?? combine.dicePermut;
-			if (config.flaws) combine.flaws = [...combine.flaws, ...config.flaws]
-			if (config.edges) combine.edges = [...combine.edges, ...config.edges]
+			if (config.flaws) combine.flaws = [...combine.flaws, ...(config.flaws ?? [])]
+			if (config.edges) combine.edges = [...combine.edges, ...(config.edges ?? [])]
 			combine.strain = config.strain ?? combine.strain;
 			combine.ignoreStrain = Boolean(combine.ignoreStrain || config.ignoreStrain);
 			combine.targetNumber = config.targetNumber ?? combine.targetNumber;
@@ -138,7 +140,7 @@ export class utils {
 			combine.taskRisk = config.taskRisk ?? combine.taskRisk;
 			combine.woundThreshold = config.woundThreshold ?? combine.woundThreshold;
 			combine.strainThreshold = config.strainThreshold ?? combine.strainThreshold;
-			combine.rollbehaviour = {...combine.rollbehaviour, ...config.rollbehaviour}
+			combine.rollbehaviour = {...combine.rollbehaviour, ...(config.rollbehaviour ?? {})}
 		}
 		
 		return combine;

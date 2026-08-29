@@ -429,15 +429,15 @@ export class o13pcActor {
 		return !isNaN(this.getAspectData(aspect,true).targetNumber);
 	}
 	
-	async rollAspect(aspectName, options = {}) {
+	async rollAspect(aspectName, options = {}, quickRoll = false) {
 		if (this.canRollAspect(aspectName)) {
 			const aspectData = this.getAspectData(aspectName, true);
 			const aspectModifiers = this.getAspectRollModifiers(aspectName);
 
-			const config = utils.combineRollOptions([utils.rollOptionsFromModifiers(aspectModifiers), options]);
-			
+			const config = utils.combineRollOptions([utils.rollOptionsFromModifiers(aspectModifiers), utils.expandRollData(options)]);
+
 			if (aspectData) {
-				new o13rollConfig(this, {...config, aspect : aspectName}).render(true);
+				new o13rollConfig(this, {...config, aspect : aspectName}, quickRoll);
 			}
 		}
 		else {

@@ -2,7 +2,7 @@ import {utils} from "../utils.js";
 
 export const enrichments = {
 	check : {
-		pattern: /@check\[\s*([^|\]\s]+)(?:\s*\|\s*(\{.*?\}))?\s*\](?:\((.*?)\))?/gi,
+		pattern: /@check\[\s*([^|\]\s]+)(?:\s*\|\s*(\{(?:[^{}]|\{[^{}]*\})*\}))?\s*\](?:\((.*?)\))?/gi,
 		enricher: async (match, options) => {
 			const [original, aspect, rollConfigString, customLabel] = match;
 			
@@ -20,9 +20,8 @@ export const enrichments = {
 			const label = customLabel || fallbackLabel;
 			const icon = `<i class="fa-solid fa-dice"></i>`;
 			
-			const enrichedElement = document.createElement("button");
-			enrichedElement.type = "button";
-			enrichedElement.classList.add("o13-enrich", "o13-button", "o13-clickable");
+			const enrichedElement = document.createElement("span");
+			enrichedElement.classList.add("o13-enrich", "o13-button", "o13-clickable", "o13-inline");
 			enrichedElement.setAttribute("enrich-type", "check");
 			enrichedElement.innerHTML = `${icon} ${label}`;
 			
@@ -38,7 +37,7 @@ export const enrichments = {
 			const aspect = enrichedElement.dataset.aspect;
 			const rollConfigString = enrichedElement.dataset.rollConfig;
 			
-			if (dataAction == "toChat") {
+			if (event.ctrlKey) {
 				ChatMessage.create({content : original});
 				return true;
 			}
@@ -55,7 +54,7 @@ export const enrichments = {
 			const actor = utils.currentActor("pc");
 			
 			if (actor) {
-				actor.rollAspect(aspect, rollConfig);
+				actor.rollAspect(aspect, rollConfig, event.shiftKey);
 				return true;
 			}
 			else {
