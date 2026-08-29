@@ -114,7 +114,7 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 		if (this.actor.type == "pc") {
 			const aspectName = target.getAttribute("aspect-name");
 			if (aspectName) {
-				this.actor.rollAspect(aspectName, true, true);
+				this.actor.rollAspect(aspectName);
 			}
 		}
 	}
