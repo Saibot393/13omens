@@ -6,10 +6,13 @@
 - Added valiant sacrifice mechanic
 - Roll config can now be skipped by holding SHIFT when clicking an aspect
 - Added change act banner
-  - Added setting to disbale change act banner
+  - Added setting to disable change act banner
 - Added inline rolling (`@check[aspect_name|{config : here, for : example, taskDifficulty : hard}](check name here)`, detailed explanations/examples will follow shortly)
+  - Inline checks can be posted to check by holding CTRL while clicking
+- Added short hand for roll config
 - Headers in enriched text will now have a more readable color
 - Improved perk description enrichment
+- Added some debug outputs
 
 ## v1.2.1
 - remove console spam
