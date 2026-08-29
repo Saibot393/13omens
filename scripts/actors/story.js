@@ -107,7 +107,7 @@ export class o13storyActor {
 			const omenDicetoAdd = Math.max(targetAct - Math.max(this.activeAct, 1), 0); //prologue->act1 does not add dice
 
 			if (targetAct > 0) {
-				showBanner({content : {title : game.i18n.localize("13omens.titles.actNames." + targetAct)}, duration : 3.5})
+				if (game.settings.get("13omens", "showActBanner")) showBanner({content : {title : game.i18n.localize("13omens.titles.actNames." + targetAct)}, duration : 3.5});
 			}
 			await this.update({system : {activeact : targetAct}});
 

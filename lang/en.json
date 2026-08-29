@@ -180,6 +180,13 @@
 				"title" : "Welcome to the <b>13&nbsp;Omens</b> system",
 				"text" : "It is recommended to use this system in combination with the 13&nbsp;Omens preview pdf, which you can get from the <b><a href=\"https://store.paizo.com/13-omens/\">Paizo store</a></b>"
 			}
+		},
+		
+		"settings" : {
+			"showActBanner" : {
+				"name" : "Show act banner",
+				"descrp" : "Show a banner to all users when a storie's act is changed"
+			}
 		}
 	}
 }
