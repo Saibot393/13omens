@@ -44,7 +44,16 @@ export class utils {
 	}
 	
 	static expandRollData(data) {
-		data.flaws = data.flaws.map(flaw => typeof flaw == "string" ? {name : flaw} : flaw)
+		data.flaws = data.flaws.map(flaw => typeof flaw == "string" ? {name : flaw} : flaw);
+		if (typeof data.taskDifficulty == "string") {
+			switch (data.taskDifficulty) {
+				case "veryeasy": data.taskDifficulty = -2; break;
+				case "easy": data.taskDifficulty = -1; break;
+				case "average": data.taskDifficulty = 0; break;
+				case "hard": data.taskDifficulty = 1; break;
+				case "veryhard": data.taskDifficulty = 2; break;
+			}
+		}
 	}
 	
 	static async enrichHTMLStructure(data, options = {}) {
