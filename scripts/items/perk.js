@@ -47,7 +47,7 @@ export class o13perkItem extends virtualItem {
 	
 	async use() {
 		if (this.canBeUsed && this.usesLeft > 0) {
-			this.update({system : {usesper : {value : this.usesLeft - 1}}})
+			this.update({system : {usesper : {value : this.usesLeft - 1}}});
 		}
 	}
 	
@@ -64,6 +64,29 @@ export class o13perkItem extends virtualItem {
 		if (effect) {
 			return this.deleteEmbeddedDocuments("ActiveEffect", [id]);
 		}
+	}
+	
+	get effectsActive() {
+		const useActive = !this.canBeUsed || this.usesLeft > 0;
+		const chosenActive = this.isChosen;
+		
+		return useActive && chosenActive;
+	}
+	
+	async checkEffectActivation(localonly = false) {
+		//cheat with local only to disable effect during data preperation without triggering an actor update
+		const effectsActive = this.effectsActive;
+		
+		let change = false;
+		
+		for (const effect of this.effects) {
+			change = change || (effect.disabled != !effectsActive);
+			
+			if (localonly) effect.disabled = !effectsActive
+			else await effect.update({disabled : !effectsActive});
+		}
+		
+		return change;
 	}
 	
 	//data preperation
