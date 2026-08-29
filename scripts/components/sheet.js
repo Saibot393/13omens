@@ -211,6 +211,8 @@ export function o13SheetMixin(baseSheet) {
 			const selfOrigin = object?.parent == this.document;
 			const dropZone = event.target.closest("[drop-zone]")?.getAttribute("drop-zone");
 			
+			if (CONFIG.debug.o13.dragndrop) console.warn(`Handling 13 omens drop:`, data, {object : object, dropZone : dropZone, selfOrigin: selfOrigin});
+			
 			await this.document.handleDrop(data, event, {object : object, dropZone : dropZone, selfOrigin: selfOrigin});
 		}
 		
@@ -223,6 +225,8 @@ export function o13SheetMixin(baseSheet) {
 			
 			if (this.document.prepareDragData) this.document.prepareDragData(dragData, event);
 
+			if (CONFIG.debug.o13.dragndrop) console.warn(`Handling 13 omens drag:`, dragData);
+			
 			event.dataTransfer.setData("text/plain", JSON.stringify(dragData));
 		}
 		

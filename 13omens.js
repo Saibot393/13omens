@@ -77,6 +77,9 @@ Hooks.once("init", () => {
 		showBanner
 	}
 	
+	//debug
+	CONFIG.debug.o13 = {};
+	
 	//News
 	initNews();
 });
