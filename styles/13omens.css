@@ -20,6 +20,10 @@
 	height: 100%;
 }
 
+.o13-sheet :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--o13-ink-grey);
+}
+
 .o13-sheet main {
 	min-height : 0;
 	flex : 1;
