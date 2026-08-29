@@ -375,7 +375,7 @@ export class o13pcActor {
 		
 		if (typeof aspect == "string") {
 			const minaspect = aspect.toLowerCase().replaceAll(" ", "_");
-			
+
 			const key = this.storyAspectNames.map(name => name.toLowerCase().replaceAll(" ", "_")).indexOf(minaspect);
 			
 			if (key >= 0) return key;
@@ -384,7 +384,7 @@ export class o13pcActor {
 	
 	getAspectData(aspect, includeTN = false) {
 		const correctedAspect = this.aspectkey(aspect);
-		
+
 		if (CONFIG["13OMENS"].COREASPECTSIDS.includes(correctedAspect)) {
 			const add = includeTN ? {targetNumber : this.system.targetNumbers.core[correctedAspect]} : {};
 			
@@ -426,7 +426,7 @@ export class o13pcActor {
 	}
 	
 	canRollAspect(aspect) {
-		return !isNaN(this.getAspectData(aspect,true).targetNumber);
+		return !isNaN(this.getAspectData(aspect,true)?.targetNumber);
 	}
 	
 	async rollAspect(aspectName, options = {}, quickRoll = false) {
