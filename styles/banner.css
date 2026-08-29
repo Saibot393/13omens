@@ -1,0 +1,42 @@
+.o13-banner {
+	position: fixed;
+	top: 20%;
+	height: 180px;
+	left: 0;
+	width : 100%;
+	background: linear-gradient(to right, transparent 0%, var(--o13-ink-black) 35%, var(--o13-ink-black) 65%, transparent 100%);
+	font-family: "Cinzel", "Times New Roman", Georgia, serif;
+	text-align: center;
+	align-content: center;
+	pointer-events: none;
+	z-index: 13000;
+	
+	animation: bannerFadeInOut var(--banner-duration, 4s) ease-in-out forwards;
+}
+
+.o13-banner-content{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 15px;
+	font-size: 90px;
+}
+
+@keyframes bannerFadeInOut {
+	0% {
+		opacity: 0;
+		transform: translateY(-20px);
+	}
+	10% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+	90% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+	100% {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+}
