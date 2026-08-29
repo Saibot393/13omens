@@ -44,7 +44,19 @@ export class utils {
 	}
 	
 	static expandRollData(data) {
-		data.flaws = data.flaws.map(flaw => typeof flaw == "string" ? {name : flaw} : flaw)
+		if (data.flaws) data.flaws = data.flaws.map(flaw => typeof flaw == "string" ? {name : flaw} : flaw);
+		if (data.omenflaws) data.flaws = [...(data.flaws || []), ...data.omenflaws.map(flaw => typeof flaw == "string" ? {name : flaw, isomen : true} : flaw)]
+		if (typeof data.taskDifficulty == "string") {
+			switch (data.taskDifficulty.toLowerCase().replaceAll(" ", "")) {
+				case "veryeasy": data.taskDifficulty = -2; break;
+				case "easy": data.taskDifficulty = -1; break;
+				case "average": data.taskDifficulty = 0; break;
+				case "hard": data.taskDifficulty = 1; break;
+				case "veryhard": data.taskDifficulty = 2; break;
+				default: data.taskDifficulty = 0;
+			}
+		}
+		return data; //no return necessary as data is mutated directly
 	}
 	
 	static async enrichHTMLStructure(data, options = {}) {
@@ -86,8 +98,8 @@ export class utils {
 		const combine = foundry.utils.deepClone(CONFIG["13OMENS"].DEFAULTROLLMODIFIERS)
 		
 		for (const modifier of modifiers) {
-			combine.addflaws = [...combine.addflaws, ...modifier.addflaws];
-			combine.addedges = [...combine.addedges, ...modifier.addedges];
+			combine.addflaws = [...combine.addflaws, ...(modifier.addflaws ?? [])];
+			combine.addedges = [...combine.addedges, ...(modifier.addedges ?? [])];
 			combine.nostrain = Boolean(combine.nostrain || modifier.nostrain);
 			combine.woundthreshold = modifier.woundthreshold ?? combine.woundthreshold;
 			combine.strainthreshold = modifier.strainthreshold ?? combine.strainthreshold;
@@ -109,7 +121,7 @@ export class utils {
 		base.ignoreStrain = modifiers.nostrain ?? base.ignoreStrain;
 		base.woundThreshold = modifiers.woundthreshold ?? base.woundThreshold;
 		base.strainThreshold = modifiers.strainthreshold ?? base.strainThreshold;
-		base.rollbehaviour = {...base.rollbehaviour, ...modifiers.rollbehaviour};
+		base.rollbehaviour = {...base.rollbehaviour, ...(modifiers.rollbehaviour ?? {})};
 		
 		return base;
 	}
@@ -119,8 +131,8 @@ export class utils {
 		
 		for (const config of configs) {
 			combine.dicePermut = config.dicePermut ?? combine.dicePermut;
-			if (config.flaws) combine.flaws = [...combine.flaws, ...config.flaws]
-			if (config.edges) combine.edges = [...combine.edges, ...config.edges]
+			if (config.flaws) combine.flaws = [...combine.flaws, ...(config.flaws ?? [])]
+			if (config.edges) combine.edges = [...combine.edges, ...(config.edges ?? [])]
 			combine.strain = config.strain ?? combine.strain;
 			combine.ignoreStrain = Boolean(combine.ignoreStrain || config.ignoreStrain);
 			combine.targetNumber = config.targetNumber ?? combine.targetNumber;
@@ -128,9 +140,62 @@ export class utils {
 			combine.taskRisk = config.taskRisk ?? combine.taskRisk;
 			combine.woundThreshold = config.woundThreshold ?? combine.woundThreshold;
 			combine.strainThreshold = config.strainThreshold ?? combine.strainThreshold;
-			combine.rollbehaviour = {...combine.rollbehaviour, ...config.rollbehaviour}
+			combine.rollbehaviour = {...combine.rollbehaviour, ...(config.rollbehaviour ?? {})}
 		}
 		
 		return combine;
+	}
+	
+	static tolerantJSONparse(string) {
+		//RECOMMENDATION: Always use this in a try to be certain
+		
+		if (!string || typeof string != "string") {
+			throw new Error("Not a parsable string:" + string);
+			return {};
+		}
+		else {
+			let cleaned = string.trim();
+			
+			cleaned = cleaned.replace(/'([^'\\]*(\\.[^'\\]*)*)'/g, '"$1"'); //replace ' with "
+			
+			cleaned = cleaned.replace(/([{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)\s*:/g, '$1"$2":'); //"" for keys
+			
+			cleaned = cleaned.replace(/:\s*([a-zA-Z_$][a-zA-Z0-9_$]*)(?=\s*[,}])(?!\s*(?:true|false|null))/g, ':"$1"'); //"" for word values
+			
+			cleaned = cleaned.replace(/,\s*([}\]])/g, '$1'); //remove trailing ,
+			
+			return JSON.parse(cleaned);
+		}
+	}
+	
+	static currentActor(type = "pc") {
+		//controlled token
+		let Actor = canvas.tokens.controlled.map(t => t.actor).find(a => a?.isOwner && (!type || a.type == type));
+		
+		//set character
+		if (!Actor) {
+			Actor = game.user.character;
+			if (type && Actor?.type != type) Actor = undefined;
+		}
+		
+		//opened sheets
+		if (!Actor) {
+			const actorSheets = [...foundry.applications.instances].map(a => a?.[1]).filter(a => a?.actor?.isOwner);
+			
+			const sortedSheets = actorSheets.sort((a, b) => {
+				const za = a?.element?.style?.zIndex || 0;
+				const zb = b?.element?.style?.zIndex || 0;
+				return zb - za;
+			});
+
+			Actor = sortedSheets.map(a => a.actor).find(a => !type || a.type == type);
+		}
+		
+		//owned actors
+		if (!Actor && !game.user.isGM) {
+			[...game.actors].find(a => a.isOwner && (!type || a.type == type));
+		}
+		
+		return Actor;
 	}
 }

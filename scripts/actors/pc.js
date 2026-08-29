@@ -368,34 +368,52 @@ export class o13pcActor {
 		return this.getArchetypeAspect(this.archetype);
 	}
 	
-	getAspectData(aspect, includeTN = false) {
-		if (CONFIG["13OMENS"].COREASPECTSIDS.includes(aspect)) {
-			const add = includeTN ? {targetNumber : this.system.targetNumbers.core[aspect]} : {};
+	aspectkey(aspect) {
+		if (CONFIG["13OMENS"].COREASPECTSIDS.includes(aspect)) return aspect;
+		
+		if (!isNaN(aspect)) return aspect;
+		
+		if (typeof aspect == "string") {
+			const minaspect = aspect.toLowerCase().replaceAll(" ", "_");
 			
-			return {...add, ...this.system.aspects.core[aspect], name : game.i18n.localize(`13omens.titles.${aspect}`)};
+			const key = this.storyAspectNames.map(name => name.toLowerCase().replaceAll(" ", "_")).indexOf(minaspect);
+			
+			if (key >= 0) return key;
+		}
+	}
+	
+	getAspectData(aspect, includeTN = false) {
+		const correctedAspect = this.aspectkey(aspect);
+		
+		if (CONFIG["13OMENS"].COREASPECTSIDS.includes(correctedAspect)) {
+			const add = includeTN ? {targetNumber : this.system.targetNumbers.core[correctedAspect]} : {};
+			
+			return {...add, ...this.system.aspects.core[correctedAspect], name : game.i18n.localize(`13omens.titles.${correctedAspect}`)};
 		}
 		
-		if (!isNaN(aspect)) {
-			const add = includeTN ? {targetNumber : this.system.targetNumbers.story[aspect]} : {};
+		if (!isNaN(correctedAspect)) {
+			const add = includeTN ? {targetNumber : this.system.targetNumbers.story[correctedAspect]} : {};
 			
-			return {...add, ...this.system.aspects.story[aspect], name : this.storyAspectNames[aspect]};
+			return {...add, ...this.system.aspects.story[correctedAspect], name : this.storyAspectNames[correctedAspect]};
 		}
 	}
 	
 	getAspectRollModifiers(aspect, combined = true) {
+		const correctedAspect = this.aspectkey(aspect);
+		
 		const RMs = [this.system.aspectrollmodifiers.general];
 		
 		let groupkey = "";
 		
-		if (CONFIG["13OMENS"].COREASPECTSIDS.includes(aspect)) groupkey = "core";
+		if (CONFIG["13OMENS"].COREASPECTSIDS.includes(correctedAspect)) groupkey = "core";
 		
-		if (!isNaN(aspect)) groupkey = "story";
+		if (!isNaN(correctedAspect)) groupkey = "story";
 
 		if (groupkey) {
 			RMs.push(this.system.aspectrollmodifiers[groupkey].general);
 			
-			if (this.system.aspectrollmodifiers[groupkey][aspect]) {
-				RMs.push(this.system.aspectrollmodifiers[groupkey][aspect]);
+			if (this.system.aspectrollmodifiers[groupkey][correctedAspect]) {
+				RMs.push(this.system.aspectrollmodifiers[groupkey][correctedAspect]);
 			}
 		}
 		
@@ -411,15 +429,15 @@ export class o13pcActor {
 		return !isNaN(this.getAspectData(aspect,true).targetNumber);
 	}
 	
-	async rollAspect(aspectName, options = {}) {
+	async rollAspect(aspectName, options = {}, quickRoll = false) {
 		if (this.canRollAspect(aspectName)) {
 			const aspectData = this.getAspectData(aspectName, true);
 			const aspectModifiers = this.getAspectRollModifiers(aspectName);
 
-			const config = utils.combineRollOptions([utils.rollOptionsFromModifiers(aspectModifiers), options]);
-			
+			const config = utils.combineRollOptions([utils.rollOptionsFromModifiers(aspectModifiers), utils.expandRollData(options)]);
+
 			if (aspectData) {
-				new o13rollConfig(this, {...config, aspect : aspectName}).render(true);
+				new o13rollConfig(this, {...config, aspect : aspectName}, quickRoll);
 			}
 		}
 		else {

@@ -168,7 +168,8 @@
 		},
 		
 		"warnings" : {
-			"selectRating" : "Please select an aspect rating before rolling"
+			"selectRating" : "Please select an aspect rating before rolling",
+			"selectActor" : "Please select an actor or open a character sheet before rolling"
 		},
 		
 		"news" : {

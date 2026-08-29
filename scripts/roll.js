@@ -486,7 +486,7 @@ export class o13Roll extends Roll {
 }
 
 export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
-	constructor(actor, data, secondaryView = false) {
+	constructor(actor, data, quickRoll = false) {
 		super();
 		
 		this._actor = actor;
@@ -500,11 +500,14 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 		
 		this._id = foundry.utils.randomID();
 		
-		this._secondaryView = secondaryView;
+		this._secondaryView = false;
+		
+		if (quickRoll) o13rollConfig.roll.call(this);
+		else this.render(true)
 	}
 	
 	static newSecondary(socketData) {
-		return new o13rollConfig(actor, data, true);
+		return new o13rollConfig(actor, data, false, true);
 	}
 	
 	updateData(data) {
