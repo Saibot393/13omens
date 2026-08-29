@@ -46,12 +46,13 @@ export class utils {
 	static expandRollData(data) {
 		data.flaws = data.flaws.map(flaw => typeof flaw == "string" ? {name : flaw} : flaw);
 		if (typeof data.taskDifficulty == "string") {
-			switch (data.taskDifficulty) {
+			switch (data.taskDifficulty.toLowerCase().replaceAll(" ", "")) {
 				case "veryeasy": data.taskDifficulty = -2; break;
 				case "easy": data.taskDifficulty = -1; break;
 				case "average": data.taskDifficulty = 0; break;
 				case "hard": data.taskDifficulty = 1; break;
 				case "veryhard": data.taskDifficulty = 2; break;
+				default: data.taskDifficulty = 0;
 			}
 		}
 	}
@@ -141,5 +142,58 @@ export class utils {
 		}
 		
 		return combine;
+	}
+	
+	static tolerantJSONparse(string) {
+		//RECOMMENDATION: Always use this in a try to be certain
+		
+		if (!string || typeof string != "string") {
+			throw new Error("Not a parsable string:" + string);
+			return {};
+		}
+		else {
+			let cleaned = string.trim();
+			
+			cleaned = cleaned.replace(/'([^'\\]*(\\.[^'\\]*)*)'/g, '"$1"'); //replace ' with "
+			
+			cleaned = cleaned.replace(/([{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)\s*:/g, '$1"$2":'); //"" for keys
+			
+			cleaned = cleaned.replace(/:\s*([a-zA-Z_$][a-zA-Z0-9_$]*)(?=\s*[,}])(?!\s*(?:true|false|null))/g, ':"$1"'); //"" for word values
+			
+			cleaned = cleaned.replace(/,\s*([}\]])/g, '$1'); //remove trailing ,
+			
+			return JSON.parse(cleaned);
+		}
+	}
+	
+	static currentActor(type = "pc") {
+		//controlled token
+		let Actor = canvas.tokens.controlled.map(t => t.actor).find(a => a?.isOwner && (!type || a.type == type));
+		
+		//set character
+		if (!Actor) {
+			Actor = game.user.character;
+			if (type && Actor?.type != type) Actor = undefined;
+		}
+		
+		//opened sheets
+		if (!Actor) {
+			const actorSheets = [...foundry.applications.instances].map(a => a?.[1]).filter(a => a?.actor?.isOwner);
+			
+			const sortedSheets = actorSheets.sort((a, b) => {
+				const za = a?.element?.style?.zIndex || 0;
+				const zb = b?.element?.style?.zIndex || 0;
+				return zb - za;
+			});
+
+			Actor = sortedSheets.map(a => a.actor).find(a => !type || a.type == type);
+		}
+		
+		//owned actors
+		if (!Actor && !game.user.isGM) {
+			[...game.actors].find(a => a.isOwner && (!type || a.type == type));
+		}
+		
+		return Actor;
 	}
 }

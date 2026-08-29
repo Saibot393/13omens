@@ -10,6 +10,7 @@ import {onO13Hooks} from "./scripts/hooks.js";
 import {onO13Sockets} from "./scripts/sockets.js";
 
 import {CONSTANTS, templatePaths} from "./scripts/constants.js";
+import {registerEnrichments} from "./scripts/components/enrichments.js";
 
 import {initNews} from "./scripts/meta/news.js";
 
@@ -61,7 +62,10 @@ Hooks.once("init", () => {
 	Handlebars.registerHelper("not", (a) => !a); //or this???
 	Handlebars.registerHelper("array", (...args) => [...args])
 	
-	//On Hooks
+	//enrichments
+	registerEnrichments();
+	
+	//On Hooks/Sockets
 	onO13Hooks();
 	onO13Sockets();
 	
