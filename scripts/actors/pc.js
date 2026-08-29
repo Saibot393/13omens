@@ -85,17 +85,25 @@ export class o13pcActor {
 	async _onUpdate(changed, options, userId) {
 		await this.superPD._onUpdate(changed, options, userId);
 		
-		if (game.user.id != userId) return;
+		if (game.user.id == userId) {
+			if (changed.system) {
+				if (changed.system.hasOwnProperty("archetype")) {
+					await this.updateArchetypeItems();
+					await this.synctoArchetypeBackground();
+				}
+			}
+		}
 		
-		if (changed.system) {
-			if (changed.system.hasOwnProperty("archetype")) {
-				await this.updateArchetypeItems();
-				await this.synctoArchetypeBackground();
+		if (game.user.isActiveGM) {
+			if (changed.system?.death) {
+				await this.storyActor?.updateMaxWounds();
 			}
-			
-			if (changed.system.death) {
-				if (game.user.isActiveGM) await this.storyActor?.updateMaxWounds();
-			}
+		}
+	}
+	
+	_onAROverrideChange(adddiff, remdiff) {
+		if (adddiff.system?.hasOwnProperty("maxwounds") || remdiff.system?.hasOwnProperty("maxwounds")) {
+			this.updateMaxWounds();
 		}
 	}
 	
@@ -156,6 +164,8 @@ export class o13pcActor {
 		for (const perk of Object.values(this.getPerks())) {
 			await perk.newAct();
 		}
+		
+		this.prepareData();
 	}
 	
 	get activeAct() {
@@ -262,6 +272,16 @@ export class o13pcActor {
 		if (pickerPerksLength > this.choosablePerksCount) return "problem";
 	}
 	
+	async checkPerkEffectActivation(localonly = false) {
+		let change = false;
+		
+		for (const perk of Object.values(this.perks)) {
+			change = await perk.checkEffectActivation(localonly) || change;
+		}
+		
+		return change;
+	}
+	
 	//Gear
 	async removeGear(id) {
 		let gear = this.items.get(id);
@@ -293,9 +313,7 @@ export class o13pcActor {
 	
 	//Select gear (from archetype)
 	get selectableGearCount() {
-		if (this.isPC) {
-			return this.archetype?.selectableGearCount;
-		}
+		return this.system.selectablegearcount;//this.archetype?.selectableGearCount;
 	}
 	
 	hasGearSelected(originid) {
@@ -350,18 +368,57 @@ export class o13pcActor {
 		return this.getArchetypeAspect(this.archetype);
 	}
 	
-	getAspectData(aspect, includeTN = false) {
-		if (CONFIG["13OMENS"].COREASPECTSIDS.includes(aspect)) {
-			const add = includeTN ? {targetNumber : this.system.targetNumbers.core[aspect]} : {};
+	aspectkey(aspect) {
+		if (CONFIG["13OMENS"].COREASPECTSIDS.includes(aspect)) return aspect;
+		
+		if (!isNaN(aspect)) return aspect;
+		
+		if (typeof aspect == "string") {
+			const minaspect = aspect.toLowerCase().replaceAll(" ", "_");
+
+			const key = this.storyAspectNames.map(name => name.toLowerCase().replaceAll(" ", "_")).indexOf(minaspect);
 			
-			return {...add, ...this.system.aspects.core[aspect], name : game.i18n.localize(`13omens.titles.${aspect}`)};
+			if (key >= 0) return key;
+		}
+	}
+	
+	getAspectData(aspect, includeTN = false) {
+		const correctedAspect = this.aspectkey(aspect);
+
+		if (CONFIG["13OMENS"].COREASPECTSIDS.includes(correctedAspect)) {
+			const add = includeTN ? {targetNumber : this.system.targetNumbers.core[correctedAspect]} : {};
+			
+			return {...add, ...this.system.aspects.core[correctedAspect], name : game.i18n.localize(`13omens.titles.${correctedAspect}`)};
 		}
 		
-		if (!isNaN(aspect)) {
-			const add = includeTN ? {targetNumber : this.system.targetNumbers.story[aspect]} : {};
+		if (!isNaN(correctedAspect)) {
+			const add = includeTN ? {targetNumber : this.system.targetNumbers.story[correctedAspect]} : {};
 			
-			return {...add, ...this.system.aspects.story[aspect], name : this.storyAspectNames[aspect]};
+			return {...add, ...this.system.aspects.story[correctedAspect], name : this.storyAspectNames[correctedAspect]};
 		}
+	}
+	
+	getAspectRollModifiers(aspect, combined = true) {
+		const correctedAspect = this.aspectkey(aspect);
+		
+		const RMs = [this.system.aspectrollmodifiers.general];
+		
+		let groupkey = "";
+		
+		if (CONFIG["13OMENS"].COREASPECTSIDS.includes(correctedAspect)) groupkey = "core";
+		
+		if (!isNaN(correctedAspect)) groupkey = "story";
+
+		if (groupkey) {
+			RMs.push(this.system.aspectrollmodifiers[groupkey].general);
+			
+			if (this.system.aspectrollmodifiers[groupkey][correctedAspect]) {
+				RMs.push(this.system.aspectrollmodifiers[groupkey][correctedAspect]);
+			}
+		}
+		
+		if (combined) return utils.combineRollModifiers(RMs)
+		else return RMs;
 	}
 	
 	get storyAspectNames() {
@@ -369,15 +426,18 @@ export class o13pcActor {
 	}
 	
 	canRollAspect(aspect) {
-		return !isNaN(this.getAspectData(aspect,true).targetNumber);
+		return !isNaN(this.getAspectData(aspect,true)?.targetNumber);
 	}
 	
-	async rollAspect(aspectName, rollDialogue = false, toChat = true) {
+	async rollAspect(aspectName, options = {}, quickRoll = false) {
 		if (this.canRollAspect(aspectName)) {
 			const aspectData = this.getAspectData(aspectName, true);
-			
+			const aspectModifiers = this.getAspectRollModifiers(aspectName);
+
+			const config = utils.combineRollOptions([utils.rollOptionsFromModifiers(aspectModifiers), utils.expandRollData(options)]);
+
 			if (aspectData) {
-				new o13rollConfig(this, {aspect : aspectName}).render(true);
+				new o13rollConfig(this, {...config, aspect : aspectName}, quickRoll);
 			}
 		}
 		else {
@@ -395,7 +455,7 @@ export class o13pcActor {
 	
 	//Wounds
 	getmaxWounds(actor = undefined) {
-		return this.storyActor?.getmaxWounds(this) || CONFIG["13OMENS"].DEFAULTMAXWOUNDS;
+		return this.system.maxwounds;//return this.storyActor?.getmaxWounds(this) || CONFIG["13OMENS"].DEFAULTMAXWOUNDS;
 	}
 	
 	get maxWounds() {
@@ -459,21 +519,25 @@ export class o13pcActor {
 	
 	async updateMaxWounds(forceupdate = false) {
 		if (!this.isDead || forceupdate) {
-			const maxWounds = this.maxWounds;
-			
-			let currentWounds = this.system.wounds;
-			
-			if (currentWounds != currentWounds.length) {
-				while (currentWounds.length > maxWounds) {
-					currentWounds.pop();
-				}
+			queueMicrotask(async () => {//scedule after current update cycle 
+				this.prepareData();
 				
-				while (currentWounds.length < maxWounds) {
-					currentWounds.push(EMPTYWOUND);
-				}
+				const maxWounds = this.maxWounds;
 				
-				return this.update({system : {wounds : currentWounds}});
-			}
+				let currentWounds = this.system.wounds;
+
+				if (maxWounds != currentWounds.length) {
+					while (currentWounds.length > maxWounds) {
+						currentWounds.pop();
+					}
+					
+					while (currentWounds.length < maxWounds) {
+						currentWounds.push(EMPTYWOUND);
+					}
+					
+					this.update({system : {wounds : currentWounds}});
+				}
+			})
 		}
 	}
 	
@@ -530,11 +594,14 @@ export class o13pcActor {
 		return isDead;
 	}
 	
+	get canValiantSacrifice() {
+		return this.woundDiceCount.omen == this.maxWounds - 1; //rules are a bit unclear here, but this seems right
+	}
+	
 	//Cheat death
 	cheatedDeathCount(act = null) {
-		const lookupact = act ?? this.activeAct;
-			
-		return Object.values(this.system.wounds).filter(wound => wound.safe?.filled && wound.safe?.act == lookupact).length;
+		if (act != null) return Object.values(this.system.wounds).filter(wound => wound.safe?.filled && wound.safe?.act == act).length
+		else return Object.values(this.system.wounds).filter(wound => wound.safe?.filled).length
 	}
 	
 	hasCheatedDeath(act = null) {
@@ -542,7 +609,10 @@ export class o13pcActor {
 	}
 	
 	get canCheatDeath() {
-		return this.storyActor?.canCheatDeath;
+		const canCheatinStory = this.cheatedDeathCount() < this.system.cheatdeathamount.perstory;
+		const canCheatinAct = (this.storyActor?.canCheatDeath && this.system.cheatdeathamount.peract > 0) || (!this.storyActor?.canCheatDeath && this.cheatedDeathCount(this.activeAct) < this.system.cheatdeathamount.peract - 1);
+		
+		return canCheatinStory && canCheatinAct;
 	}
 	
 	//strain
@@ -615,7 +685,8 @@ export class o13pcActor {
 				goal: this.system.background.goal,
 				traits: this.system.background.traits,
 				relations: Object.fromEntries(this.system.background.relations.map(r => ([r.archetype, r.relation])))
-			}
+			},
+			perks : Object.fromEntries(Object.entries(this.perks).map(([id, perk]) => ([id, {description : perk.system?.description}])))
 		}
 	}
 	
@@ -642,6 +713,36 @@ export class o13pcActor {
 				data.uuid = item.uuid;
 			}
 		}
+	}
+	
+	prepareBaseData() { //pre AE
+		this.superPD.prepareBaseData();
+		
+		this.system.maxwounds = this.storyActor?.getmaxWounds(this) || CONFIG["13OMENS"].DEFAULTMAXWOUNDS;
+							
+		this.system.selectablegearcount = this.archetype?.selectableGearCount ?? 0;
+			
+		this.system.cheatdeathamount = { //these give the maximum
+			perstory: 1,
+			peract: 1
+		};
+		
+		const defaultRollModifiers = CONFIG["13OMENS"].DEFAULTROLLMODIFIERS;
+		
+		this.system.aspectrollmodifiers = {general : foundry.utils.deepClone(defaultRollModifiers)};
+		
+		for (const groupkey of Object.keys(this.system.aspects)) {
+			this.system.aspectrollmodifiers[groupkey] = {general : foundry.utils.deepClone(defaultRollModifiers)};
+			
+			for (const subkey of Object.keys(this.system.aspects[groupkey])) {
+				this.system.aspectrollmodifiers[groupkey][subkey] = foundry.utils.deepClone(defaultRollModifiers);
+			}
+		}
+	}
+	
+	prepareEmbeddedDocuments() {
+		this.checkPerkEffectActivation(true);
+		this.superPD.prepareEmbeddedDocuments();
 	}
 }
 
@@ -702,24 +803,6 @@ export class pcDataModel extends foundry.abstract.TypeDataModel {
 			}),
 			
 			pickedperks: new ObjectField({}) //refer to id
-			
-			//mainly for active affects
-			/*
-			perks : new SchemaField({
-				maxwounds: new NumberField({ required: false, integer: true, nullable: true, min: 1, initial: null }),
-				
-				maxwoundschange: new NumberField({ required: false, integer: true, nullable: true, min: 1, initial: null }),
-				
-				omenwoundthreshold : new NumberField({ required: false, integer: true, nullable: true, min: 1, max : 6, initial: null }),
-				
-				noflawwoundcount: new NumberField({ required: false, integer: true, nullable: true, min: 1, initial: null }),
-								
-				chooseableitems: new NumberField({ required: false, integer: true, nullable: true, min: 1, initial: null }),
-				
-				cheatdeathamount: new NumberField({ required: false, integer: true, nullable: true, min: 1, initial: null })
-			})
-			*/
-			
 		};
 	}
 	

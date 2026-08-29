@@ -78,6 +78,7 @@
 			"flaw" : "Flaw",
 			"flaws" : "Flaws",
 			"edges" : "Edges",
+			"omenflaw" : "Omen flaw",
 			
 			"ratings" : {
 				"-1" : "-",
@@ -95,6 +96,7 @@
 			},
 			
 			"outcomes" : {
+				"2" : "Valiant Success",
 				"1" : "Success",
 				"0" : "Partial success",
 				"-1" : "Failure"
@@ -135,7 +137,9 @@
 		
 		"actions" : {
 			"roll" : "Roll",
-			"usePerk" : "Use"
+			"usePerk" : "Use",
+			"rollcheck" : "{aspect} check",
+			"rollacheck" : "Aspect check"
 		},
 		
 		"tooltips" : {
@@ -145,12 +149,18 @@
 			"clearWound" : "Clear wound",
 			"createPCs" : "Create player characters",
 			"revive" : "Revive",
-			"kill" : "Kill"
+			"kill" : "Kill",
+			"takeValiantSacrifice" : "Take valiant sacrifice",
+			"refuseValiantSacrifice" : "Refuse valiant sacrifice",
+			"reroll" : "Reroll",
+			"redrawomen" : "Redraw omen dice"
 		},
 		
 		"chats" : {
 			"actorRolled" : "{actor} rolled a <b>{aspect}</b> check {with}(TN:{tn})",
-			"rollResult" : "Outcome: {taskrisk} <b>{outcome}</b>"
+			"rollResult" : "Outcome: {taskrisk} <b>{outcome}</b>",
+			"hasValiantlySacrificed" : "Valiant Sacrifice",
+			"sacrificeValiantly" : "Do you want to valiantly sacrifice yourself?"
 		},
 		
 		"dialogues" : {
@@ -161,13 +171,21 @@
 		},
 		
 		"warnings" : {
-			"selectRating" : "Please select an aspect rating before rolling"
+			"selectRating" : "Please select an aspect rating before rolling",
+			"selectActor" : "Please select an actor or open a character sheet before rolling"
 		},
 		
 		"news" : {
 			"welcome_prerelease" : {
 				"title" : "Welcome to the <b>13&nbsp;Omens</b> system",
 				"text" : "It is recommended to use this system in combination with the 13&nbsp;Omens preview pdf, which you can get from the <b><a href=\"https://store.paizo.com/13-omens/\">Paizo store</a></b>"
+			}
+		},
+		
+		"settings" : {
+			"showActBanner" : {
+				"name" : "Show act banner",
+				"descrp" : "Show a banner to all users when a storie's act is changed"
 			}
 		}
 	}

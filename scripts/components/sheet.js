@@ -134,14 +134,12 @@ export function o13SheetMixin(baseSheet) {
 			
 			await super._replaceHTML(result, content, options);
 			
-			console.log(scrollCache);
 			if (this.element) {
 				const newScrollables = this.element.querySelectorAll("[scroll-id]");
 				for (const el of newScrollables) {
-					console.log(el);
 					const id = el.getAttribute("scroll-id");
 					const saved = scrollCache[id];
-					console.log(saved);
+					
 					if (saved) {
 						requestAnimationFrame(() => {
 							el.scrollTop = saved.top;
@@ -213,18 +211,22 @@ export function o13SheetMixin(baseSheet) {
 			const selfOrigin = object?.parent == this.document;
 			const dropZone = event.target.closest("[drop-zone]")?.getAttribute("drop-zone");
 			
+			if (CONFIG.debug.o13.dragndrop) console.warn(`Handling 13 omens drop:`, data, {object : object, dropZone : dropZone, selfOrigin: selfOrigin});
+			
 			await this.document.handleDrop(data, event, {object : object, dropZone : dropZone, selfOrigin: selfOrigin});
 		}
 		
 		_onDragStart(event) {
 			const element = event.currentTarget;
 
-			const IDdata = ["story", "pc", "npc", "archetype", "perk", "gear"].map(type => ([`${type}ID`, element.getAttribute(`${type}-id`)]));
+			const IDdata = ["story", "pc", "npc", "archetype", "perk", "gear", "effect"].map(type => ([`${type}ID`, element.getAttribute(`${type}-id`)]));
 			
 			const dragData = Object.fromEntries(IDdata);
 			
 			if (this.document.prepareDragData) this.document.prepareDragData(dragData, event);
 
+			if (CONFIG.debug.o13.dragndrop) console.warn(`Handling 13 omens drag:`, dragData);
+			
 			event.dataTransfer.setData("text/plain", JSON.stringify(dragData));
 		}
 		

@@ -34,7 +34,7 @@
 									<i class="fa-solid fa-x o13-label o13-icon o13-hover-icon o13-clickable" perk-id="{{this._id}}" data-action="removePerk"></i>
 								{{/if}}
 							{{/unless}}
-							<b data-action="openPerk" perk-id="{{this._id}}">{{this.name}}</b> {{{this.system.description}}}
+							<b {{#if ../actor.isHostView}}class="o13-clickable" data-action="openPerk"{{/if}} perk-id="{{this._id}}">{{this.name}}</b> {{{lookup (lookup ../enriched.perks this._id) "description"}}}
 							{{#if (and this.canBeUsed this.isChosen)}}
 								<span class="o13-button o13-clickable" data-action="usePerk" perk-id="{{this._id}}">{{localize "13omens.actions.usePerk"}} [{{this.usesLeft}}/{{this.usesMax}}]</span>
 							{{/if }}
@@ -71,10 +71,10 @@
 						</span>
 						<span class="o13-label o13-flex-center" gear-id="{{this._id}}" style="flex:0.4">
 							<i class="fa-solid fa-burst o13-icon o13-clickable" gear-id="{{this._id}}" data-action="breakGear"></i>
-								<span class="o13-label" gear-id="{{this._id}}">{{this.quantityValue}}</span>
-								{{#if this.hasQuantityMax}}
-									/ <span class="o13-label" gear-id="{{this._id}}">{{this.quantityMax}}</span>
-								{{/if}}
+							<span class="o13-label" gear-id="{{this._id}}">{{this.quantityValue}}</span>
+							{{#if this.hasQuantityMax}}
+								/ <span class="o13-label" gear-id="{{this._id}}">{{this.quantityMax}}</span>
+							{{/if}}
 							<i class="fa-solid fa-hammer o13-icon o13-clickable" gear-id="{{this._id}}" data-action="repairGear"></i>
 						</span>
 						<i class="fa-solid fa-x o13-label o13-icon o13-clickable o13-flex-right" gear-id="{{this._id}}" data-action="removeGear"></i>

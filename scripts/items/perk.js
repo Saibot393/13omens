@@ -47,14 +47,78 @@ export class o13perkItem extends virtualItem {
 	
 	async use() {
 		if (this.canBeUsed && this.usesLeft > 0) {
-			this.update({system : {usesper : {value : this.usesLeft - 1}}})
+			this.update({system : {usesper : {value : this.usesLeft - 1}}});
 		}
 	}
 	
-	//data preperation
+	//Effects
+	async createNewEffect(data) {
+		const effect = {name : game.i18n.localize("DOCUMENT.ActiveEffect"), ...data};
+		
+		return this.createEmbeddedDocuments("ActiveEffect", [effect]);
+	}
+	
+	async removeEffect(id) {
+		let effect = this.effects.get(id);
+		
+		if (effect) {
+			return this.deleteEmbeddedDocuments("ActiveEffect", [id]);
+		}
+	}
+	
+	get effectsActive() {
+		const useActive = !this.canBeUsed || this.usesLeft > 0;
+		const chosenActive = this.isChosen;
+		
+		return useActive && chosenActive;
+	}
+	
+	async checkEffectActivation(localonly = false) {
+		//cheat with local only to disable effect during data preperation without triggering an actor update
+		const effectsActive = this.effectsActive;
+		
+		let change = false;
+		
+		for (const effect of this.effects) {
+			change = change || (effect.disabled != !effectsActive);
+			
+			if (localonly) effect.disabled = !effectsActive
+			else await effect.update({disabled : !effectsActive});
+		}
+		
+		return change;
+	}
+	
+	//data preperation/handling
 	get enrichables() {
 		return {
 			description : this.system.description
+		}
+	}
+	
+	async handleDrop(data, event, prepared) {
+		let handled = false;
+		
+		const object = prepared.object;
+		//Default sheet drop
+		if (!object) return handled;
+
+		if(object.documentName == "ActiveEffect") {
+			await this.createNewEffect(object.toObject());
+			handled = true;
+		}
+		
+		return handled;
+	}
+	
+	prepareDragData(data, event) {
+		if (data.effectID) {
+			const effect = this.effects.get(data.effectID);
+			
+			if (effect) {
+				data.type = "ActiveEffect",
+				data.uuid = effect.uuid;
+			}
 		}
 	}
 }

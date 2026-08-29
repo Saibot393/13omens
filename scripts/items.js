@@ -43,7 +43,10 @@ export class o13ItemSheet extends o13SheetMixin(HandlebarsApplicationMixin(ItemS
 			openPerk : o13ItemSheet.openPerk,
 			createNewGear : o13ItemSheet.createNewGear,
 			removeGear : o13ItemSheet.removeGear,
-			openGear : o13ItemSheet.openGear
+			openGear : o13ItemSheet.openGear,
+			createNewEffect : o13ItemSheet.createNewEffect,
+			removeEffect : o13ItemSheet.removeEffect,
+			openEffect : o13ItemSheet.openEffect
 		}
 	});
 
@@ -116,6 +119,32 @@ export class o13ItemSheet extends o13SheetMixin(HandlebarsApplicationMixin(ItemS
 						gear.sheet.render(true);
 					}
 				}
+			}
+		}
+	}
+	
+	static async createNewEffect(event, target) {
+		if (this.item.type == "perk") {
+			this.item.createNewEffect();
+		}
+	}
+	
+	static async removeEffect(event, target) {
+		if (this.item.type == "perk") {
+			const effectid = target.getAttribute("effect-id");
+			
+			this.item.removeEffect(effectid);
+		}
+	}
+	
+	static async openEffect(event, target) {
+		if (this.item.type == "perk") {
+			const effectid = target.getAttribute("effect-id");
+			
+			const effect = this.item.effects.get(effectid);
+			
+			if (effect) {
+				effect.sheet.render(true);
 			}
 		}
 	}
