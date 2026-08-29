@@ -85,16 +85,18 @@ export class o13pcActor {
 	async _onUpdate(changed, options, userId) {
 		await this.superPD._onUpdate(changed, options, userId);
 		
-		if (game.user.id != userId) return;
-		
-		if (changed.system) {
-			if (changed.system.hasOwnProperty("archetype")) {
-				await this.updateArchetypeItems();
-				await this.synctoArchetypeBackground();
+		if (game.user.id == userId) {
+			if (changed.system) {
+				if (changed.system.hasOwnProperty("archetype")) {
+					await this.updateArchetypeItems();
+					await this.synctoArchetypeBackground();
+				}
 			}
-			
-			if (changed.system.death) {
-				if (game.user.isActiveGM) await this.storyActor?.updateMaxWounds();
+		}
+		
+		if (game.user.isActiveGM) {
+			if (changed.system?.death) {
+				await this.storyActor?.updateMaxWounds();
 			}
 		}
 	}
@@ -271,9 +273,13 @@ export class o13pcActor {
 	}
 	
 	async checkPerkEffectActivation(localonly = false) {
+		let change = false;
+		
 		for (const perk of Object.values(this.perks)) {
-			await perk.checkEffectActivation(localonly);
+			change = await perk.checkEffectActivation(localonly) || change;
 		}
+		
+		return change;
 	}
 	
 	//Gear
@@ -495,23 +501,25 @@ export class o13pcActor {
 	
 	async updateMaxWounds(forceupdate = false) {
 		if (!this.isDead || forceupdate) {
-			this.prepareData();
-			
-			const maxWounds = this.maxWounds;
-			
-			let currentWounds = this.system.wounds;
-			
-			if (currentWounds != currentWounds.length) {
-				while (currentWounds.length > maxWounds) {
-					currentWounds.pop();
-				}
+			queueMicrotask(async () => {//scedule after current update cycle 
+				this.prepareData();
 				
-				while (currentWounds.length < maxWounds) {
-					currentWounds.push(EMPTYWOUND);
-				}
+				const maxWounds = this.maxWounds;
 				
-				return this.update({system : {wounds : currentWounds}});
-			}
+				let currentWounds = this.system.wounds;
+
+				if (maxWounds != currentWounds.length) {
+					while (currentWounds.length > maxWounds) {
+						currentWounds.pop();
+					}
+					
+					while (currentWounds.length < maxWounds) {
+						currentWounds.push(EMPTYWOUND);
+					}
+					
+					this.update({system : {wounds : currentWounds}});
+				}
+			})
 		}
 	}
 	
@@ -714,9 +722,8 @@ export class o13pcActor {
 	}
 	
 	prepareEmbeddedDocuments() {
+		this.checkPerkEffectActivation(true);
 		this.superPD.prepareEmbeddedDocuments();
-		
-		//this.checkPerkEffectActivation(true);
 	}
 }
 
