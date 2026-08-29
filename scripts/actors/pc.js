@@ -667,7 +667,8 @@ export class o13pcActor {
 				goal: this.system.background.goal,
 				traits: this.system.background.traits,
 				relations: Object.fromEntries(this.system.background.relations.map(r => ([r.archetype, r.relation])))
-			}
+			},
+			perks : Object.fromEntries(Object.entries(this.perks).map(([id, perk]) => ([id, {description : perk.system?.description}])))
 		}
 	}
 	
