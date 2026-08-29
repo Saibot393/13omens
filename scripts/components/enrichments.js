@@ -15,7 +15,8 @@ export const enrichments = {
 				}
 			}
 			
-			const fallbackLabel = "NPTYF"; //NEEDS PROPER TRANSLATION YOU FOOL
+			const aspectName = game.i18n.has(`13omens.titles.${aspect?.toLowerCase()}`) ? game.i18n.localize(`13omens.titles.${aspect?.toLowerCase()}`)  : "";
+			const fallbackLabel = aspectName ? game.i18n.format("13omens.actions.rollcheck", {aspect : aspectName}) : game.i18n.localize("13omens.actions.rollacheck");
 			
 			const label = customLabel || fallbackLabel;
 			const icon = `<i class="fa-solid fa-dice"></i>`;

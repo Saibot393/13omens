@@ -136,7 +136,9 @@
 		
 		"actions" : {
 			"roll" : "Roll",
-			"usePerk" : "Use"
+			"usePerk" : "Use",
+			"rollcheck" : "{aspect} check",
+			"rollacheck" : "Aspect check"
 		},
 		
 		"tooltips" : {
