@@ -721,6 +721,8 @@ export class o13pcActor {
 		this.superPD.prepareBaseData();
 		
 		this.system.maxwounds = this.storyActor?.getmaxWounds(this) || CONFIG["13OMENS"].DEFAULTMAXWOUNDS;
+		
+		this.system.activeact = this.activeAct;
 							
 		this.system.selectablegearcount = this.archetype?.selectableGearCount ?? 0;
 			
