@@ -1,3 +1,8 @@
+## v1.3.2
+- Fixed a bug with roll config not being completely respected by the roll config window
+- Fixed a bug that causes valid edge configs to be displayed without names
+- Added debug info to rolls
+
 ## v1.3.1
 - Fixed bug that could prevent entered archetype relations to show up the pc background tab if no archetype was selected
 

@@ -27,6 +27,8 @@ export class o13Roll extends Roll {
 		
 		this._formula = this.formula;
 		this.terms = this.constructor.parse(this.formula, this.data);
+		
+		if (CONFIG.debug.o13?.rolls) console.log(this);
 	}
 	
 	get outcome() {
@@ -502,6 +504,8 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 		
 		this._secondaryView = false;
 		
+		if (CONFIG.debug.o13?.rolls) console.log(this);
+		
 		if (quickRoll) o13rollConfig.roll.call(this);
 		else this.render(true)
 	}
@@ -548,11 +552,11 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 	
 	get strain() {
-		return this.aspectData.strain && !this._data.ignoreStrain;
+		return this._data.strain && !this._data.ignoreStrain;
 	}
 	
 	get targetNumber() {
-		return this.aspectData.targetNumber;
+		return this._data.targetNumber;
 	}
 	
 	get taskRisk() {

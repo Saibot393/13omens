@@ -86,7 +86,8 @@ Hooks.once("init", () => {
 	CONFIG.debug.o13 = {
 		sockets : false,
 		enrichments : false,
-		dragndrop : false
+		dragndrop : false,
+		rolls : false
 	};
 	
 	//News

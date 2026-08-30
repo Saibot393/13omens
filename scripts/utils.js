@@ -45,7 +45,7 @@ export class utils {
 	
 	static expandRollData(data) {
 		if (data.flaws) data.flaws = data.flaws.map(flaw => typeof flaw == "string" ? {name : flaw} : flaw);
-		if (data.omenflaw) data.omenflaws = [{name : game.i18n.localize("13omens.titles.omenflaw") ,isomen : true}]
+		if (data.omenflaw) data.omenflaws = [{name : game.i18n.localize("13omens.titles.omenflaw") ,isomen : true}];
 		if (data.omenflaws) data.flaws = [...(data.flaws || []), ...data.omenflaws.map(flaw => typeof flaw == "string" ? {name : flaw, isomen : true} : flaw)]
 		if (typeof data.taskDifficulty == "string") {
 			switch (data.taskDifficulty.toLowerCase().replaceAll(" ", "")) {
@@ -57,6 +57,7 @@ export class utils {
 				default: data.taskDifficulty = 0;
 			}
 		}
+		if (data.edges) data.edges = data.edges.map(edge => typeof edge == "string" ? {name : edge} : edge);
 		return data; //no return necessary as data is mutated directly
 	}
 	
@@ -129,7 +130,7 @@ export class utils {
 	
 	static combineRollOptions(configs) {
 		const combine = foundry.utils.deepClone(CONFIG["13OMENS"].DEFAULTROLLOPTIONS);
-		
+
 		for (const config of configs) {
 			combine.dicePermut = config.dicePermut ?? combine.dicePermut;
 			if (config.flaws) combine.flaws = [...combine.flaws, ...(config.flaws ?? [])]
@@ -161,7 +162,7 @@ export class utils {
 			
 			cleaned = cleaned.replace(/([{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)\s*:/g, '$1"$2":'); //"" for keys
 			
-			cleaned = cleaned.replace(/:\s*([a-zA-Z_$][a-zA-Z0-9_$]*)(?=\s*[,}])(?!\s*(?:true|false|null))/g, ':"$1"'); //"" for word values
+			cleaned = cleaned.replace(/:\s*(?!(?:true|false|null)\b)([a-zA-Z_$][a-zA-Z0-9_$]*)(?=\s*[,}])/g, ':"$1"'); //"" for word values except true,false,null
 			
 			cleaned = cleaned.replace(/,\s*([}\]])/g, '$1'); //remove trailing ,
 			

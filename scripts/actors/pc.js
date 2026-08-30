@@ -436,9 +436,9 @@ export class o13pcActor {
 			const aspectData = this.getAspectData(aspectName, true);
 			const aspectModifiers = this.getAspectRollModifiers(aspectName);
 
-			const config = utils.combineRollOptions([utils.rollOptionsFromModifiers(aspectModifiers), utils.expandRollData(options)]);
-
 			if (aspectData) {
+				const config = utils.combineRollOptions([aspectData, utils.rollOptionsFromModifiers(aspectModifiers), utils.expandRollData(options)]);
+
 				new o13rollConfig(this, {...config, aspect : aspectName}, quickRoll);
 			}
 		}
