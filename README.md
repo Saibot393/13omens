@@ -9,12 +9,12 @@ This system is intended for Paizo's new horror pen & paper system [13 Omens](htt
 
 **Actor Types**
 - **Story:** The story actor allows the GM to plan a story and organise Story Aspects, Archetypes, and Players. It also displays the currently available Omen-Dice and the dice bag. Player characters (PC) can be added to a story by dropping their actor onto the sheet. It is intended as the general control hub for a given story.
-- **PC:** The player actor allows players to track their wounds and choose their aspect ratings. Once an archetype is chosen, the player can also pick perks and select gear. Perks and gear can also directly be dropped into the sheet. Note that some functionality is only available once a player character is connected to a story.
+- **PC:** The player actor allows players to track their wounds and choose their aspect ratings. Once an archetype is chosen, the player can also pick perks and select gear. Perks and gear can also directly be dropped into the sheet. Note that some functionality is only available once a player character is connected to a story. In the background tab the description and the relations from the current archetype will be synched and can be edited.
 - **NPC:** A minimalistic sheet to take notes, give NPCs a portrait and a token.
 
 **Item Types**
-- **Archetype:** An archetype can be added to a story and chosen by a PC. Perks and items can be added to it. Items can be set as guaranteed or selectable, the amount of selectable items can also be set.
-- **Perk:** In cludes a description that will be idsplayed in the PC actor sheet
+- **Archetype:** An archetype can be added to a story and chosen by a PC. Perks and items can be added to it. Items can be set as guaranteed or selectable, the amount of selectable items can be set. In the background tab, a general description, suggested traits and relations to other archetypes can be set.
+- **Perk:** In cludes a description that will be dsplayed in the PC actor sheet. Active effects that will take place if the perk is picked by a player can also be added.
 - **Gear:** Includes a description and allows for the quantity/maximum quantity to be set.
 
 **Rolls**
