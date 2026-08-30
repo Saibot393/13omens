@@ -15,6 +15,17 @@ function wrapedNews(contentKey) {
 	return `<div class="o13-sheet o13-bordered o13-content-centered"> <span class="o13-label o13-header-label"> ${contentTitle} </span> <span class="o13-label"> ${contentText} </span></div>`
 }
 
+export async function sendNews(key) {
+	if (hasNewsContent(NEWS[key].contentKey)) {
+		await ChatMessage.create({
+			content : wrapedNews(NEWS[key].contentKey),
+			speaker : { alias : game.i18n.localize("13omens.titles.systemNews")}
+		})
+		
+		return true;
+	}
+}
+
 export function initNews() {
 	game.settings.register("13omens", "sentNews", {
 		name : "",
@@ -45,16 +56,14 @@ export function initNews() {
 			if (sentNews[key].status == "skipped") continue;
 			
 			if (sentNews[key].status != "sent") {
-				if (hasNewsContent(NEWS[key].contentKey)) {
-					await ChatMessage.create({
-						content : wrapedNews(NEWS[key].contentKey),
-						speaker : { alias : game.i18n.localize("13omens.titles.systemNews")}
-					})
-					
+				const newsSent = await sendNews(key);
+				
+				if (newsSent) {
 					sentNews[key].status = "sent";
 					sentNews[key].sentInfo = {
 						systemVersion : game.system.version,
-						gameVersion : game.version
+						gameVersion : game.version,
+						date : new Date().toISOString()
 					}
 					changed = true;
 				}
