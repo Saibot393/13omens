@@ -1,3 +1,9 @@
+## v1.3.3
+- Added basic wiki pages for [active effects](https://github.com/Saibot393/13omens/wiki/Active-effects) and [inline rolls](https://github.com/Saibot393/13omens/wiki/Inline-checks)
+- Added roll config short hand
+- Cleaned up omen flaw application during rolls
+- Added pc read only system key "_activeact" for use in active effects 
+
 ## v1.3.2
 - Fixed a bug with roll config not being completely respected by the roll config window
 - Fixed a bug that causes valid edge configs to be displayed without names

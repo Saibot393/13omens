@@ -153,13 +153,15 @@ export class o13pcActor {
 			strainlessAspects.story[key] = {strain : false};
 		}
 		
-		return this.update({
+		await this.update({
 			system : {
 				wounds : Array.from({length : this.system.wounds.length}, () => (EMPTYWOUND)),
 				death : {isdead : false},
 				aspects : strainlessAspects
 			}
 		});
+		
+		this.prepareData();
 	}
 	
 	async prepareNewAct() {
