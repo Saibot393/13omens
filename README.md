@@ -25,14 +25,14 @@ Once a roll is made, dice are randomly drawn from the dice bag and the result is
 ## Roadmap
 
 I have multiple additions to the system planned, the following is an incomplete list with no specific order
-- Adding active effects for perks, so that they can affect PC properties, e.g. the maximum amount of wounds
-- Adding inline checks for aspects, which allow for roll properties to be parsed
+- ~~Adding active effects for perks, so that they can affect PC properties, e.g. the maximum amount of wounds~~
+- ~~Adding inline checks for aspects, which allow for roll properties to be parsed~~
 - More drag and drop utility for items in sheets, including reordering
-- Dedicated tab in the Story and PC actor sheets for notes and descriptions
-- Dedicated tab in the archetype item sheet for descriptions
-- Posting Gear and Perks to chat
-- Implementation of the final sacrifice mechanic
-- Allowing for perks to add roll rules (edges, roll behaviour)
+- Dedicated tab in the Story and ~~PC~~ actor sheets for notes and descriptions
+- ~~Dedicated tab in the archetype item sheet for descriptions~~
+- Posting ~~Gear~~ and Perks to chat
+- ~~Implementation of the final sacrifice mechanic~~
+- ~~Allowing for perks to add roll rules (edges, roll behaviour)~~
 - Story independent archetypes on the PC sheet
 
 ## Bugs and Feature requests
