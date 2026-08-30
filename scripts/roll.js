@@ -21,6 +21,10 @@ export class o13Roll extends Roll {
 		this._storyID = this.storyID;
 		
 		if (!this._rollData.dicePermut || this._rollData.dicePermut.length == 0) this.drawDice();
+		if (!this._rollData.hasAppliedOmenPermut) {
+			this._rollData.dicePermut = this.dicePermutOmenApplied;
+			this._rollData.hasAppliedOmenPermut = true;
+		}
 		
 		this._canvaliantsacrifice = this.actor?.canValiantSacrifice;
 		this._hasvaliantlysacrificed = false;
@@ -162,7 +166,7 @@ export class o13Roll extends Roll {
 	}
 	
 	get canOmenRedraw() {
-		return this.hasOmenRedraws && this.diceResults.filter(result => result.type == "omen").length > this.omenflaws && this.isOwner;
+		return this.hasOmenRedraws && this.diceResults.filter(result => result.type == "omen").length /*> this.omenflaws*/ && this.isOwner;
 	}
 	
 	get FERollMod() {
@@ -226,19 +230,19 @@ export class o13Roll extends Roll {
 			return [];
 		}
 		
-		const dicePermutOmenApplied = this.dicePermutOmenApplied;
+		const dicePermut = this.dicePermut;
 		
-		return this.terms[0].results.map((result, index) => ({face : result.result, type : dicePermutOmenApplied[index], crossed : result.discarded, mystery : this.canValiantSacrifice}))
+		return this.terms[0].results.map((result, index) => ({face : result.result, type : dicePermut[index], crossed : result.discarded, mystery : this.canValiantSacrifice}))
 	}
 	
 	get rollsOmenDice() {
-		const dicePermutOmenApplied = this.dicePermutOmenApplied;
-		return this.terms[0]?.results?.some((result, index) => dicePermutOmenApplied[index] == "omen");
+		const dicePermut = this.dicePermut;
+		return this.terms[0]?.results?.some((result, index) => dicePermut[index] == "omen");
 	}
 	
 	get rollsSafeDice() {
-		const dicePermutOmenApplied = this.dicePermutOmenApplied;
-		return this.terms[0]?.results?.some((result, index) => dicePermutOmenApplied[index] == "safe");
+		const dicePermut = this.dicePermut;
+		return this.terms[0]?.results?.some((result, index) => dicePermut[index] == "safe");
 	}
 	
 	rerollDiceSelection(indices) {
