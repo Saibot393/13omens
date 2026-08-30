@@ -14,7 +14,7 @@ import {onO13Sockets} from "./scripts/sockets.js";
 
 import {registerEnrichments} from "./scripts/components/enrichments.js";
 
-import {initNews, sendNews, resetNews} from "./scripts/meta/news.js";
+import {initNews, o13News} from "./scripts/meta/news.js";
 
 import {showBanner} from "./scripts/components/banner.js";
 
@@ -80,10 +80,7 @@ Hooks.once("init", () => {
 		o13Roll,
 		utils,
 		showBanner,
-		news : {
-			sendNews,
-			resetNews
-		}
+		o13News
 	}
 	
 	//debug

@@ -4,74 +4,65 @@ const NEWS = {
 		skip : false, //optional
 		startDate : null, //optional
 		endDate : null, //optional
-		additionals : {} //optional
+		additionals : {}, //optional
+		customContent : null
 	}
 }
 
-function hasNewsContent(contentKey) {
-	if (!contentKey) return false;
-	return game.i18n.has("13omens.news." +contentKey + ".title") && game.i18n.has("13omens.news." +contentKey + ".text");
-}
+export class o13News {
+	static hasNewsContent(contentKey) {
+		if (!contentKey) return false;
+		return game.i18n.has("13omens.news." +contentKey + ".title") && game.i18n.has("13omens.news." +contentKey + ".text");
+	}
 
-function wrapedNews(contentKey, add = {}) {
-	const contentTitle = game.i18n.localize("13omens.news." + contentKey + ".title");
-	const contentText = game.i18n.localize("13omens.news." + contentKey + ".text");
-	
-	const additionals = typeof add == "object" ? add : {};
-	
-	return `<div class="o13-sheet o13-bordered o13-content-centered"> 
-				${additionals.before ?? ""}
-				<span class="o13-label o13-header-label"> 
-					${contentTitle} 
-				</span> 
-				${additionals.middle ?? ""}
-				<span class="o13-label"> 
-					${contentText} 
-				</span>
-				${additionals.after ?? ""}
-			</div>`
-}
+	static wrapedNews(contentKey, add = {}) {
+		const contentTitle = game.i18n.localize("13omens.news." + contentKey + ".title");
+		const contentText = game.i18n.localize("13omens.news." + contentKey + ".text");
+		
+		const additionals = typeof add == "object" ? add : {};
+		
+		return `<div class="o13-sheet o13-bordered o13-content-centered"> 
+					${additionals.before ?? ""}
+					<span class="o13-label o13-header-label"> 
+						${contentTitle} 
+					</span> 
+					${additionals.middle ?? ""}
+					<span class="o13-label"> 
+						${contentText} 
+					</span>
+					${additionals.after ?? ""}
+				</div>`
+	}
 
-export async function sendNews(key) {
-	try {
-		if (hasNewsContent(NEWS[key]?.contentKey) || NEWS[key].customContent) {
-			const wrappedContent = NEWS[key].customContent ? NEWS[key].customContent() : wrapedNews(NEWS[key].contentKey, NEWS[key].additionals);
-			
-			await ChatMessage.create({
-				content : wrappedContent,
-				speaker : { alias : game.i18n.localize("13omens.titles.systemNews")}
-			})
-			
-			return true;
-		}
-		else {
-			console.error(`13 omens news lacks content for key ${key}`);
+	static async sendNews(key) {
+		try {
+			if (o13News.hasNewsContent(NEWS[key]?.contentKey) || NEWS[key].customContent) {
+				const wrappedContent = NEWS[key].customContent ? NEWS[key].customContent() : o13News.wrapedNews(NEWS[key].contentKey, NEWS[key].additionals);
+				
+				await ChatMessage.create({
+					content : wrappedContent,
+					speaker : { alias : game.i18n.localize("13omens.titles.systemNews")}
+				})
+				
+				return true;
+			}
+			else {
+				console.error(`13 omens news lacks content for key ${key}`);
+				return false;
+			}
+		} catch(error) {
+			console.error(`13 omens news failed to send message with error:`, error);
 			return false;
 		}
-	} catch(error) {
-		console.error(`13 omens news failed to send message with error:`, error);
-		return false;
 	}
-}
 
-export function resetNews() {
-	game.settings.set("13omens", "sentNews", {})
-}
+	static resetNews() {
+		game.settings.set("13omens", "sentNews", {})
+	}
 
-export function initNews() {
-	game.settings.register("13omens", "sentNews", {
-		name : "",
-		scope : "world",
-		config : false,
-		type : Object,
-		default : {}
-	});
-	
-	Hooks.once("ready", async () => {
-		if (game.users.activeGM != game.user) return;
-		
-		const now = new Date();
-		
+	static async checkNews(checkDate) {
+		const now = checkDate ?? new Date();
+			
 		let changed = false;
 		
 		const sentNews = foundry.utils.deepClone(game.settings.get("13omens", "sentNews") ?? {});
@@ -106,7 +97,7 @@ export function initNews() {
 			}
 			
 			//we are not to early and we do not skip it for any reason, so post the message
-			const newsSent = await sendNews(key);
+			const newsSent = await o13News.sendNews(key);
 			
 			//save the infor for the now sent message
 			if (newsSent) {
@@ -120,6 +111,22 @@ export function initNews() {
 			}
 		}
 		
-		if (changed) await game.settings.set("13omens", "sentNews", sentNews);
+		if (changed) await game.settings.set("13omens", "sentNews", sentNews);	
+	}
+}
+
+export function initNews() {
+	game.settings.register("13omens", "sentNews", {
+		name : "",
+		scope : "world",
+		config : false,
+		type : Object,
+		default : {}
+	});
+	
+	Hooks.once("ready", async () => {
+		if (game.users.activeGM != game.user) return;
+		
+		o13News.checkNews();
 	})
 }
