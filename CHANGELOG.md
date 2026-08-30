@@ -1,3 +1,6 @@
+## v1.3.1
+- Fixed bug that could prevent entered archetype relations to show up the pc background tab if no archetype was selected
+
 ## v1.3.0
 - Perk can now apply active effects to change attributes (maximum wounds, selectable gear, cheat death amout) and roll modifiers (cheat death threshold, additional (omen)flaws, rerolls, redraws, ...) (detailed explanations/examples will follow shortly)
   - Perks will automatically deactive their active effects if not chosen or if used up
