@@ -14,7 +14,7 @@ This system is intended for Paizo's new horror pen & paper system [13 Omens](htt
 
 **Item Types**
 - **Archetype:** An archetype can be added to a story and chosen by a PC. Perks and items can be added to it. Items can be set as guaranteed or selectable, the amount of selectable items can be set. In the background tab, a general description, suggested traits and relations to other archetypes can be set.
-- **Perk:** In cludes a description that will be dsplayed in the PC actor sheet. Active effects that will take place if the perk is picked by a player can also be added.
+- **Perk:** In cludes a description that will be dsplayed in the PC actor sheet. [Active effects](https://github.com/Saibot393/13omens/wiki/Active-effects) that will take place if the perk is picked by a player can also be added.
 - **Gear:** Includes a description and allows for the quantity/maximum quantity to be set.
 
 **Rolls**
