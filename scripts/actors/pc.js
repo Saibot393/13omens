@@ -722,7 +722,7 @@ export class o13pcActor {
 		
 		this.system.maxwounds = this.storyActor?.getmaxWounds(this) || CONFIG["13OMENS"].DEFAULTMAXWOUNDS;
 		
-		this.system.activeact = this.activeAct;
+		this.system._activeact = this.activeAct;
 							
 		this.system.selectablegearcount = this.archetype?.selectableGearCount ?? 0;
 			
