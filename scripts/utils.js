@@ -44,6 +44,10 @@ export class utils {
 	}
 	
 	static expandRollData(data) {
+		if (data.tR && !data.taskRisk) data.taskRisk = data.tR;
+		if (data.tD && !data.taskDifficulty) data.taskDifficulty = data.tD;
+		if (data.of && !data.omenflaw) data.omenflaw = data.of;
+		
 		if (data.flaws) data.flaws = data.flaws.map(flaw => typeof flaw == "string" ? {name : flaw} : flaw);
 		if (data.omenflaw) data.omenflaws = [{name : game.i18n.localize("13omens.titles.omenflaw") ,isomen : true}];
 		if (data.omenflaws) data.flaws = [...(data.flaws || []), ...data.omenflaws.map(flaw => typeof flaw == "string" ? {name : flaw, isomen : true} : flaw)]
