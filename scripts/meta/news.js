@@ -34,9 +34,11 @@ function wrapedNews(contentKey, add = {}) {
 
 export async function sendNews(key) {
 	try {
-		if (hasNewsContent(NEWS[key]?.contentKey)) {
+		if (hasNewsContent(NEWS[key]?.contentKey) || NEWS[key].customContent) {
+			const wrappedContent = NEWS[key].customContent ? NEWS[key].customContent() : wrapedNews(NEWS[key].contentKey, NEWS[key].additionals);
+			
 			await ChatMessage.create({
-				content : wrapedNews(NEWS[key].contentKey, NEWS[key].additionals),
+				content : wrappedContent,
 				speaker : { alias : game.i18n.localize("13omens.titles.systemNews")}
 			})
 			
