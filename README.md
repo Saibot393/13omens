@@ -21,6 +21,8 @@ This system is intended for Paizo's new horror pen & paper system [13 Omens](htt
 Rolls can be initiated from a player character's (PC) sheet. The config popup allows for the risk level and the check difficulty to be set. Flaws and edges are also displayed in the config and can be added or removed, flaws can also be marked as omen flaws.
 Once a roll is made, dice are randomly drawn from the dice bag and the result is calculated. Wounds and strains a character might suffer are indicated in the result and can directly be applied from there.
 
+Rolls can also be triggered via [inline checks](https://github.com/Saibot393/13omens/wiki/Inline-checks).
+
 ---
 ## Roadmap
 
