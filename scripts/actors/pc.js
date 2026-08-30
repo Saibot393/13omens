@@ -71,9 +71,11 @@ export class o13pcActor {
 					
 					const newRelations = changed.system.background.relations;
 					
+					const siblingArchetypes = this.siblingArchetypes;
+					
 					//updates might mess with relations archetypel links
 					for (let i = 0; i < newRelations.length; i++) {
-						newRelations[i].archetype = newRelations[i].archetype || currentRelations[i]?.archetype;
+						newRelations[i].archetype = newRelations[i].archetype || currentRelations[i]?.archetype || siblingArchetypes[i]?.id;
 					}
 				}
 			}
