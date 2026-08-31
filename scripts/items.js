@@ -38,15 +38,6 @@ export class o13ItemSheet extends o13SheetMixin(HandlebarsApplicationMixin(ItemS
 			height: 600
 		},
 		actions: {
-			createNewPerk : o13ItemSheet.createNewPerk,
-			removePerk : o13ItemSheet.removePerk,
-			openPerk : o13ItemSheet.openPerk,
-			createNewGear : o13ItemSheet.createNewGear,
-			removeGear : o13ItemSheet.removeGear,
-			openGear : o13ItemSheet.openGear,
-			createNewEffect : o13ItemSheet.createNewEffect,
-			removeEffect : o13ItemSheet.removeEffect,
-			openEffect : o13ItemSheet.openEffect
 		}
 	});
 
@@ -60,13 +51,7 @@ export class o13ItemSheet extends o13SheetMixin(HandlebarsApplicationMixin(ItemS
 		return super._processSubmitData(event, form, formData);
     }
 	
-	static async createNewPerk(event, target) {
-		if (this.item.type == "archetype") {
-			this.item.createNewPerk();
-		}
-	}
-	
-	static async removePerk(event, target) {
+	async removePerk(event, target) {
 		if (this.item.type == "archetype") {
 			const perkID = target.getAttribute("perk-id");
 
@@ -76,7 +61,7 @@ export class o13ItemSheet extends o13SheetMixin(HandlebarsApplicationMixin(ItemS
 		}
 	}
 	
-	static async openPerk(event, target) {
+	async openPerk(event, target) {
 		if (this.item.type == "archetype") {
 			const perkID = target.getAttribute("perk-id");
 			
@@ -90,13 +75,7 @@ export class o13ItemSheet extends o13SheetMixin(HandlebarsApplicationMixin(ItemS
 		}
 	}
 	
-	static async createNewGear(event, target) {
-		if (this.item.type == "archetype") {
-			this.item.createNewGear();
-		}
-	}
-	
-	static async removeGear(event, target) {
+	async removeGear(event, target) {
 		if (this.item.type == "archetype") {
 			const gearID = target.getAttribute("gear-id");
 
@@ -106,7 +85,7 @@ export class o13ItemSheet extends o13SheetMixin(HandlebarsApplicationMixin(ItemS
 		}
 	}
 	
-	static async openGear(event, target) {
+	async openGear(event, target) {
 		if (this.item.type == "archetype") {
 			const gearID = target.getAttribute("gear-id");
 			
@@ -123,13 +102,7 @@ export class o13ItemSheet extends o13SheetMixin(HandlebarsApplicationMixin(ItemS
 		}
 	}
 	
-	static async createNewEffect(event, target) {
-		if (this.item.type == "perk") {
-			this.item.createNewEffect();
-		}
-	}
-	
-	static async removeEffect(event, target) {
+	static removeEffect(event, target) {
 		if (this.item.type == "perk") {
 			const effectid = target.getAttribute("effect-id");
 			
@@ -137,7 +110,7 @@ export class o13ItemSheet extends o13SheetMixin(HandlebarsApplicationMixin(ItemS
 		}
 	}
 	
-	static async openEffect(event, target) {
+	static openEffect(event, target) {
 		if (this.item.type == "perk") {
 			const effectid = target.getAttribute("effect-id");
 			
