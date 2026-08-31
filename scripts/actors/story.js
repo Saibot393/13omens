@@ -396,6 +396,14 @@ export class o13storyActor {
 	}
 	
 	//Data prep/handling
+	get enrichables() {
+		return {
+			story: {
+				acts : this.system.story.acts.map(act => ({story : act.story}))
+			}
+		}
+	}
+	
 	async handleDrop(data, event, prepared) {
 		let handled = false;
 		
@@ -425,6 +433,13 @@ export class storyDataModel extends foundry.abstract.TypeDataModel {
 			acts: new ArrayField(new SchemaField({
 				omenDiceThreshold : new NumberField({ required: true, integer: true, nullable: false, min: 0, max : 14, initial: null })
 			}), { initial : () => Array.from({length : 4}, (_, index) => ({omenDiceThreshold : CONFIG["13OMENS"].DEFAULTACTOMENDCIETHRESHOLD[index]}))}),
+			
+			story: new SchemaField({
+				acts : new ArrayField(new SchemaField({
+					notes : new StringField({ required: true, initial: "" }),
+					story : new HTMLField({ required: true, initial: ""})
+				}), { initial : () => Array.from({length : 4}, (_, index) => ({notes : "", story : ""}))})
+			}),
 			
 			autoprogressacts : new BooleanField({ required : true, initial : true}),
 			

@@ -222,7 +222,8 @@ export function o13SheetMixin(baseSheet) {
 			
 			if (typeof this.document?.[action] == "function") return this.document?.[action](); //equally named document action
 			
-			console.warn(`Unhandled sheet action ${action} at click:`, target);
+			//some default foundry actions are not handled here:
+			if (!["save"].includes(action))console.warn(`Unhandled sheet action ${action} at click:`, target);
 		}
 		
 		async _onDrop(event) {

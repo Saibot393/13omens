@@ -1,0 +1,21 @@
+<nav class="o13-nav" nav-group="story" style="margin-top:3px">
+	{{#each actor.system.story.acts}}
+		<a data-group="story" nav-tab="{{@key}}">{{localize (concat "13omens.titles.actNames." @key)}}</a>
+	{{/each}}
+</nav>
+
+{{#each actor.system.story.acts}}
+	<section class="o13-tab o13-scrollable flexcol" nav-group="story" nav-tab="{{@key}}" scroll-id="story_{{@key}}">
+		<div class="flexcol">
+			<label for="notes" class="o13-label" style="flex:0.5"><b>{{localize "13omens.titles.notes"}}:</b></label>
+			<textarea  class="o13-input o13-textarea o13-bordered o13-scrollable" name="system.story.acts.{{@key}}.notes" rows=8" scroll-id="story_{{@key}}_notes" style="flex:none;">{{lookup (lookup ../actor.system.story.acts @key) "notes"}}</textarea>
+		</div>
+		
+		<div class="o13-notes flexcol" style="flex:0.1;min-height:400px;">
+			<label for="story" class="o13-label"><b>{{localize "13omens.titles.story"}}:</b></label>
+			<prose-mirror class="o13-text-editor" style="min-height:400px;" name="system.story.acts.{{@key}}.story" document-uuid="{{actor.uuid}}" value="{{lookup (lookup ../actor.system.story.acts @key) "story"}}" button toggled editable collaborative="false">
+				{{{lookup (lookup ../enriched.story.acts @key) "story"}}}
+			</prose-mirror>
+		</div>
+	</section>
+{{/each}}
