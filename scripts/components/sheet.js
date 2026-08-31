@@ -220,7 +220,7 @@ export function o13SheetMixin(baseSheet) {
 			
 			if (typeof this[action] == "function") return this[action](event, target); //equally named sheet action
 			
-			if (typeof this.actor?.[action] == "function") return this.actor?.[action](); //equally named actor action
+			if (typeof this.document?.[action] == "function") return this.document?.[action](); //equally named document action
 			
 			console.warn(`Unhandled sheet action ${action} at click:`, target);
 		}
