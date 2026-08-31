@@ -1,6 +1,6 @@
 <nav class="o13-nav" nav-group="story" style="margin-top:3px">
 	{{#each actor.system.story.acts}}
-		<a data-group="story" nav-tab="{{@key}}">{{localize (concat "13omens.titles.actNames." @key)}}</a>
+		<a data-group="story" nav-tab="{{@key}}" {{#if (eqLoose ../actor.activeAct @key)}}style="color:var(--o13-omen-red)"{{/if}}>{{localize (concat "13omens.titles.actNames." @key)}}</a>
 	{{/each}}
 </nav>
 
