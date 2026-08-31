@@ -9,7 +9,7 @@ export function o13SheetMixin(baseSheet) {
 	class o13Sheet extends baseSheet {
 		constructor(options = {}) {
 			super(options);
-			console.log(DEFAULTACTIONPARAMETERS);
+
 			this._boundonAction = this._onAction.bind(this);
 		}
 		

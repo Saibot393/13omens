@@ -102,7 +102,7 @@ export class o13ItemSheet extends o13SheetMixin(HandlebarsApplicationMixin(ItemS
 		}
 	}
 	
-	static removeEffect(event, target) {
+	async removeEffect(event, target) {
 		if (this.item.type == "perk") {
 			const effectid = target.getAttribute("effect-id");
 			
@@ -110,7 +110,7 @@ export class o13ItemSheet extends o13SheetMixin(HandlebarsApplicationMixin(ItemS
 		}
 	}
 	
-	static openEffect(event, target) {
+	async openEffect(event, target) {
 		if (this.item.type == "perk") {
 			const effectid = target.getAttribute("effect-id");
 			
