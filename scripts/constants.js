@@ -1,3 +1,12 @@
+const CAPTYPES = {
+	story : "Story",
+	pc : "PC",
+	npc : "NPC",
+	archetype : "Archetype",
+	perk : "Perk",
+	gear : "Gear"
+}
+
 const COREASPECTSIDS = ["courage", "evade", "fight", "luck", "perception"];
 const ASPECTRATINGS = [-1, 0,1,2,3,4];
 const ASPECTTN = [10, 9, 7, 5, 4];
@@ -39,6 +48,6 @@ const DEFAULTROLLMODIFIERS = {
 	}
 }
 
-export const CONSTANTS = { COREASPECTSIDS, ASPECTRATINGS, ASPECTTN, ARCHETYPEASPECTRATING, DEFAULTMAXWOUNDS, DEFAULTMAXHOSTOMENDICE, DEFAULTDICEBAGCOUNT, DEFAULTACTOMENDCIETHRESHOLD, MAXFE, MAXTD, MINTD, TASKRISKS, DEFAULTROLLOPTIONS, DEFAULTROLLMODIFIERS };
+export const CONSTANTS = { CAPTYPES, COREASPECTSIDS, ASPECTRATINGS, ASPECTTN, ARCHETYPEASPECTRATING, DEFAULTMAXWOUNDS, DEFAULTMAXHOSTOMENDICE, DEFAULTDICEBAGCOUNT, DEFAULTACTOMENDCIETHRESHOLD, MAXFE, MAXTD, MINTD, TASKRISKS, DEFAULTROLLOPTIONS, DEFAULTROLLMODIFIERS };
 
-export const templatePaths = ["actors/pc", "actors/components/pc_character", "actors/components/pc_background", "actors/story", "actors/components/aspects", "items/perk", "items/components/archetype_perksngear", "items/components/archetype_background", "dice/dice", "dice/dicebar", "dice/minidicebar", "dice/dicebag", "rolls/rollConfig", "rolls/chatRoll", "dialogues/general", "dialogues/confirmOmenDiceRoll", "chat/gear", "banner/banner"].map((path) => `systems/13omens/templates/${path}.hbs`);
+export const templatePaths = ["actors/pc", "actors/components/pc_character", "actors/components/pc_background", "actors/story", "actors/components/story_game", "actors/components/story_story", "actors/components/aspects", "items/perk", "items/components/archetype_perksngear", "items/components/archetype_background", "dice/dice", "dice/dicebar", "dice/minidicebar", "dice/dicebag", "rolls/rollConfig", "rolls/chatRoll", "dialogues/general", "dialogues/confirmOmenDiceRoll", "chat/gear", "banner/banner"].map((path) => `systems/13omens/templates/${path}.hbs`);

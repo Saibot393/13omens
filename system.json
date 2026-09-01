@@ -22,7 +22,7 @@
   }],
   "documentTypes": {
     "Actor": {
-	  "story": {"htmlFields" : []},
+	  "story": {"htmlFields" : ["story.acts.*.story"]},
       "pc": {"htmlFields" : ["background.description", "background.goal", "background.traits", "background.relations.*.relation"]},
 	  "npc": {"htmlFields" : ["description"]}
     },

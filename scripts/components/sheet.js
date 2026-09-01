@@ -7,6 +7,12 @@ import {utils} from "../utils.js";
 
 export function o13SheetMixin(baseSheet) {
 	class o13Sheet extends baseSheet {
+		constructor(options = {}) {
+			super(options);
+
+			this._boundonAction = this._onAction.bind(this);
+		}
+		
 		static get DEFAULT_OPTIONS() {
 			return foundry.utils.mergeObject(foundry.utils.deepClone(super.DEFAULT_OPTIONS ?? {}), {
 				tag: "form",
@@ -44,6 +50,9 @@ export function o13SheetMixin(baseSheet) {
 		
 		async _onRender(context, options) {
 			super._onRender(context, options);
+			
+			this.element.removeEventListener("click", this._boundonAction)
+			this.element.addEventListener("click", this._boundonAction);
 			
 			//tabs
 			const html = this.element;
@@ -197,6 +206,24 @@ export function o13SheetMixin(baseSheet) {
 			});
 			
 			return context;
+		}
+		
+		async _onAction(event) {
+			const target = event?.target?.closest("[data-action]");
+			const action = target?.getAttribute("data-action");
+
+			if (!action) return;
+			
+			event.stopPropagation();
+			
+			if (this.constructor.DEFAULT_OPTIONS?.actions?.[action]) return; //other defined sheets action, let foundry handle it
+			
+			if (typeof this[action] == "function") return this[action](event, target); //equally named sheet action
+			
+			if (typeof this.document?.[action] == "function") return this.document?.[action](); //equally named document action
+			
+			//some default foundry actions are not handled here:
+			if (!["save"].includes(action))console.warn(`Unhandled sheet action ${action} at click:`, target);
 		}
 		
 		async _onDrop(event) {
