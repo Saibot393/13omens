@@ -394,11 +394,26 @@ select:disabled {
 	opacity: 0.3; !important;
 }
 
+.o13-bottom-right{
+	position: absolute;
+	bottom: 12px;
+	right: 12px;
+	color: var(--o13-ink-black)
+}
+
 span .o13-hover-icon {
 	display: none;
 }
 
 span:hover > .o13-hover-icon {
+	display: inline-block;
+}
+
+div .o13-hover-icon.o13-bottom-right {
+	display: none;
+}
+
+div:hover > .o13-hover-icon.o13-bottom-right {
 	display: inline-block;
 }
 

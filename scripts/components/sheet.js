@@ -24,7 +24,6 @@ export function o13SheetMixin(baseSheet) {
 					resizable: true
 				},
 				actions: {
-					choosePortrait : o13Sheet.choosePortrait
 				}
 			});
 		}
@@ -215,13 +214,13 @@ export function o13SheetMixin(baseSheet) {
 			if (!action) return;
 			
 			event.stopPropagation();
-			
+
 			if (this.constructor.DEFAULT_OPTIONS?.actions?.[action]) return; //other defined sheets action, let foundry handle it
-			
+
 			if (typeof this[action] == "function") return this[action](event, target); //equally named sheet action
-			
+
 			if (typeof this.document?.[action] == "function") return this.document?.[action](); //equally named document action
-			
+
 			//some default foundry actions are not handled here:
 			if (!["save"].includes(action))console.warn(`Unhandled sheet action ${action} at click:`, target);
 		}
@@ -257,7 +256,7 @@ export function o13SheetMixin(baseSheet) {
 			event.dataTransfer.setData("text/plain", JSON.stringify(dragData));
 		}
 		
-		static async choosePortrait(event, target) {
+		async choosePortrait(event, target) {
 			if (this.document.isOwner) {
 				const picker = new foundry.applications.apps.FilePicker.implementation({
 					type: "image",
@@ -267,6 +266,16 @@ export function o13SheetMixin(baseSheet) {
 					}
 				}).render(true);
 			}
+		}
+		
+		async viewPortrait(event, target) {
+			new foundry.applications.apps.ImagePopout({
+				src: this.document.img,
+				window: {
+					title: this.document.name
+				},
+				uuid: this.document.uuid
+			}).render(true);
 		}
 	}
 	
