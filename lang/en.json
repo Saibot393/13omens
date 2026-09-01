@@ -154,7 +154,8 @@
 			"takeValiantSacrifice" : "Take valiant sacrifice",
 			"refuseValiantSacrifice" : "Refuse valiant sacrifice",
 			"reroll" : "Reroll",
-			"redrawomen" : "Redraw omen dice"
+			"redrawomen" : "Redraw omen dice",
+			"viewPortrait" : "View portrait"
 		},
 		
 		"chats" : {
