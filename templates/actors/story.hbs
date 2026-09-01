@@ -53,22 +53,26 @@
 	</header>
 	
 	<main class="flexcol">
-		<nav class="o13-nav" nav-group="main">
-			<a data-group="main" nav-tab="game">{{localize "13omens.titles.game"}}</a>
-			<a data-group="main" nav-tab="story">{{localize "13omens.titles.story"}}</a>
-		</nav>
+		{{#if actor.isHostView}}
+			<nav class="o13-nav" nav-group="main">
+				<a data-group="main" nav-tab="game">{{localize "13omens.titles.game"}}</a>
+				<a data-group="main" nav-tab="story">{{localize "13omens.titles.story"}}</a>
+			</nav>
+		{{/if}}
 		
-		<section class="o13-tab o13-scrollable flexcol" nav-group="main" nav-tab="game" scroll-id="game">
+		<section class="o13-tab o13-scrollable flexcol {{#unless actor.isHostView}}active{{/unless}}" nav-group="main" nav-tab="game" scroll-id="game">
 			{{> "systems/13omens/templates/actors/components/story_game.hbs" 
 				actor=actor
 			}}
 		</section>
 		
-		<section class="o13-tab o13-scrollable flexcol" nav-group="main" nav-tab="story" scroll-id="story">
-			{{> "systems/13omens/templates/actors/components/story_story.hbs" 
-				actor=actor
-				enriched=enriched
-			}}
-		</section>
+		{{#if actor.isHostView}}
+			<section class="o13-tab o13-scrollable flexcol" nav-group="main" nav-tab="story" scroll-id="story">
+				{{> "systems/13omens/templates/actors/components/story_story.hbs" 
+					actor=actor
+					enriched=enriched
+				}}
+			</section>
+		{{/if}}
 	</main>
 </div>
