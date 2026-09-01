@@ -72,6 +72,17 @@ export function o13SheetMixin(baseSheet) {
 					this._activeo13Tab(group, tab);
 				}
 			})
+			
+			//custom Hooks
+			this._disableExternalRenderHooks();
+			
+			this._externalItemUpdateRender = Hooks.on("updateItem", async (item, changes, options, userId) => {
+				await this._onUpdateItem(item, changes, options, userId);
+			});
+		
+			this._externalActorUpdateRender = Hooks.on("updateActor", async (actor, changes, options, userId) => {
+				await this._onUpdateActor(actor, changes, options, userId);
+			});
 		}
 		
 		async _activeo13Tab(group, tab) {
@@ -185,7 +196,7 @@ export function o13SheetMixin(baseSheet) {
 		async _prepareContext(options) {
 			const context = await super._prepareContext(options);
 			
-			switch (this.document.documentName) {
+			switch (this.document?.documentName) {
 				case "Actor":
 					context.actor = this.document;
 					break;
@@ -196,15 +207,23 @@ export function o13SheetMixin(baseSheet) {
 			
 			context.editable = true;
 			
-			const enrichables = this.document.enrichables ?? {};
+			const enrichables = this.document?.enrichables ?? {};
 			
-			context.enriched = await utils.enrichHTMLStructure(enrichables, {
+			context.enriched = foundry.utils.isEmpty(enrichables) ? {} : await utils.enrichHTMLStructure(enrichables, {
 				secrets: this.document.isOwner,
 				async: true,
 				relativeTo: this.document
 			});
 			
 			return context;
+		}
+		
+		async _onUpdateItem(item, changes, options, userId) {
+			
+		}
+		
+		async _onUpdateActor(actor, changes, options, userId) {
+			
 		}
 		
 		async _onAction(event) {
@@ -276,6 +295,19 @@ export function o13SheetMixin(baseSheet) {
 				},
 				uuid: this.document.uuid
 			}).render(true);
+		}
+		
+		async _onClose(options) {
+			await super._onClose(options);
+		
+			this._disableExternalRenderHooks();
+		}
+		
+		_disableExternalRenderHooks() {
+			Hooks.off("updateItem", this._externalItemUpdateRender);
+			this._externalItemUpdateRender = null;
+			Hooks.off("updateActor", this._externalActorUpdateRender);
+			this._externalActorUpdateRender = null;
 		}
 	}
 	

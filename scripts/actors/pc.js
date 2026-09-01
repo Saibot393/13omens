@@ -122,8 +122,17 @@ export class o13pcActor {
 	}
 	
 	//State
+	get prepStateDetailed() {
+		return {
+			archetype: this.archetypePrepState,
+			aspects: this.aspectPrepState, 
+			perks: this.perkPrepState,
+			gear: this.gearPrepState
+		};
+	}
+	
 	get prepState() {
-		const states = [this.archetypePrepState, this.aspectPrepState, this.perkPrepState, this.gearPrepState];
+		const states = Object.values(this.prepStateDetailed);
 		
 		if (states.some(state => state == "problem")) return "problem";
 		

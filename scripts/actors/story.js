@@ -241,6 +241,16 @@ export class o13storyActor {
 		return this.addPC(actors);
 	}
 	
+	get prepState() {
+		const prepState = {};
+		
+		for (const pc of this.pcActors) {
+			prepState[pc.id] = {total : pc.prepState, ...pc.prepStateDetailed}
+		}
+		
+		return prepState;
+	}
+	
 	//Wounds
 	getmaxWounds(actor = undefined) {
 		const pcCount = this.pcCount;

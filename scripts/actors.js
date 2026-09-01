@@ -248,72 +248,49 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 		}
 	}
 	
-	async _onRender(context, options) {
-		await super._onRender(context, options);
+	async _onUpdateActor(actor, changes, options, userId) {
+		let rerender = false;
 		
-		this._disableExternalRenderHooks();
-
-		this._externalItemUpdateRender = Hooks.on("updateItem", (item, changes, options, userId) => {
-			
-		});
-		
-		this._externalActorUpdateRender = Hooks.on("updateActor", (actor, changes, options, userId) => {
-			let rerender = false;
-			
-			//decide if actor update is relevant for this sheet
-			if (this.actor.isStory) {
-				if (actor?.isPC) {
-					if (actor.storyActor == this.actor) {
-						if (changes.hasOwnProperty("name")) {
+		//decide if actor update is relevant for this sheet
+		if (this.actor.isStory) {
+			if (actor?.isPC) {
+				if (actor.storyActor == this.actor) {
+					if (changes.hasOwnProperty("name")) {
+						rerender = true;
+					}
+					
+					if (changes.system) {
+						if (changes.system.wounds || changes.system.hasOwnProperty("archetype") || changes.system.death) {
 							rerender = true;
 						}
 						
-						if (changes.system) {
-							if (changes.system.wounds || changes.system.hasOwnProperty("archetype") || changes.system.death) {
-								rerender = true;
-							}
-							
-							if (this.actor.isPrologue) {
-								if (changes.system.hasOwnProperty("archetype") || changes.system.hasOwnProperty("aspects") || changes.system.hasOwnProperty("pickedperks")) {
-									//rerender for characters for ready check mark
-								}
+						if (this.actor.isPrologue) {
+							if (changes.system.hasOwnProperty("archetype") || changes.system.hasOwnProperty("aspects") || changes.system.hasOwnProperty("pickedperks")) {
+								//rerender for characters for ready check mark
 							}
 						}
 					}
 				}
 			}
-			
-			if (this.actor.isPC) {
-				if (actor.isStory) {
-					if (this.actor.storyActor == actor) {
-						if (changes.system) {
-							if (changes.system.storyaspects) {
-								rerender = true;
-							}
-							if (changes.system.hasOwnProperty("activeact")) {
-								rerender = true;
-							}
+		}
+		
+		if (this.actor.isPC) {
+			if (actor.isStory) {
+				if (this.actor.storyActor == actor) {
+					if (changes.system) {
+						if (changes.system.storyaspects) {
+							rerender = true;
+						}
+						if (changes.system.hasOwnProperty("activeact")) {
+							rerender = true;
 						}
 					}
 				}
 			}
-			
-			if (rerender) {
-				this.render({force : false, window : {focus : false}});
-			}
-		});
-	}
-	
-	async _onClose(options) {
-		await super._onClose(options);
-	
-		this._disableExternalRenderHooks();
-	}
-	
-	_disableExternalRenderHooks() {
-		Hooks.off("updateItem", this._externalItemUpdateRender);
-		this._externalItemUpdateRender = null;
-		Hooks.off("updateActor", this._externalActorUpdateRender);
-		this._externalActorUpdateRender = null;
+		}
+		
+		if (rerender) {
+			this.render({force : false, window : {focus : false}});
+		}
 	}
 }
