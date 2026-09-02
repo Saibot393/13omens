@@ -4,6 +4,8 @@ import {utils} from "../utils.js";
 
 import {showBanner} from "../components/banner.js";
 
+import {o13prepState} from "../dialogues/prepState.js";
+
 export class o13storyActor {
 	//Updates % Create
 	async _preCreate(data, options, user) {
@@ -91,17 +93,28 @@ export class o13storyActor {
 		
 		if (targetAct > this.activeAct && targetAct <= 3 && targetAct >= 0) {
 			if (!force) {
-				const advance = await foundry.applications.api.DialogV2.confirm({
-					window: { title: game.i18n.localize("13omens.titles.confirmAdvanceAct") },
-					content: await foundry.applications.handlebars.renderTemplate("systems/13omens/templates/dialogues/general.hbs", {
-						content : {
-							text : game.i18n.format("13omens.dialogues.confirmAdvanceAct", {act : game.i18n.localize("13omens.titles.actNames." + targetAct)})
-						}
-					}),
-					rejectClose: false
-				});
+				const prepSetting = game.settings.get("13omens", "showStoryPrepState");
+				const askPrepState = (this.activeAct == 0 && targetAct > this.activeAct)
+				&& (prepSetting == "always" || (prepSetting == "notReady" && this.prepState != "ready"))
 				
-				if (!advance) return;
+				if (askPrepState) {
+					const advance = await new o13prepState(this).wait(true);
+					
+					if (!advance) return;
+				}
+				else {
+					const advance = await foundry.applications.api.DialogV2.confirm({
+						window: { title: game.i18n.localize("13omens.titles.confirmAdvanceAct") },
+						content: await foundry.applications.handlebars.renderTemplate("systems/13omens/templates/dialogues/general.hbs", {
+							content : {
+								text : game.i18n.format("13omens.dialogues.confirmAdvanceAct", {act : game.i18n.localize("13omens.titles.actNames." + targetAct)})
+							}
+						}),
+						rejectClose: false
+					});
+					
+					if (!advance) return;
+				}
 			}
 			
 			const omenDicetoAdd = Math.max(targetAct - Math.max(this.activeAct, 1), 0); //prologue->act1 does not add dice
@@ -241,7 +254,7 @@ export class o13storyActor {
 		return this.addPC(actors);
 	}
 	
-	get prepState() {
+	get prepStateDetailed() {
 		const prepState = {};
 		
 		for (const pc of this.pcActors) {
@@ -249,6 +262,16 @@ export class o13storyActor {
 		}
 		
 		return prepState;
+	}
+	
+	get prepState() {
+		const states = this.pcActors.map(pc => pc.prepState);
+		
+		if (states.some(state => state == "problem")) return "problem";
+		
+		if (states.some(state => state == "pending")) return "pending";
+		
+		return "ready";
 	}
 	
 	//Wounds

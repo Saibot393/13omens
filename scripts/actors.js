@@ -289,8 +289,6 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 			}
 		}
 		
-		if (rerender) {
-			this.render({force : false, window : {focus : false}});
-		}
+		return rerender;
 	}
 }

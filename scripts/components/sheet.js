@@ -10,15 +10,37 @@ export function o13SheetMixin(baseSheet) {
 		constructor(options = {}) {
 			super(options);
 
+			if (CONFIG.debug.o13.dialogues) console.log(this);
+
 			this._boundonAction = this._onAction.bind(this);
 			
 			//custom Hooks
 			this._externalItemUpdateRender = Hooks.on("updateItem", async (item, changes, options, userId) => {
-				if (this.rendered) await this._onUpdateItem(item, changes, options, userId);
+				if (this.rendered) {
+					const rerender = await this._onUpdateItem(item, changes, options, userId);
+					if (rerender) this.render({force : false, window : {focus : false}});
+				}
+			});
+			
+			this._externalItemCreateRender = Hooks.on("createItem", async (item, options, userId) => {
+				if (this.rendered) {
+					const rerender = await this._onUpdateItem(item, {create : true}, options, userId);
+					if (rerender) this.render({force : false, window : {focus : false}});
+				}
+			});
+			
+			this._externalItemDeleteRender = Hooks.on("deleteItem", async (item, options, userId) => {
+				if (this.rendered) {
+					const rerender = await this._onUpdateItem(item, {delete : true}, options, userId);
+					if (rerender) this.render({force : false, window : {focus : false}});
+				}
 			});
 		
 			this._externalActorUpdateRender = Hooks.on("updateActor", async (actor, changes, options, userId) => {
-				if (this.rendered) await this._onUpdateActor(actor, changes, options, userId);
+				if (this.rendered) {
+					const rerender = await this._onUpdateActor(actor, changes, options, userId);
+					if (rerender) this.render({force : false, window : {focus : false}});
+				}
 			});
 		}
 		
@@ -298,6 +320,10 @@ export function o13SheetMixin(baseSheet) {
 		_disableExternalRenderHooks() {
 			Hooks.off("updateItem", this._externalItemUpdateRender);
 			this._externalItemUpdateRender = null;
+			Hooks.off("createItem", this._externalItemCreateRender);
+			this._externalItemCreateRender = null;
+			Hooks.off("deleteItem", this._externalItemDeleteRender);
+			this._externalItemDeleteRender = null;
 			Hooks.off("updateActor", this._externalActorUpdateRender);
 			this._externalActorUpdateRender = null;
 		}

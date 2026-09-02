@@ -1,4 +1,4 @@
-export funcion o13WaitMixIn(baseClass) {
+export function o13WaitMixIn(baseClass) {
 	return class o13Wait extends baseClass {
 		constructor(...args) {
 			super(...args);
@@ -6,30 +6,30 @@ export funcion o13WaitMixIn(baseClass) {
 			this._waitResolver = null;
 			this._waitResolved = false;
 		}
-	}
 	
-	async wait(render = false) {
-		if (render && this.render) this.render();
-		
-		return new Promise((resolver) => {
-			this._waitResolver = resolver;
-		})
-	}
-	
-	async _resolveWait(resolveValue, close = false) {
-		if (!this._waitResolved && this._waitResolver) {
-			this._waitResolved = true;
-			this._waitResolver(resolveValue);
+		async wait(render = false) {
+			if (render && this.render) this.render(true);
 			
-			if (close && this.close) await this.close();
-		}
-	}
-	
-	async close(...args) {
-		if (!this._waitResolved) {
-			this._resolveWait(null);
+			return new Promise((resolver) => {
+				this._waitResolver = resolver;
+			})
 		}
 		
-		return super.close(...args);
+		async _resolveWait(resolveValue, close = false) {
+			if (!this._waitResolved && this._waitResolver) {
+				this._waitResolved = true;
+				this._waitResolver(resolveValue);
+				
+				if (close && this.close) await this.close();
+			}
+		}
+		
+		async close(...args) {
+			if (!this._waitResolved) {
+				this._resolveWait(null);
+			}
+			
+			return super.close(...args);
+		}
 	}
 }
