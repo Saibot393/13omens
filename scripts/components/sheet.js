@@ -11,6 +11,15 @@ export function o13SheetMixin(baseSheet) {
 			super(options);
 
 			this._boundonAction = this._onAction.bind(this);
+			
+			//custom Hooks
+			this._externalItemUpdateRender = Hooks.on("updateItem", async (item, changes, options, userId) => {
+				if (this.rendered) await this._onUpdateItem(item, changes, options, userId);
+			});
+		
+			this._externalActorUpdateRender = Hooks.on("updateActor", async (actor, changes, options, userId) => {
+				if (this.rendered) await this._onUpdateActor(actor, changes, options, userId);
+			});
 		}
 		
 		static get DEFAULT_OPTIONS() {
@@ -72,17 +81,6 @@ export function o13SheetMixin(baseSheet) {
 					this._activeo13Tab(group, tab);
 				}
 			})
-			
-			//custom Hooks
-			this._disableExternalRenderHooks();
-			
-			this._externalItemUpdateRender = Hooks.on("updateItem", async (item, changes, options, userId) => {
-				await this._onUpdateItem(item, changes, options, userId);
-			});
-		
-			this._externalActorUpdateRender = Hooks.on("updateActor", async (actor, changes, options, userId) => {
-				await this._onUpdateActor(actor, changes, options, userId);
-			});
 		}
 		
 		async _activeo13Tab(group, tab) {
@@ -297,17 +295,17 @@ export function o13SheetMixin(baseSheet) {
 			}).render(true);
 		}
 		
-		async _onClose(options) {
-			await super._onClose(options);
-		
-			this._disableExternalRenderHooks();
-		}
-		
 		_disableExternalRenderHooks() {
 			Hooks.off("updateItem", this._externalItemUpdateRender);
 			this._externalItemUpdateRender = null;
 			Hooks.off("updateActor", this._externalActorUpdateRender);
 			this._externalActorUpdateRender = null;
+		}
+		
+		async _onClose(options) {
+			await super._onClose(options);
+		
+			this._disableExternalRenderHooks();
 		}
 	}
 	
