@@ -8,13 +8,15 @@ export funcion o13WaitMixIn(baseClass) {
 		}
 	}
 	
-	async wait() {
+	async wait(render = false) {
+		if (render && this.render) this.render();
+		
 		return new Promise((resolver) => {
 			this._waitResolver = resolver;
 		})
 	}
 	
-	async resolveWait(resolveValue, close = false) {
+	async _resolveWait(resolveValue, close = false) {
 		if (!this._waitResolved && this._waitResolver) {
 			this._waitResolved = true;
 			this._waitResolver(resolveValue);
@@ -25,7 +27,7 @@ export funcion o13WaitMixIn(baseClass) {
 	
 	async close(...args) {
 		if (!this._waitResolved) {
-			this.resolveWait(null);
+			this._resolveWait(null);
 		}
 		
 		return super.close(...args);
