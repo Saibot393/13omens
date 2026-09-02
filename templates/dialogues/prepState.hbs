@@ -1,0 +1,24 @@
+<div class="o13-sheet o13-sheet-lining">
+	<table class="o13-table">
+		<tr class="o13-table-header">
+			<th> <label class="o13-label o13-header-label">{{localize "13omens.titles.pc"}}</label> </th>
+			<th> <label class="o13-label o13-header-label">{{localize "13omens.titles.archetype"}}</label> </th>
+			<th> <label class="o13-label o13-header-label">{{localize "13omens.titles.aspects"}}</label> </th>
+			<th> <label class="o13-label o13-header-label">{{localize "13omens.titles.perks"}}</label> </th>
+			<th> <label class="o13-label o13-header-label">{{localize "13omens.titles.gears"}}</label> </th>
+		</tr>
+		{{#each aspects as |aspect|}}
+			<tr>
+				<td>
+
+				</td>
+				
+				{{#each (array "archetype" "aspect" "perk" "gear") as type}}
+					<td class="o13-content-centered">
+						
+					</td>
+				{{/each}}
+			</tr>
+		{{/each}}
+	</table>
+</div>
