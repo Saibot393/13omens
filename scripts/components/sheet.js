@@ -10,7 +10,38 @@ export function o13SheetMixin(baseSheet) {
 		constructor(options = {}) {
 			super(options);
 
+			if (CONFIG.debug.o13.dialogues) console.log(this);
+
 			this._boundonAction = this._onAction.bind(this);
+			
+			//custom Hooks
+			this._externalItemUpdateRender = Hooks.on("updateItem", async (item, changes, options, userId) => {
+				if (this.rendered) {
+					const rerender = await this._onUpdateItem(item, changes, options, userId);
+					if (rerender) this.render({force : false, window : {focus : false}});
+				}
+			});
+			
+			this._externalItemCreateRender = Hooks.on("createItem", async (item, options, userId) => {
+				if (this.rendered) {
+					const rerender = await this._onUpdateItem(item, {create : true}, options, userId);
+					if (rerender) this.render({force : false, window : {focus : false}});
+				}
+			});
+			
+			this._externalItemDeleteRender = Hooks.on("deleteItem", async (item, options, userId) => {
+				if (this.rendered) {
+					const rerender = await this._onUpdateItem(item, {delete : true}, options, userId);
+					if (rerender) this.render({force : false, window : {focus : false}});
+				}
+			});
+		
+			this._externalActorUpdateRender = Hooks.on("updateActor", async (actor, changes, options, userId) => {
+				if (this.rendered) {
+					const rerender = await this._onUpdateActor(actor, changes, options, userId);
+					if (rerender) this.render({force : false, window : {focus : false}});
+				}
+			});
 		}
 		
 		static get DEFAULT_OPTIONS() {
@@ -185,7 +216,7 @@ export function o13SheetMixin(baseSheet) {
 		async _prepareContext(options) {
 			const context = await super._prepareContext(options);
 			
-			switch (this.document.documentName) {
+			switch (this.document?.documentName) {
 				case "Actor":
 					context.actor = this.document;
 					break;
@@ -196,15 +227,23 @@ export function o13SheetMixin(baseSheet) {
 			
 			context.editable = true;
 			
-			const enrichables = this.document.enrichables ?? {};
+			const enrichables = this.document?.enrichables ?? {};
 			
-			context.enriched = await utils.enrichHTMLStructure(enrichables, {
+			context.enriched = foundry.utils.isEmpty(enrichables) ? {} : await utils.enrichHTMLStructure(enrichables, {
 				secrets: this.document.isOwner,
 				async: true,
 				relativeTo: this.document
 			});
 			
 			return context;
+		}
+		
+		async _onUpdateItem(item, changes, options, userId) {
+			
+		}
+		
+		async _onUpdateActor(actor, changes, options, userId) {
+			
 		}
 		
 		async _onAction(event) {
@@ -276,6 +315,23 @@ export function o13SheetMixin(baseSheet) {
 				},
 				uuid: this.document.uuid
 			}).render(true);
+		}
+		
+		_disableExternalRenderHooks() {
+			Hooks.off("updateItem", this._externalItemUpdateRender);
+			this._externalItemUpdateRender = null;
+			Hooks.off("createItem", this._externalItemCreateRender);
+			this._externalItemCreateRender = null;
+			Hooks.off("deleteItem", this._externalItemDeleteRender);
+			this._externalItemDeleteRender = null;
+			Hooks.off("updateActor", this._externalActorUpdateRender);
+			this._externalActorUpdateRender = null;
+		}
+		
+		async _onClose(options) {
+			await super._onClose(options);
+		
+			this._disableExternalRenderHooks();
 		}
 	}
 	

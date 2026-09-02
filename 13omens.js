@@ -88,7 +88,8 @@ Hooks.once("init", () => {
 		sockets : false,
 		enrichments : false,
 		dragndrop : false,
-		rolls : false
+		rolls : false,
+		dialogues : false
 	};
 	
 	//News
