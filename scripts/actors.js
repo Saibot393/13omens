@@ -17,6 +17,30 @@ export class o13Actor extends Actor {
 		},
 		superPD : ["update", "_preCreate", "_preUpdate", "_onUpdate", "_onCreateDescendantDocuments", "prepareBaseData", "prepareEmbeddedDocuments", "prepareDerivedData"]
 	}
+		
+	async createEmbeddedDocuments(embeddedName, data = [], operation = {}) {
+		try {
+			if (embeddedName == "Item") {
+				const types = [...new Set(data.map(entry => entry.type))];
+				for (const type of types) {
+					const typeItems = [...this.items].filter(item => item.type == type);
+					let sortValue = Math.max(...typeItems.map(item => item.sort));
+					if (!isNaN(sortValue) && sortValue > -Infinity) {
+						for (const entry of data) {
+							if (entry.type == type) {
+								sortValue = sortValue + 100000;
+								entry.sort = sortValue;
+							}
+						}
+					}
+				}
+			}
+		} catch (error) {
+			console.error(`Error during 13 Omens pre item sort:`, error);
+		}
+		
+		super.createEmbeddedDocuments(embeddedName, data, operation);
+	}
 	
 	prepareDerivedData() {
         super.prepareDerivedData();

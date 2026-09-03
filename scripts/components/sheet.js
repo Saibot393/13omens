@@ -266,19 +266,92 @@ export function o13SheetMixin(baseSheet) {
 		
 		async _onDrop(event) {
 			event.preventDefault();
-			
 			if (!this.document.handleDrop) return;
+			const targetElement = event.target;
 			
-			const data = foundry.applications.ux.TextEditor.implementation.getDragEventData(event);
-			if (!data) return;
+			const dragData = foundry.applications.ux.TextEditor.implementation.getDragEventData(event);
+			if (!dragData) return;
 			
-			const object = await fromUuid(data.uuid);
+			const sortElement = targetElement.closest(".o13-sortable");
+			
+			const object = await fromUuid(dragData.uuid);
 			const selfOrigin = object?.parent == this.document;
-			const dropZone = event.target.closest("[drop-zone]")?.getAttribute("drop-zone");
+			const dropZone = targetElement.closest("[drop-zone]")?.getAttribute("drop-zone");
+			const sourceIDData = Object.fromEntries(["story", "pc", "npc", "archetype", "perk", "gear", "effect"].map(type => ([`${type}ID`, dragData[`${type}ID`]])));
+			const targetIDData = Object.fromEntries(["story", "pc", "npc", "archetype", "perk", "gear", "effect"].map(type => ([`${type}ID`, sortElement?.getAttribute(`${type}-id`)])));
+			const sortBehaviour = sortElement?.closest("[sort-behaviour]")?.getAttribute("sort-behaviour");
+			const sortDirection = sortElement?.closest("[sort-direction]")?.getAttribute("sort-direction");
 			
-			if (CONFIG.debug.o13.dragndrop) console.warn(`Handling 13 omens drop:`, data, {object : object, dropZone : dropZone, selfOrigin: selfOrigin});
+			let sortBefore = true;
+			const rect = sortElement?.getBoundingClientRect();
+			if (rect) {
+				switch (sortDirection) {
+					case "l_r":
+						const relativeX = event.clientX - rect.left;
+						sortBefore = relativeX < rect.width/2;
+						break;
+					case "t_b":
+						const relativeY = event.clientY - rect.top;
+						sortBefore = relativeY < rect.height/2;
+						break;
+				}
+			}
 			
-			await this.document.handleDrop(data, event, {object : object, dropZone : dropZone, selfOrigin: selfOrigin});
+			const prepared = {object : object, dropZone : dropZone, selfOrigin: selfOrigin, sourceID : sourceIDData, targetID : targetIDData, sortBefore : sortBefore, sortBehaviour : sortBehaviour};
+			
+			if (CONFIG.debug.o13.dragndrop) console.warn(`Handling 13 omens drop:`, dragData, prepared);
+			
+			const handled = await this.document.handleDrop(dragData, event, prepared);
+			
+			if (!handled && sortBehaviour == "AUTO") {
+				this._autoSort(dragData, event, prepared);
+			}
+		}
+		
+		async _autoSort(data, event, prepared) {
+			let handled = false;
+			
+			const object = prepared.object;
+			if (!object) return handled;
+		
+			let idType = "";
+			let collectionName = "";
+			
+			if (object instanceof Item) {
+				idType = object.type;
+				collectionName = "Item"
+			}
+			if (object instanceof ActiveEffect) {
+				idType = "effect";
+				collectionName = "ActiveEffect";
+			}
+		
+			if (prepared.selfOrigin) {
+				const targetID = prepared.targetID[idType + "ID"];
+			
+				const target = this.document[object.collectionName].get(targetID);
+
+				if (CONFIG.debug.o13.dragndrop) console.warn(`Handling 13 omens auto sort:`, object, target, idType, collectionName);
+
+				if (target?.type == object.type) {
+					const siblings = [...this.document[object.collectionName]].filter(entry => entry.type == object.type);
+
+					if (prepared.sortBefore && object.sort < target.sort && !siblings.some(sibling => sibling.sort > object.sort && sibling.sort < target.sort)) prepared.sortBefore = false;
+
+					const sorted = foundry.utils.performIntegerSort(object, {
+						target: target,
+						siblings: siblings,
+						sortKey: "sort",
+						sortBefore : prepared.sortBefore
+					})
+					
+					await this.document.updateEmbeddedDocuments(collectionName, sorted.map(entry => ({_id : entry.target._id, sort : entry.update.sort})));
+					
+					handled = true;
+				}
+			}
+			
+			return handled;
 		}
 		
 		_onDragStart(event) {

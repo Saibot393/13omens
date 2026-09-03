@@ -320,7 +320,7 @@ export class o13storyActor {
 	
 	//Archetypes
 	get archetypes() {
-		return [...this.items].filter(item => item.type == "archetype");
+		return [...this.items].filter(item => item.type == "archetype").sort((a,b) => a.sort - b.sort);
 	}
 	
 	get availableArchetype() {
@@ -440,21 +440,46 @@ export class o13storyActor {
 	async handleDrop(data, event, prepared) {
 		let handled = false;
 		
-		const object = prepared.object;
-		if (!object) return handled;
+		if (prepared.sourceID?.pcID && prepared.targetID?.pcID) {
+			const item = this.system.pcs.find(pc => pc.id == prepared.sourceID.pcID);
+			const target = this.system.pcs.find(pc => pc.id == prepared.targetID.pcID);
+			if (item && target) {
+				const newSort = utils.changeOrder(item, this.system.pcs, target, prepared.sortBefore);
+				
+				await this.update({system : {pcs : newSort}});
+				
+				handled = true;
+			}
+		}
 		
-
+		const object = prepared.object;
+		if (!object || handled) return handled;
+		
 		if (object.isPC) {
 			await this.addPC(object);
 			handled = true;
 		}
-		if (object.isArchetype) {
-			const archetype = await this.createEmbeddedDocuments("Item", [object.toObject()]);
-			await this.registerArchetype(archetype);
-			handled = true;
+		
+		if (!prepared.selfOrigin) {
+			if (object.isArchetype) {
+				const archetype = await this.createEmbeddedDocuments("Item", [object.toObject()]);
+				await this.registerArchetype(archetype);
+				handled = true;
+			}
 		}
 		
 		return handled;
+	}
+	
+	prepareDragData(data, event) {
+		if (data.archetypeID) {
+			const item = this.items.get(data.archetypeID);
+			
+			if (item.isArchetype) {
+				data.type = "Item",
+				data.uuid = item.uuid;
+			}
+		}
 	}
 }
 

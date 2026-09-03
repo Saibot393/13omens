@@ -21,6 +21,28 @@ export class utils {
 		return indexes;
 	}
 	
+	static changeOrder(item, array, target, before = true) {
+		let orderArray = [...array];
+		if (!orderArray.includes(item)) {
+			console.error(`Order cant be changed as array does not contain item:`, item, orderArray);
+			return orderArray;
+		}
+		if (!orderArray.includes(target)) {
+			console.error(`Order cant be changed as array does not contain target:`, target, orderArray);
+			return orderArray;
+		}
+		
+		orderArray = orderArray.filter(i => i != item);
+		
+		const posShift = before ? 0 : 1;
+		
+		const targetIndex = orderArray.indexOf(target);
+		
+		orderArray.splice(targetIndex + posShift, 0, item);
+		
+		return orderArray;
+	}
+	
 	static randomPermut(array) {
 		for (let i = array.length - 1; i > 0; i--) {
 			const j = Math.floor(Math.random() * (i + 1));

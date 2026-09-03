@@ -32,10 +32,10 @@
 					<input class="o13-input o13-underline" type="text" name="{{concat "system.storyaspects." @key ".name"}}" value="{{aspect.name}}" />
 				{{/each}}
 			</div>
-			<div class="flexcol o13-flexStart" style="flex:1.5">
+			<div class="flexcol o13-flexStart" style="flex:1.5" sort-direction="t_b" sort-behaviour="AUTO">
 				<span class="o13-label o13-header-label o13-content-centered">{{localize "13omens.titles.archetypes"}} <i class="fa-solid fa-plus o13-clickable" data-action="createNewArchetype"></i></span>
 				{{#each actor.archetypes as |archetype|}}
-					<div class="flexrow o13-padding">
+					<div class="flexrow o13-padding o13-sortable draggable" draggable="true" archetype-id="{{archetype.id}}">
 						<span class="o13-label o13-clickable o13-content-centered" type="text" archetype-id="{{archetype.id}}" data-action="openArchetype">{{archetype.name}}</span>
 						<select class="o13-input o13-underline" name="{{concat "system.archetypeaspects." archetype.id}}">
 							<option value="-1"></option>
@@ -50,10 +50,10 @@
 				{{/each}}
 			</div>
 		</div>
-		<div class="flexcol">
+		<div class="flexcol" sort-direction="t_b">
 			<span class="o13-label o13-header-label o13-flex-span">{{localize "13omens.titles.players"}} <div style="flex:1"></div><i class="fa-solid fa-people-group o13-flex-right o13-icon o13-clickable" data-action="autoPopulatePCs" data-tooltip="{{localize '13omens.tooltips.createPCs'}}"></i></span>
 			{{#each actor.pcActors as |pc|}}
-				<div class="flexrow">
+				<div class="flexrow o13-sortable draggable" draggable="true" pc-id="{{pc.id}}">
 					<span class="o13-label o13-clickable o13-content-centered" type="text" pc-id="{{pc.id}}" data-action="openPC">{{pc.name}}</span>
 					<span class="o13-label o13-content-centered" type="text" pc-id="{{pc.id}}" >{{pc.archetype.name}}</span>
 					{{!--

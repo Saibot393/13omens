@@ -107,7 +107,7 @@ export class o13archetypeItem {
 	}
 	
 	get gearData() {
-		return this.system.gear;
+		return Object.fromEntries(Object.entries(this.system.gear).sort((entrya, entryb) => entrya[1].sort - entryb[1].sort));
 	}
 	
 	getGearItem(id) {
@@ -157,11 +157,11 @@ export class o13archetypeItem {
 	}
 	
 	get guaranteedGear() {
-		return Object.fromEntries(Object.keys(this.system.gear).filter(id => this.isGuaranteedGear(id)).map(id => [id, this.system.gear[id]]));
+		return Object.fromEntries(Object.keys(this.system.gear).filter(id => this.isGuaranteedGear(id)).map(id => [id, this.system.gear[id]]).sort((entrya, entryb) => entrya[1].sort - entryb[1].sort));
 	}
 	
 	get unguaranteedGear() {
-		return Object.fromEntries(Object.keys(this.system.gear).filter(id => !this.isGuaranteedGear(id)).map(id => [id, this.system.gear[id]]));
+		return Object.fromEntries(Object.keys(this.system.gear).filter(id => !this.isGuaranteedGear(id)).map(id => [id, this.system.gear[id]]).sort((entrya, entryb) => entrya[1].sort - entryb[1].sort));
 	}
 	
 	get selectableGearCount() {
@@ -170,7 +170,7 @@ export class o13archetypeItem {
 	
 	//Perks
 	get perksData() {
-		return this.system.perks;
+		return Object.fromEntries(Object.entries(this.system.perks).sort((entrya, entryb) => entrya[1].sort - entryb[1].sort));
 	}
 	
 	getPerkItem(id) {
@@ -207,20 +207,66 @@ export class o13archetypeItem {
 	
 	async handleDrop(data, event, prepared) {
 		let handled = false;
+		let sort = this.hasPerk(data.perkID);
 		
-		if (prepared.dropZone) {
+		if (prepared.dropZone && data.gearID) {
 			if (data.parentArchetype == this.uuid) {
 				switch(prepared.dropZone) {
 					case "guaranteedGear":
-						await this.markAsGuaranteedGear(data.gearID);
-						handled = true;
+						if (this.isGuaranteedGear(data.gearID)) sort = true
+						else {
+							await this.markAsGuaranteedGear(data.gearID);
+							handled = true;
+						}
 						break;
 					case "selectableGear":
-						await this.removeFromGuaranteedGear(data.gearID);
-						handled = true;
+						if (!this.isGuaranteedGear(data.gearID)) sort = true
+						else {
+							await this.removeFromGuaranteedGear(data.gearID);
+							handled = true;
+						}
 						break;
 				}
 			}
+		}
+		
+		if (sort) {
+			const object = this.perksData[data.perkID] || this.gearData[data.gearID];
+			const target = this.perksData[prepared.targetID.perkID] || this.gearData[prepared.targetID.gearID];
+
+			if (object && target?.type == object.type) {
+				let siblings = [];
+				
+				switch (object.type) {
+					case "perk":
+						siblings = Object.values(this.perksData);
+						break;
+					case "gear":
+						siblings = Object.values(this.gearData);
+						break;
+				}
+
+				if (prepared.sortBefore && object.sort < target.sort && !siblings.some(sibling => sibling.sort > object.sort && sibling.sort < target.sort)) prepared.sortBefore = false;
+				console.log(object, target, siblings);
+				const sorted = foundry.utils.performIntegerSort(object, {
+					target: target,
+					siblings: siblings,
+					sortKey: "sort",
+					sortBefore : prepared.sortBefore
+				})
+				
+				switch (object.type) {
+					case "perk":
+						await this.update({system : {perks : {...Object.fromEntries(sorted.map(entry => ([entry.target._id, {sort : entry.update.sort}])))}}});
+						break;
+					case "gear":
+						await this.update({system : {gear : {...Object.fromEntries(sorted.map(entry => ([entry.target._id, {sort : entry.update.sort}])))}}});
+						break;
+				}
+				
+				handled = true;
+			}
+			
 		}
 		
 		if (!handled) {
