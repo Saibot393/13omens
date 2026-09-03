@@ -337,7 +337,8 @@ export function o13SheetMixin(baseSheet) {
 					const siblings = [...this.document[object.collectionName]].filter(entry => entry.type == object.type);
 
 					if ((prepared.sortBefore || prepared.sortBefore == undefined) && object.sort < target.sort && !siblings.some(sibling => sibling.sort > object.sort && sibling.sort < target.sort)) prepared.sortBefore = false;
-
+					if (prepared.sortBefore == undefined && !siblings.some(sibling => sibling.sort > target.sort )) prepared.sortBefore = false;
+	
 					const sorted = foundry.utils.performIntegerSort(object, {
 						target: target,
 						siblings: siblings,
