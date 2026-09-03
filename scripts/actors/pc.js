@@ -721,7 +721,7 @@ export class o13pcActor {
 		if (data.gearID || data.perkID) {
 			const item = this.items.get(data.gearID || data.perkID);
 			
-			if (item) {
+			if (item.isGear || item.isPerk) {
 				data.type = "Item",
 				data.uuid = item.uuid;
 			}

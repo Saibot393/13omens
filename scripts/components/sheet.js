@@ -277,6 +277,7 @@ export function o13SheetMixin(baseSheet) {
 			const object = await fromUuid(dragData.uuid);
 			const selfOrigin = object?.parent == this.document;
 			const dropZone = targetElement.closest("[drop-zone]")?.getAttribute("drop-zone");
+			const sourceIDData = Object.fromEntries(["story", "pc", "npc", "archetype", "perk", "gear", "effect"].map(type => ([`${type}ID`, dragData[`${type}ID`]])));
 			const targetIDData = Object.fromEntries(["story", "pc", "npc", "archetype", "perk", "gear", "effect"].map(type => ([`${type}ID`, sortElement?.getAttribute(`${type}-id`)])));
 			const sortBehaviour = sortElement?.closest("[sort-behaviour]")?.getAttribute("sort-behaviour");
 			const sortDirection = sortElement?.closest("[sort-direction]")?.getAttribute("sort-direction");
@@ -296,7 +297,7 @@ export function o13SheetMixin(baseSheet) {
 				}
 			}
 			
-			const prepared = {object : object, dropZone : dropZone, selfOrigin: selfOrigin, targetID : targetIDData, sortBefore : sortBefore, sortBehaviour : sortBehaviour};
+			const prepared = {object : object, dropZone : dropZone, selfOrigin: selfOrigin, sourceID : sourceIDData, targetID : targetIDData, sortBefore : sortBefore, sortBehaviour : sortBehaviour};
 			
 			if (CONFIG.debug.o13.dragndrop) console.warn(`Handling 13 omens drop:`, dragData, prepared);
 			

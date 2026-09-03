@@ -23,12 +23,16 @@ export class utils {
 	
 	static changeOrder(item, array, target, before = true) {
 		let orderArray = [...array];
+		if (!orderArray.includes(item)) {
+			console.error(`Order cant be changed as array does not contain item:`, item, orderArray);
+			return orderArray;
+		}
 		if (!orderArray.includes(target)) {
 			console.error(`Order cant be changed as array does not contain target:`, target, orderArray);
 			return orderArray;
 		}
 		
-		if (orderArray.includes(item)) orderArray = orderArray.filter(i => i != item);
+		orderArray = orderArray.filter(i => i != item);
 		
 		const posShift = before ? 0 : 1;
 		
