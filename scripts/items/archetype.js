@@ -246,13 +246,13 @@ export class o13archetypeItem {
 						break;
 				}
 
-				if (prepared.sortBefore && object.sort < target.sort && !siblings.some(sibling => sibling.sort > object.sort && sibling.sort < target.sort)) prepared.sortBefore = false;
-				console.log(object, target, siblings);
+				if ((prepared.sortBefore || prepared.sortBefore == undefined) && object.sort < target.sort && !siblings.some(sibling => sibling.sort > object.sort && sibling.sort < target.sort)) prepared.sortBefore = false;
+
 				const sorted = foundry.utils.performIntegerSort(object, {
 					target: target,
 					siblings: siblings,
 					sortKey: "sort",
-					sortBefore : prepared.sortBefore
+					sortBefore : prepared.sortBefore || prepared.sortBefore == undefined
 				})
 				
 				switch (object.type) {

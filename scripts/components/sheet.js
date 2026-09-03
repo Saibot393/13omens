@@ -282,7 +282,7 @@ export function o13SheetMixin(baseSheet) {
 			const sortBehaviour = sortElement?.closest("[sort-behaviour]")?.getAttribute("sort-behaviour");
 			const sortDirection = sortElement?.closest("[sort-direction]")?.getAttribute("sort-direction");
 			
-			let sortBefore = true;
+			let sortBefore = undefined;
 			const rect = sortElement?.getBoundingClientRect();
 			if (rect) {
 				switch (sortDirection) {
@@ -336,13 +336,13 @@ export function o13SheetMixin(baseSheet) {
 				if (target?.type == object.type) {
 					const siblings = [...this.document[object.collectionName]].filter(entry => entry.type == object.type);
 
-					if (prepared.sortBefore && object.sort < target.sort && !siblings.some(sibling => sibling.sort > object.sort && sibling.sort < target.sort)) prepared.sortBefore = false;
+					if ((prepared.sortBefore || prepared.sortBefore == undefined) && object.sort < target.sort && !siblings.some(sibling => sibling.sort > object.sort && sibling.sort < target.sort)) prepared.sortBefore = false;
 
 					const sorted = foundry.utils.performIntegerSort(object, {
 						target: target,
 						siblings: siblings,
 						sortKey: "sort",
-						sortBefore : prepared.sortBefore
+						sortBefore : (prepared.sortBefore || prepared.sortBefore == undefined)
 					})
 					
 					await this.document.updateEmbeddedDocuments(collectionName, sorted.map(entry => ({_id : entry.target._id, sort : entry.update.sort})));
