@@ -234,7 +234,7 @@ export class o13pcActor {
 	
 	//Perks
 	getPerks(filterpicked = false) {
-		let perks = this.items.filter(item => item.isPerk);
+		let perks = this.items.filter(item => item.isPerk).sort((a,b) => a.sort - b.sort);
 		
 		if (filterpicked) {
 			perks = perks.filter(perk => this.system.pickedperks[perk.id]);
@@ -305,7 +305,7 @@ export class o13pcActor {
 	}
 	
 	get gear() {
-		let gear = this.items.filter(item => item.isGear);
+		let gear = this.items.filter(item => item.isGear).sort((a,b) => a.sort - b.sort);
 		
 		return Object.fromEntries(gear.map(item => [item.id, item]));
 	}
@@ -718,8 +718,8 @@ export class o13pcActor {
 	}
 	
 	prepareDragData(data, event) {
-		if (data.gearID) {
-			const item = this.items.get(data.gearID);
+		if (data.gearID || data.perkID) {
+			const item = this.items.get(data.gearID || data.perkID);
 			
 			if (item) {
 				data.type = "Item",

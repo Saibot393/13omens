@@ -504,7 +504,6 @@ span.o13-input-span input {
 .o13-adaptive-grid-12 {
   display: grid;
   grid-template-columns: repeat(1, 1fr);
-  gap: 1rem;
 }
 
 @container (min-width: 800px) {
