@@ -7,6 +7,43 @@ import {utils} from "../utils.js";
 
 export function o13SheetMixin(baseSheet) {
 	class o13Sheet extends baseSheet {
+		constructor(options = {}) {
+			super(options);
+
+			if (CONFIG.debug.o13.dialogues) console.log(this);
+
+			this._boundonAction = this._onAction.bind(this);
+			
+			//custom Hooks
+			this._externalItemUpdateRender = Hooks.on("updateItem", async (item, changes, options, userId) => {
+				if (this.rendered) {
+					const rerender = await this._onUpdateItem(item, changes, options, userId);
+					if (rerender) this.render({force : false, window : {focus : false}});
+				}
+			});
+			
+			this._externalItemCreateRender = Hooks.on("createItem", async (item, options, userId) => {
+				if (this.rendered) {
+					const rerender = await this._onUpdateItem(item, {create : true}, options, userId);
+					if (rerender) this.render({force : false, window : {focus : false}});
+				}
+			});
+			
+			this._externalItemDeleteRender = Hooks.on("deleteItem", async (item, options, userId) => {
+				if (this.rendered) {
+					const rerender = await this._onUpdateItem(item, {delete : true}, options, userId);
+					if (rerender) this.render({force : false, window : {focus : false}});
+				}
+			});
+		
+			this._externalActorUpdateRender = Hooks.on("updateActor", async (actor, changes, options, userId) => {
+				if (this.rendered) {
+					const rerender = await this._onUpdateActor(actor, changes, options, userId);
+					if (rerender) this.render({force : false, window : {focus : false}});
+				}
+			});
+		}
+		
 		static get DEFAULT_OPTIONS() {
 			return foundry.utils.mergeObject(foundry.utils.deepClone(super.DEFAULT_OPTIONS ?? {}), {
 				tag: "form",
@@ -18,7 +55,6 @@ export function o13SheetMixin(baseSheet) {
 					resizable: true
 				},
 				actions: {
-					choosePortrait : o13Sheet.choosePortrait
 				}
 			});
 		}
@@ -44,6 +80,9 @@ export function o13SheetMixin(baseSheet) {
 		
 		async _onRender(context, options) {
 			super._onRender(context, options);
+			
+			this.element.removeEventListener("click", this._boundonAction)
+			this.element.addEventListener("click", this._boundonAction);
 			
 			//tabs
 			const html = this.element;
@@ -177,7 +216,7 @@ export function o13SheetMixin(baseSheet) {
 		async _prepareContext(options) {
 			const context = await super._prepareContext(options);
 			
-			switch (this.document.documentName) {
+			switch (this.document?.documentName) {
 				case "Actor":
 					context.actor = this.document;
 					break;
@@ -188,9 +227,9 @@ export function o13SheetMixin(baseSheet) {
 			
 			context.editable = true;
 			
-			const enrichables = this.document.enrichables ?? {};
+			const enrichables = this.document?.enrichables ?? {};
 			
-			context.enriched = await utils.enrichHTMLStructure(enrichables, {
+			context.enriched = foundry.utils.isEmpty(enrichables) ? {} : await utils.enrichHTMLStructure(enrichables, {
 				secrets: this.document.isOwner,
 				async: true,
 				relativeTo: this.document
@@ -199,21 +238,121 @@ export function o13SheetMixin(baseSheet) {
 			return context;
 		}
 		
+		async _onUpdateItem(item, changes, options, userId) {
+			
+		}
+		
+		async _onUpdateActor(actor, changes, options, userId) {
+			
+		}
+		
+		async _onAction(event) {
+			const target = event?.target?.closest("[data-action]");
+			const action = target?.getAttribute("data-action");
+
+			if (!action) return;
+			
+			event.stopPropagation();
+
+			if (this.constructor.DEFAULT_OPTIONS?.actions?.[action]) return; //other defined sheets action, let foundry handle it
+
+			if (typeof this[action] == "function") return this[action](event, target); //equally named sheet action
+
+			if (typeof this.document?.[action] == "function") return this.document?.[action](); //equally named document action
+
+			//some default foundry actions are not handled here:
+			if (!["save"].includes(action))console.warn(`Unhandled sheet action ${action} at click:`, target);
+		}
+		
 		async _onDrop(event) {
 			event.preventDefault();
-			
 			if (!this.document.handleDrop) return;
+			const targetElement = event.target;
 			
-			const data = foundry.applications.ux.TextEditor.implementation.getDragEventData(event);
-			if (!data) return;
+			const dragData = foundry.applications.ux.TextEditor.implementation.getDragEventData(event);
+			if (!dragData) return;
 			
-			const object = await fromUuid(data.uuid);
+			const sortElement = targetElement.closest(".o13-sortable");
+			
+			const object = await fromUuid(dragData.uuid);
 			const selfOrigin = object?.parent == this.document;
-			const dropZone = event.target.closest("[drop-zone]")?.getAttribute("drop-zone");
+			const dropZone = targetElement.closest("[drop-zone]")?.getAttribute("drop-zone");
+			const sourceIDData = Object.fromEntries(["story", "pc", "npc", "archetype", "perk", "gear", "effect"].map(type => ([`${type}ID`, dragData[`${type}ID`]])));
+			const targetIDData = Object.fromEntries(["story", "pc", "npc", "archetype", "perk", "gear", "effect"].map(type => ([`${type}ID`, sortElement?.getAttribute(`${type}-id`)])));
+			const sortBehaviour = sortElement?.closest("[sort-behaviour]")?.getAttribute("sort-behaviour");
+			const sortDirection = sortElement?.closest("[sort-direction]")?.getAttribute("sort-direction");
 			
-			if (CONFIG.debug.o13.dragndrop) console.warn(`Handling 13 omens drop:`, data, {object : object, dropZone : dropZone, selfOrigin: selfOrigin});
+			let sortBefore = undefined;
+			const rect = sortElement?.getBoundingClientRect();
+			if (rect) {
+				switch (sortDirection) {
+					case "l_r":
+						const relativeX = event.clientX - rect.left;
+						sortBefore = relativeX < rect.width/2;
+						break;
+					case "t_b":
+						const relativeY = event.clientY - rect.top;
+						sortBefore = relativeY < rect.height/2;
+						break;
+				}
+			}
 			
-			await this.document.handleDrop(data, event, {object : object, dropZone : dropZone, selfOrigin: selfOrigin});
+			const prepared = {object : object, dropZone : dropZone, selfOrigin: selfOrigin, sourceID : sourceIDData, targetID : targetIDData, sortBefore : sortBefore, sortBehaviour : sortBehaviour};
+			
+			if (CONFIG.debug.o13.dragndrop) console.warn(`Handling 13 omens drop:`, dragData, prepared);
+			
+			const handled = await this.document.handleDrop(dragData, event, prepared);
+			
+			if (!handled && sortBehaviour == "AUTO") {
+				this._autoSort(dragData, event, prepared);
+			}
+		}
+		
+		async _autoSort(data, event, prepared) {
+			let handled = false;
+			
+			const object = prepared.object;
+			if (!object) return handled;
+		
+			let idType = "";
+			let collectionName = "";
+			
+			if (object instanceof Item) {
+				idType = object.type;
+				collectionName = "Item"
+			}
+			if (object instanceof ActiveEffect) {
+				idType = "effect";
+				collectionName = "ActiveEffect";
+			}
+		
+			if (prepared.selfOrigin) {
+				const targetID = prepared.targetID[idType + "ID"];
+			
+				const target = this.document[object.collectionName].get(targetID);
+
+				if (CONFIG.debug.o13.dragndrop) console.warn(`Handling 13 omens auto sort:`, object, target, idType, collectionName);
+
+				if (target?.type == object.type) {
+					const siblings = [...this.document[object.collectionName]].filter(entry => entry.type == object.type);
+
+					if ((prepared.sortBefore || prepared.sortBefore == undefined) && object.sort < target.sort && !siblings.some(sibling => sibling.sort > object.sort && sibling.sort < target.sort)) prepared.sortBefore = false;
+					if (prepared.sortBefore == undefined && !siblings.some(sibling => sibling.sort > target.sort )) prepared.sortBefore = false;
+	
+					const sorted = foundry.utils.performIntegerSort(object, {
+						target: target,
+						siblings: siblings,
+						sortKey: "sort",
+						sortBefore : (prepared.sortBefore || prepared.sortBefore == undefined)
+					})
+					
+					await this.document.updateEmbeddedDocuments(collectionName, sorted.map(entry => ({_id : entry.target._id, sort : entry.update.sort})));
+					
+					handled = true;
+				}
+			}
+			
+			return handled;
 		}
 		
 		_onDragStart(event) {
@@ -230,7 +369,7 @@ export function o13SheetMixin(baseSheet) {
 			event.dataTransfer.setData("text/plain", JSON.stringify(dragData));
 		}
 		
-		static async choosePortrait(event, target) {
+		async choosePortrait(event, target) {
 			if (this.document.isOwner) {
 				const picker = new foundry.applications.apps.FilePicker.implementation({
 					type: "image",
@@ -240,6 +379,33 @@ export function o13SheetMixin(baseSheet) {
 					}
 				}).render(true);
 			}
+		}
+		
+		async viewPortrait(event, target) {
+			new foundry.applications.apps.ImagePopout({
+				src: this.document.img,
+				window: {
+					title: this.document.name
+				},
+				uuid: this.document.uuid
+			}).render(true);
+		}
+		
+		_disableExternalRenderHooks() {
+			Hooks.off("updateItem", this._externalItemUpdateRender);
+			this._externalItemUpdateRender = null;
+			Hooks.off("createItem", this._externalItemCreateRender);
+			this._externalItemCreateRender = null;
+			Hooks.off("deleteItem", this._externalItemDeleteRender);
+			this._externalItemDeleteRender = null;
+			Hooks.off("updateActor", this._externalActorUpdateRender);
+			this._externalActorUpdateRender = null;
+		}
+		
+		async _onClose(options) {
+			await super._onClose(options);
+		
+			this._disableExternalRenderHooks();
 		}
 	}
 	

@@ -122,8 +122,17 @@ export class o13pcActor {
 	}
 	
 	//State
+	get prepStateDetailed() {
+		return {
+			archetype: this.archetypePrepState,
+			aspects: this.aspectPrepState, 
+			perks: this.perkPrepState,
+			gear: this.gearPrepState
+		};
+	}
+	
 	get prepState() {
-		const states = [this.archetypePrepState, this.aspectPrepState, this.perkPrepState, this.gearPrepState];
+		const states = Object.values(this.prepStateDetailed);
 		
 		if (states.some(state => state == "problem")) return "problem";
 		
@@ -225,7 +234,7 @@ export class o13pcActor {
 	
 	//Perks
 	getPerks(filterpicked = false) {
-		let perks = this.items.filter(item => item.isPerk);
+		let perks = this.items.filter(item => item.isPerk).sort((a,b) => a.sort - b.sort);
 		
 		if (filterpicked) {
 			perks = perks.filter(perk => this.system.pickedperks[perk.id]);
@@ -276,14 +285,21 @@ export class o13pcActor {
 		if (pickerPerksLength > this.choosablePerksCount) return "problem";
 	}
 	
-	async checkPerkEffectActivation(localonly = false) {
+	checkPerkEffectActivation() {
 		let change = false;
 		
 		for (const perk of Object.values(this.perks)) {
-			change = await perk.checkEffectActivation(localonly) || change;
+			change = perk.checkEffectActivation() || change;
 		}
 		
 		return change;
+	}
+	
+	async perktoChatMessage(id, messageData = {}) {
+		const perk = this.items.get(id);
+		if (perk?.isPerk) {
+			perk.toChatMessage(messageData);
+		}
 	}
 	
 	//Gear
@@ -296,7 +312,7 @@ export class o13pcActor {
 	}
 	
 	get gear() {
-		let gear = this.items.filter(item => item.isGear);
+		let gear = this.items.filter(item => item.isGear).sort((a,b) => a.sort - b.sort);
 		
 		return Object.fromEntries(gear.map(item => [item.id, item]));
 	}
@@ -328,7 +344,12 @@ export class o13pcActor {
 		const selectableGear = this.archetype?.unguaranteedGear;
 		
 		if (selectableGear) {
-			return Object.fromEntries(Object.keys(selectableGear).map(id => [id, {name : selectableGear[id].name, selected : this.hasGearSelected(id), id : id}]));
+			return Object.fromEntries(Object.keys(selectableGear).map(id => [id, {
+				name : selectableGear[id].name, 
+				selected : this.hasGearSelected(id), 
+				id : id, 
+				sort : selectableGear[id].sort
+			}]).sort((entrya, entryb) => entrya[1].sort - entryb[1].sort));
 		}
 		
 		return {};
@@ -709,10 +730,10 @@ export class o13pcActor {
 	}
 	
 	prepareDragData(data, event) {
-		if (data.gearID) {
-			const item = this.items.get(data.gearID);
+		if (data.gearID || data.perkID) {
+			const item = this.items.get(data.gearID || data.perkID);
 			
-			if (item) {
+			if (item.isGear || item.isPerk) {
 				data.type = "Item",
 				data.uuid = item.uuid;
 			}
@@ -747,7 +768,7 @@ export class o13pcActor {
 	}
 	
 	prepareEmbeddedDocuments() {
-		this.checkPerkEffectActivation(true);
+		this.checkPerkEffectActivation();
 		this.superPD.prepareEmbeddedDocuments();
 	}
 }

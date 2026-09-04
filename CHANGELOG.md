@@ -1,3 +1,15 @@
+## v1.4.0
+- Added story tab to story actors to store story text and notes
+- Portraits of actors and items can now be shown to players by the Host
+- Added an optional window with detailed warnings should a host start a story while players are not ready
+  - Added setting "Show preperation state check" to disable this window
+- Players, archetypes, gear, perks and active effects can now be reordered via drag and drop within sheets
+- Refactored some sheet actions and rerender code
+- Perks can now be send to chat
+- Improved/refactored news system
+- Fixed bug that caused active effects creation in archetype embedded perks to fail
+- Fixed bug that could cause perks that are no longer picked to still apply their effects
+
 ## v1.3.3
 - Added basic wiki pages for [active effects](https://github.com/Saibot393/13omens/wiki/Active-effects) and [inline rolls](https://github.com/Saibot393/13omens/wiki/Inline-checks)
 - Added roll config short hand

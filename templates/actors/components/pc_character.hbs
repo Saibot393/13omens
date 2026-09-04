@@ -23,10 +23,10 @@
 		<span class="o13-label o13-side-padding" style="margin-bottom:5px;"> {{localize "13omens.titles.choosePerks" n=actor.choosablePerksCount}} </span>
 	{{/if}}
 	<div class="o13-adaptive-grid-wrapper">
-		<div class="o13-adaptive-grid-23">
+		<div class="o13-adaptive-grid-23" sort-behaviour="AUTO">
 			{{#each actor.perks}}
 				{{#if (or ../actor.canPrepare this.isChosen)}}
-					<div class="o13-side-padding">
+					<div class="o13-side-padding o13-sortable draggable" draggable="true" perk-id="{{this._id}}">
 						<span class="o13-label o13-inline" perk-id="{{this._id}}">
 							<input class="o13-checkbox" type="checkbox" name="system.pickedperks.{{@key}}" {{#unless ../actor.canPrepare}}disabled{{/unless}} {{checked (lookup ../actor.system.pickedperks @key)}} /> 
 							{{#unless this.isArchetypeOrigin}}
@@ -34,7 +34,9 @@
 									<i class="fa-solid fa-x o13-label o13-icon o13-hover-icon o13-clickable" perk-id="{{this._id}}" data-action="removePerk"></i>
 								{{/if}}
 							{{/unless}}
-							<b {{#if ../actor.isHostView}}class="o13-clickable" data-action="openPerk"{{/if}} perk-id="{{this._id}}">{{this.name}}</b> {{{lookup (lookup ../enriched.perks this._id) "description"}}}
+							<b {{#if ../actor.isHostView}}class="o13-clickable" data-action="openPerk"{{/if}} perk-id="{{this._id}}">{{this.name}} </b> 
+							<i class="fa-solid fa-message o13-icon o13-clickable o13-hover-icon" gear-id="{{this._id}}" data-action="posttoChat" perk-id="{{this._id}}"></i>
+							{{{lookup (lookup ../enriched.perks this._id) "description"}}}
 							{{#if (and this.canBeUsed this.isChosen)}}
 								<span class="o13-button o13-clickable" data-action="usePerk" perk-id="{{this._id}}">{{localize "13omens.actions.usePerk"}} [{{this.usesLeft}}/{{this.usesMax}}]</span>
 							{{/if }}
@@ -52,7 +54,9 @@
 		{{#if actor.canPrepare}}
 			{{#if actor.selectableGearCount}}
 				<span class="o13-item-line" drop-zone="selectableGear">
-					<span class="o13-label"><b>{{localize "13omens.titles.selectGear" n=actor.selectableGearCount}}:</b></span>
+					<span class="o13-label">
+						<b>{{localize "13omens.titles.selectGear" n=actor.selectableGearCount}}:</b>
+					</span>
 					{{#each actor.selectableGearInfo}}
 						<span class="o13-label o13-inline o13-item-box {{#if this.selected}}o13-selected{{/if}}" gear-id="{{this.id}}">
 							<p class="o13-clickable" data-action="toggleSelectGear" gear-id="{{this.id}}">{{this.name}}</p> 
@@ -61,9 +65,9 @@
 				</span>
 			{{/if}}
 		{{/if}}
-		<div class="o13-adaptive-grid-12" style="margin-top:15px">
+		<div class="o13-adaptive-grid-12" sort-direction="t_b" sort-behaviour="AUTO">
 			{{#each actor.gear}}
-				<div class="flexrow o13-side-padding draggable" draggable="true" gear-id="{{this._id}}">
+				<div class="flexrow o13-side-padding o13-sortable draggable" draggable="true" gear-id="{{this._id}}" style="padding-top:1rem">
 					<span class="o13-underline o13-flex-span">
 						<span class="o13-label o13-clickable o13-flex-grow" gear-id="{{this._id}}" data-action="openGear">
 							{{this.name}}

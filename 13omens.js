@@ -4,6 +4,8 @@ import {registerSettings} from "./scripts/settings.js";
 import {o13Actor, o13ActorSheet, actorDMs} from "./scripts/actors.js";
 import {o13Item, o13ItemSheet, itemDMs} from "./scripts/items.js";
 
+import {patch} from "./scripts/patches.js";
+
 import  {disPatcher} from "./scripts/meta/disPatcher.js";
 
 import {o13Roll, o13rollConfig} from "./scripts/roll.js";
@@ -14,13 +16,16 @@ import {onO13Sockets} from "./scripts/sockets.js";
 
 import {registerEnrichments} from "./scripts/components/enrichments.js";
 
-import {initNews} from "./scripts/meta/news.js";
+import {initNews, o13News} from "./scripts/meta/news.js";
 
 import {showBanner} from "./scripts/components/banner.js";
 
 Hooks.once("init", () => {
 	//CONST
 	CONFIG["13OMENS"] = {...CONSTANTS}
+	
+	//Patches
+	patch();
 	
 	//Setings
 	registerSettings();
@@ -79,7 +84,8 @@ Hooks.once("init", () => {
 		o13rollConfig,
 		o13Roll,
 		utils,
-		showBanner
+		showBanner,
+		o13News
 	}
 	
 	//debug
@@ -87,7 +93,8 @@ Hooks.once("init", () => {
 		sockets : false,
 		enrichments : false,
 		dragndrop : false,
-		rolls : false
+		rolls : false,
+		dialogues : false
 	};
 	
 	//News

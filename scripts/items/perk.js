@@ -2,6 +2,8 @@ const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDo
 
 import {virtualItem} from "./virtualItem.js";
 
+import {utils} from "../utils.js";
+
 const USESPEROPTIONS = ["passive", "act", "story", "custom"];
 
 export class o13perkItem extends virtualItem {
@@ -72,8 +74,14 @@ export class o13perkItem extends virtualItem {
 		
 		return useActive && chosenActive;
 	}
+
+	get activeEffects() {
+		let effects = [...this.effects].sort((a,b) => a.sort - b.sort);
+		
+		return Object.fromEntries(effects.map(effect => [effect.id, effect]));
+	}
 	
-	async checkEffectActivation(localonly = false) {
+	checkEffectActivation() {
 		//cheat with local only to disable effect during data preperation without triggering an actor update
 		const effectsActive = this.effectsActive;
 		
@@ -82,11 +90,15 @@ export class o13perkItem extends virtualItem {
 		for (const effect of this.effects) {
 			change = change || (effect.disabled != !effectsActive);
 			
-			if (localonly) effect.disabled = !effectsActive
-			else await effect.update({disabled : !effectsActive});
+			effect.disabled = !effectsActive;
 		}
 		
 		return change;
+	}
+	
+	//chat
+	async toChatMessage(chatMessageData = {}) {
+		return utils.createHBSChatMessage({item : this, enrichables : this.enrichables}, chatMessageData, "chat/perk");
 	}
 	
 	//data preperation/handling
@@ -103,9 +115,11 @@ export class o13perkItem extends virtualItem {
 		//Default sheet drop
 		if (!object) return handled;
 
-		if(object.documentName == "ActiveEffect") {
-			await this.createNewEffect(object.toObject());
-			handled = true;
+		if (!prepared.selfOrigin) {
+			if(object.documentName == "ActiveEffect") {
+				await this.createNewEffect(object.toObject());
+				handled = true;
+			}
 		}
 		
 		return handled;

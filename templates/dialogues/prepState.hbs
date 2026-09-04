@@ -1,0 +1,43 @@
+<div class="o13-sheet o13-sheet-lining">
+	<table class="o13-table">
+		<tr class="o13-table-header">
+			<th> <label class="o13-label o13-header-label">{{localize "13omens.titles.pc"}}</label> </th>
+			<th> <label class="o13-label o13-header-label">{{localize "13omens.titles.archetype"}}</label> </th>
+			<th> <label class="o13-label o13-header-label">{{localize "13omens.titles.aspects"}}</label> </th>
+			<th> <label class="o13-label o13-header-label">{{localize "13omens.titles.perks"}}</label> </th>
+			<th> <label class="o13-label o13-header-label">{{localize "13omens.titles.gears"}}</label> </th>
+		</tr>
+		{{#with baseStory.prepStateDetailed as |prepList|}}
+			{{#each ../baseStory.pcActors as |pc|}}
+				<tr>
+					<td>
+						<span class="o13-label o13-clickable" data-action="openPC" pc-id="{{pc.id}}">{{pc.name}}</span>
+					</td>
+					
+					{{#each (array "archetype" "aspects" "perks" "gear") as |type|}}
+						<td class="o13-content-centered">
+							{{#with (lookup (lookup prepList pc.id) type) as |state|}}
+								{{#if (eqLoose state "ready")}}
+									<i class="fa-solid fa-check o13-icon" style="color:var(--o13-ink-black)" data-tooltip="{{localize "13omens.tooltips.ready"}}"></i>
+								{{/if}}
+								
+								{{#if (eqLoose state "pending")}}
+									<i class="fa-solid fa-x o13-icon" style="color:var(--o13-omen-red)" data-tooltip="{{localize "13omens.tooltips.pending"}}"></i>
+								{{/if}}
+								
+								{{#if (eqLoose state "problem")}}
+									<i class="fa-solid fa-question o13-icon" style="color:var(--o13-cheat-blue)" data-tooltip="{{localize "13omens.tooltips.problem"}}"></i>
+								{{/if}}
+							{{/with}}
+						</td>
+					{{/each}}
+				</tr>
+			{{/each}}
+		{{/with}}
+	</table>
+	
+	<div class="flexrow" style="gap:5px">
+		<button class="o13-button o13-clickable" type="button" data-action="startStory">{{localize "13omens.actions.startStory"}} <i class="fa-solid fa-play"></i> </button>
+		<button class="o13-button o13-clickable" type="button" data-action="returnToPrep">{{localize "13omens.actions.returnToPrep"}} <i class="fa-solid fa-arrow-rotate-left"></i> </button>
+	</div>
+</div>

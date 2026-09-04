@@ -4,6 +4,8 @@ import {utils} from "../utils.js";
 
 import {showBanner} from "../components/banner.js";
 
+import {o13prepState} from "../dialogues/prepState.js";
+
 export class o13storyActor {
 	//Updates % Create
 	async _preCreate(data, options, user) {
@@ -91,17 +93,28 @@ export class o13storyActor {
 		
 		if (targetAct > this.activeAct && targetAct <= 3 && targetAct >= 0) {
 			if (!force) {
-				const advance = await foundry.applications.api.DialogV2.confirm({
-					window: { title: game.i18n.localize("13omens.titles.confirmAdvanceAct") },
-					content: await foundry.applications.handlebars.renderTemplate("systems/13omens/templates/dialogues/general.hbs", {
-						content : {
-							text : game.i18n.format("13omens.dialogues.confirmAdvanceAct", {act : game.i18n.localize("13omens.titles.actNames." + targetAct)})
-						}
-					}),
-					rejectClose: false
-				});
+				const prepSetting = game.settings.get("13omens", "showStoryPrepState");
+				const askPrepState = (this.activeAct == 0 && targetAct > this.activeAct)
+				&& (prepSetting == "always" || (prepSetting == "notReady" && this.prepState != "ready"))
 				
-				if (!advance) return;
+				if (askPrepState) {
+					const advance = await new o13prepState(this).wait(true);
+					
+					if (!advance) return;
+				}
+				else {
+					const advance = await foundry.applications.api.DialogV2.confirm({
+						window: { title: game.i18n.localize("13omens.titles.confirmAdvanceAct") },
+						content: await foundry.applications.handlebars.renderTemplate("systems/13omens/templates/dialogues/general.hbs", {
+							content : {
+								text : game.i18n.format("13omens.dialogues.confirmAdvanceAct", {act : game.i18n.localize("13omens.titles.actNames." + targetAct)})
+							}
+						}),
+						rejectClose: false
+					});
+					
+					if (!advance) return;
+				}
 			}
 			
 			const omenDicetoAdd = Math.max(targetAct - Math.max(this.activeAct, 1), 0); //prologue->act1 does not add dice
@@ -241,6 +254,26 @@ export class o13storyActor {
 		return this.addPC(actors);
 	}
 	
+	get prepStateDetailed() {
+		const prepState = {};
+		
+		for (const pc of this.pcActors) {
+			prepState[pc.id] = {total : pc.prepState, ...pc.prepStateDetailed}
+		}
+		
+		return prepState;
+	}
+	
+	get prepState() {
+		const states = this.pcActors.map(pc => pc.prepState);
+		
+		if (states.some(state => state == "problem")) return "problem";
+		
+		if (states.some(state => state == "pending")) return "pending";
+		
+		return "ready";
+	}
+	
 	//Wounds
 	getmaxWounds(actor = undefined) {
 		const pcCount = this.pcCount;
@@ -287,7 +320,7 @@ export class o13storyActor {
 	
 	//Archetypes
 	get archetypes() {
-		return [...this.items].filter(item => item.type == "archetype");
+		return [...this.items].filter(item => item.type == "archetype").sort((a,b) => a.sort - b.sort);
 	}
 	
 	get availableArchetype() {
@@ -396,24 +429,57 @@ export class o13storyActor {
 	}
 	
 	//Data prep/handling
+	get enrichables() {
+		return {
+			story: {
+				acts : this.system.story.acts.map(act => ({story : act.story}))
+			}
+		}
+	}
+	
 	async handleDrop(data, event, prepared) {
 		let handled = false;
 		
-		const object = prepared.object;
-		if (!object) return handled;
+		if (prepared.sourceID?.pcID && prepared.targetID?.pcID) {
+			const item = this.system.pcs.find(pc => pc.id == prepared.sourceID.pcID);
+			const target = this.system.pcs.find(pc => pc.id == prepared.targetID.pcID);
+			if (item && target) {
+				const newSort = utils.changeOrder(item, this.system.pcs, target, prepared.sortBefore);
+				
+				await this.update({system : {pcs : newSort}});
+				
+				handled = true;
+			}
+		}
 		
-
+		const object = prepared.object;
+		if (!object || handled) return handled;
+		
 		if (object.isPC) {
 			await this.addPC(object);
 			handled = true;
 		}
-		if (object.isArchetype) {
-			const archetype = await this.createEmbeddedDocuments("Item", [object.toObject()]);
-			await this.registerArchetype(archetype);
-			handled = true;
+		
+		if (!prepared.selfOrigin) {
+			if (object.isArchetype) {
+				const archetype = await this.createEmbeddedDocuments("Item", [object.toObject()]);
+				await this.registerArchetype(archetype);
+				handled = true;
+			}
 		}
 		
 		return handled;
+	}
+	
+	prepareDragData(data, event) {
+		if (data.archetypeID) {
+			const item = this.items.get(data.archetypeID);
+			
+			if (item.isArchetype) {
+				data.type = "Item",
+				data.uuid = item.uuid;
+			}
+		}
 	}
 }
 
@@ -425,6 +491,13 @@ export class storyDataModel extends foundry.abstract.TypeDataModel {
 			acts: new ArrayField(new SchemaField({
 				omenDiceThreshold : new NumberField({ required: true, integer: true, nullable: false, min: 0, max : 14, initial: null })
 			}), { initial : () => Array.from({length : 4}, (_, index) => ({omenDiceThreshold : CONFIG["13OMENS"].DEFAULTACTOMENDCIETHRESHOLD[index]}))}),
+			
+			story: new SchemaField({
+				acts : new ArrayField(new SchemaField({
+					notes : new StringField({ required: true, initial: "" }),
+					story : new HTMLField({ required: true, initial: ""})
+				}), { initial : () => Array.from({length : 4}, (_, index) => ({notes : "", story : ""}))})
+			}),
 			
 			autoprogressacts : new BooleanField({ required : true, initial : true}),
 			

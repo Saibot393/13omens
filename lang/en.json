@@ -24,7 +24,9 @@
 			"players" : "Players",
 			"act" : "Act",
 			
+			"pc" : "Player character",
 			"story" : "Story",
+			"game" : "Game",
 			
 			"character" : "Character",
 			"background" : "Background",
@@ -39,6 +41,7 @@
 			"hostomendice" : "Host omen dice",
 			"dicebag" : "Dice bag",
 			
+			"aspects" : "Aspects",
 			"coreAspects" : "Core Aspects",
 			"storyAspects" : "Story Aspects",
 			
@@ -139,7 +142,9 @@
 			"roll" : "Roll",
 			"usePerk" : "Use",
 			"rollcheck" : "{aspect} check",
-			"rollacheck" : "Aspect check"
+			"rollacheck" : "Aspect check",
+			"startStory" : "Start story",
+			"returnToPrep" : "Return to preperation"
 		},
 		
 		"tooltips" : {
@@ -153,7 +158,11 @@
 			"takeValiantSacrifice" : "Take valiant sacrifice",
 			"refuseValiantSacrifice" : "Refuse valiant sacrifice",
 			"reroll" : "Reroll",
-			"redrawomen" : "Redraw omen dice"
+			"redrawomen" : "Redraw omen dice",
+			"viewPortrait" : "View portrait",
+			"ready" : "Ready",
+			"pending" : "Pending",
+			"problem" : "Problem"
 		},
 		
 		"chats" : {
@@ -186,6 +195,15 @@
 			"showActBanner" : {
 				"name" : "Show act banner",
 				"descrp" : "Show a banner to all users when a storie's act is changed"
+			},
+			"showStoryPrepState" : {
+				"name" : "Show preperation state check",
+				"descrp" : "Show a list to the host containing details regarding the players preperation state before starting Act I",
+				"options" : {
+					"always" : "always",
+					"notReady" : "when not ready",
+					"never" : "never"
+				}
 			}
 		}
 	}

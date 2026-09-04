@@ -17,6 +17,32 @@ export class o13Actor extends Actor {
 		},
 		superPD : ["update", "_preCreate", "_preUpdate", "_onUpdate", "_onCreateDescendantDocuments", "prepareBaseData", "prepareEmbeddedDocuments", "prepareDerivedData"]
 	}
+		
+	async createEmbeddedDocuments(embeddedName, data = [], operation = {}) {
+		const localData = foundry.utils.deepClone(data);
+		
+		try {
+			if (embeddedName == "Item") {
+				const types = [...new Set(localData.map(entry => entry.type))];
+				for (const type of types) {
+					const typeItems = [...this.items].filter(item => item.type == type);
+					let sortValue = Math.max(...typeItems.map(item => item.sort));
+					if (!isNaN(sortValue) && sortValue > -Infinity) {
+						for (const entry of localData) {
+							if (entry.type == type) {
+								sortValue = sortValue + 100000;
+								entry.sort = sortValue;
+							}
+						}
+					}
+				}
+			}
+		} catch (error) {
+			console.error(`Error during 13 Omens pre item sort:`, error);
+		}
+		
+		super.createEmbeddedDocuments(embeddedName, localData, operation);
+	}
 	
 	prepareDerivedData() {
         super.prepareDerivedData();
@@ -74,43 +100,14 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 			height: 800
 		},
 		actions: {
-			viewStory : o13ActorSheet.viewStory,
-			rollAspect : o13ActorSheet.rollAspect,
-			createNewArchetype : o13ActorSheet.createNewArchetype,
-			openArchetype : o13ActorSheet.openArchetype,
-			deleteArchetype : o13ActorSheet.deleteArchetype,
-			openPC : o13ActorSheet.openPC,
-			removePC : o13ActorSheet.removePC,
-			removePerk : o13ActorSheet.removePerk,
-			openPerk : o13ActorSheet.openPerk,
-			removeGear : o13ActorSheet.removeGear,
-			addOmenDice : o13ActorSheet.addOmenDice,
-			removeOmenDice : o13ActorSheet.removeOmenDice,
-			openGear : o13ActorSheet.openGear,
-			breakGear : o13ActorSheet.breakGear,
-			repairGear : o13ActorSheet.repairGear,
-			toggleSelectGear : o13ActorSheet.toggleSelectGear,
-			takeWound : o13ActorSheet.takeWound,
-			cheatDeath : o13ActorSheet.cheatDeath,
-			clearWound : o13ActorSheet.clearWound,
-			advanceAct : o13ActorSheet.advanceAct,
-			resettoPrologue : o13ActorSheet.resettoPrologue,
-			usePerk : o13ActorSheet.usePerk,
-			autoPopulatePCs : o13ActorSheet.autoPopulatePCs,
-			createNewGear : o13ActorSheet.createNewGear,
-			kill : o13ActorSheet.kill,
-			revive : o13ActorSheet.revive,
-			posttoChat : o13ActorSheet.posttoChat
 		}
 	});
 	
-	static async viewStory(event, target) {
-		if (this.actor.type == "pc") {
-			this.actor.storyActor?.sheet.render(true);
-		}
+	async viewStory(event, target) {
+		this.actor.storyActor?.sheet.render(true);
 	}
 	
-	static async rollAspect(event, target) {
+	async rollAspect(event, target) {
 		if (this.actor.type == "pc") {
 			const aspectName = target.getAttribute("aspect-name");
 			if (aspectName) {
@@ -119,13 +116,7 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 		}
 	}
 	
-	static async createNewArchetype(event, target) {
-		if (this.actor.type == "story") {
-			this.actor.createNewArchetype();
-		}
-	}
-	
-	static async openArchetype(event, target) {
+	async openArchetype(event, target) {
 		if (this.actor.type == "story") {
 			const archetypeID = target.getAttribute("archetype-id");
 			
@@ -137,14 +128,14 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 		}
 	}
 	
-	static async deleteArchetype(event, target) {
+	async deleteArchetype(event, target) {
 		if (this.actor.type == "story") {
 			const archetypeID = target.getAttribute("archetype-id");
 			this.actor.deleteArchetype(archetypeID);
 		}
 	}
 	
-	static async openPC(event, target) {
+	async openPC(event, target) {
 		if (this.actor.type == "story") {
 			const pcID = target.getAttribute("pc-id");
 			
@@ -156,14 +147,14 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 		}
 	}
 	
-	static async removePC(event, target) {
+	async removePC(event, target) {
 		if (this.actor.type == "story") {
 			const pcID = target.getAttribute("pc-id");
 			return this.actor.removePC(pcID);
 		}
 	}
 	
-	static async removePerk(event, target) {
+	async removePerk(event, target) {
 		if (this.actor.type == "pc") {
 			const perkID = target.getAttribute("perk-id");
 			
@@ -171,7 +162,7 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 		}
 	}
 	
-	static async openPerk(event, target) {
+	async openPerk(event, target) {
 		if (this.actor.type == "pc") {
 			const perkid = target.getAttribute("perk-id");
 			
@@ -183,7 +174,7 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 		}
 	}
 	
-	static async removeGear(event, target) {
+	async removeGear(event, target) {
 		if (this.actor.type == "pc") {
 			const gearID = target.getAttribute("gear-id");
 			
@@ -191,19 +182,7 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 		}
 	}
 	
-	static async addOmenDice(event, target) {
-		if (this.actor.type == "story") {
-			return this.actor.addOmenDice();
-		}
-	}
-	
-	static async removeOmenDice(event, target) {
-		if (this.actor.type == "story") {
-			return this.actor.removeOmenDice();
-		}
-	}
-	
-	static async openGear(event, target) {
+	async openGear(event, target) {
 		if (this.actor.type == "pc") {
 			const gearid = target.getAttribute("gear-id");
 			
@@ -215,7 +194,7 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 		}
 	}
 	
-	static async breakGear(event, target) {
+	async breakGear(event, target) {
 		if (this.actor.type == "pc") {
 			const gearid = target.getAttribute("gear-id");
 			
@@ -227,7 +206,7 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 		}
 	}
 	
-	static async repairGear(event, target) {
+	async repairGear(event, target) {
 		if (this.actor.type == "pc") {
 			const gearid = target.getAttribute("gear-id");
 			
@@ -239,7 +218,7 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 		}
 	}
 	
-	static async toggleSelectGear(event, target) {
+	async toggleSelectGear(event, target) {
 		if (this.actor.type == "pc") {
 			const gearid = target.getAttribute("gear-id");
 			
@@ -247,37 +226,31 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 		}
 	}
 	
-	static async takeWound(event, target) {
+	async takeWound(event, target) {
 		if (this.actor.type == "pc") {
 			this.actor.takeWound({face : 6, cheatDeath : false})
 		}
 	}
 	
-	static async cheatDeath(event, target) {
+	async cheatDeath(event, target) {
 		if (this.actor.type == "pc") {
 			this.actor.takeWound({face : 6, cheatDeath : true})
 		}
 	}
 	
-	static async clearWound(event, target) {
-		if (this.actor.type == "pc") {
-			this.actor.clearWound();
-		}
-	}
-	
-	static async advanceAct(event, target) {
+	async advanceAct(event, target) {
 		if (this.actor.type == "story") {
 			this.actor.advanceAct(null, event.shiftKey);
 		}
 	}
 	
-	static async resettoPrologue(event, target) {
+	async resettoPrologue(event, target) {
 		if (this.actor.type == "story") {
 			this.actor.resettoPrologue(event.shiftKey);
 		}
 	}
 	
-	static async usePerk(event, target) {
+	async usePerk(event, target) {
 		if (this.actor.type == "pc") {
 			const perkID = target.getAttribute("perk-id");
 			
@@ -286,37 +259,13 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 		}
 	}
 	
-	static async autoPopulatePCs(event, target) {
-		if (this.actor.type == "story") {
-			this.actor.autoPopulatePCs();
-		}
-	}
-	
-	static async createNewGear(event, target) {
-		if (this.actor.type == "pc") {
-			this.actor.createNewGear();
-    }
-  }
-  
-	static async kill(event, target) {
-		if (this.actor.type == "pc") {
-			this.actor.kill();
-		}
-	}
-	
-	static async revive(event, target) {
-		if (this.actor.type == "pc") {
-			this.actor.revive();
-		}
-	}
-	
-	static async posttoChat(event, target) {
+	async posttoChat(event, target) {
 		if (this.actor.type == "pc") {
 			const perkID = target.getAttribute("perk-id");
 			const gearID = target.getAttribute("gear-id");
-			
+
 			if (perkID) {
-				
+				this.actor.perktoChatMessage(perkID);
 			}
 			
 			if (gearID) {
@@ -325,72 +274,47 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 		}
 	}
 	
-	async _onRender(context, options) {
-		await super._onRender(context, options);
+	async _onUpdateActor(actor, changes, options, userId) {
+		let rerender = false;
 		
-		this._disableExternalRenderHooks();
-
-		this._externalItemUpdateRender = Hooks.on("updateItem", (item, changes, options, userId) => {
-			
-		});
-		
-		this._externalActorUpdateRender = Hooks.on("updateActor", (actor, changes, options, userId) => {
-			let rerender = false;
-			
-			//decide if actor update is relevant for this sheet
-			if (this.actor.isStory) {
-				if (actor?.isPC) {
-					if (actor.storyActor == this.actor) {
-						if (changes.hasOwnProperty("name")) {
+		//decide if actor update is relevant for this sheet
+		if (this.actor.isStory) {
+			if (actor?.isPC) {
+				if (actor.storyActor == this.actor) {
+					if (changes.hasOwnProperty("name")) {
+						rerender = true;
+					}
+					
+					if (changes.system) {
+						if (changes.system.wounds || changes.system.hasOwnProperty("archetype") || changes.system.death) {
 							rerender = true;
 						}
 						
-						if (changes.system) {
-							if (changes.system.wounds || changes.system.hasOwnProperty("archetype") || changes.system.death) {
-								rerender = true;
-							}
-							
-							if (this.actor.isPrologue) {
-								if (changes.system.hasOwnProperty("archetype") || changes.system.hasOwnProperty("aspects") || changes.system.hasOwnProperty("pickedperks")) {
-									//rerender for characters for ready check mark
-								}
+						if (this.actor.isPrologue) {
+							if (changes.system.hasOwnProperty("archetype") || changes.system.hasOwnProperty("aspects") || changes.system.hasOwnProperty("pickedperks")) {
+								//rerender for characters for ready check mark
 							}
 						}
 					}
 				}
 			}
-			
-			if (this.actor.isPC) {
-				if (actor.isStory) {
-					if (this.actor.storyActor == actor) {
-						if (changes.system) {
-							if (changes.system.storyaspects) {
-								rerender = true;
-							}
-							if (changes.system.hasOwnProperty("activeact")) {
-								rerender = true;
-							}
+		}
+		
+		if (this.actor.isPC) {
+			if (actor.isStory) {
+				if (this.actor.storyActor == actor) {
+					if (changes.system) {
+						if (changes.system.storyaspects) {
+							rerender = true;
+						}
+						if (changes.system.hasOwnProperty("activeact")) {
+							rerender = true;
 						}
 					}
 				}
 			}
-			
-			if (rerender) {
-				this.render({force : false, window : {focus : false}});
-			}
-		});
-	}
-	
-	async _onClose(options) {
-		await super._onClose(options);
-	
-		this._disableExternalRenderHooks();
-	}
-	
-	_disableExternalRenderHooks() {
-		Hooks.off("updateItem", this._externalItemUpdateRender);
-		this._externalItemUpdateRender = null;
-		Hooks.off("updateActor", this._externalActorUpdateRender);
-		this._externalActorUpdateRender = null;
+		}
+		
+		return rerender;
 	}
 }
