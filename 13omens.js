@@ -4,6 +4,8 @@ import {registerSettings} from "./scripts/settings.js";
 import {o13Actor, o13ActorSheet, actorDMs} from "./scripts/actors.js";
 import {o13Item, o13ItemSheet, itemDMs} from "./scripts/items.js";
 
+import {patch} from "./scripts/patches.js";
+
 import  {disPatcher} from "./scripts/meta/disPatcher.js";
 
 import {o13Roll, o13rollConfig} from "./scripts/roll.js";
@@ -21,6 +23,9 @@ import {showBanner} from "./scripts/components/banner.js";
 Hooks.once("init", () => {
 	//CONST
 	CONFIG["13OMENS"] = {...CONSTANTS}
+	
+	//Patches
+	patch();
 	
 	//Setings
 	registerSettings();

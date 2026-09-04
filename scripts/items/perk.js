@@ -74,6 +74,12 @@ export class o13perkItem extends virtualItem {
 		
 		return useActive && chosenActive;
 	}
+
+	get activeEffects() {
+		let effects = [...this.effects].sort((a,b) => a.sort - b.sort);
+		
+		return Object.fromEntries(effects.map(effect => [effect.id, effect]));
+	}
 	
 	async checkEffectActivation(localonly = false) {
 		//cheat with local only to disable effect during data preperation without triggering an actor update
@@ -110,9 +116,11 @@ export class o13perkItem extends virtualItem {
 		//Default sheet drop
 		if (!object) return handled;
 
-		if(object.documentName == "ActiveEffect") {
-			await this.createNewEffect(object.toObject());
-			handled = true;
+		if (!prepared.selfOrigin) {
+			if(object.documentName == "ActiveEffect") {
+				await this.createNewEffect(object.toObject());
+				handled = true;
+			}
 		}
 		
 		return handled;

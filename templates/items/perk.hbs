@@ -43,10 +43,10 @@
 		</section>
 		
 		<section class="o13-tab o13-scrollable flexcol" nav-group="main" nav-tab="activeeffects" scroll-id="description">
-			<div>
+			<div sort-direction="t_b" sort-behaviour="AUTO">
 				<span class="o13-label o13-header-label">{{localize "DOCUMENT.ActiveEffects"}} <i class="fa-solid fa-plus o13-icon o13-clickable" data-action="createNewEffect"></i> </span>
-				{{#each item.effects}}
-					<div class="flexrow o13-side-padding draggable" draggable="true" effect-id="{{this._id}}">
+				{{#each item.activeEffects}}
+					<div class="flexrow o13-side-padding o13-sortable draggable" draggable="true" effect-id="{{this._id}}" style="padding-top:1rem">
 						<span class="o13-underline o13-flex-span">
 							<span class="o13-label o13-clickable o13-flex-grow" effect-id="{{this._id}}" data-action="openEffect">
 								{{this.name}}
