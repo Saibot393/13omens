@@ -81,7 +81,7 @@ export class o13perkItem extends virtualItem {
 		return Object.fromEntries(effects.map(effect => [effect.id, effect]));
 	}
 	
-	async checkEffectActivation(localonly = false) {
+	checkEffectActivation() {
 		//cheat with local only to disable effect during data preperation without triggering an actor update
 		const effectsActive = this.effectsActive;
 		
@@ -90,8 +90,7 @@ export class o13perkItem extends virtualItem {
 		for (const effect of this.effects) {
 			change = change || (effect.disabled != !effectsActive);
 			
-			if (localonly) effect.disabled = !effectsActive
-			else await effect.update({disabled : !effectsActive});
+			effect.disabled = !effectsActive;
 		}
 		
 		return change;
