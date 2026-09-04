@@ -295,6 +295,13 @@ export class o13pcActor {
 		return change;
 	}
 	
+	async perktoChatMessage(id, messageData = {}) {
+		const perk = this.items.get(id);
+		if (perk?.isPerk) {
+			perk.toChatMessage(messageData);
+		}
+	}
+	
 	//Gear
 	async removeGear(id) {
 		let gear = this.items.get(id);
@@ -337,7 +344,12 @@ export class o13pcActor {
 		const selectableGear = this.archetype?.unguaranteedGear;
 		
 		if (selectableGear) {
-			return Object.fromEntries(Object.keys(selectableGear).map(id => [id, {name : selectableGear[id].name, selected : this.hasGearSelected(id), id : id}]));
+			return Object.fromEntries(Object.keys(selectableGear).map(id => [id, {
+				name : selectableGear[id].name, 
+				selected : this.hasGearSelected(id), 
+				id : id, 
+				sort : selectableGear[id].sort
+			}]).sort((entrya, entryb) => entrya[1].sort - entryb[1].sort));
 		}
 		
 		return {};

@@ -19,14 +19,16 @@ export class o13Actor extends Actor {
 	}
 		
 	async createEmbeddedDocuments(embeddedName, data = [], operation = {}) {
+		const localData = foundry.utils.deepClone(data);
+		
 		try {
 			if (embeddedName == "Item") {
-				const types = [...new Set(data.map(entry => entry.type))];
+				const types = [...new Set(localData.map(entry => entry.type))];
 				for (const type of types) {
 					const typeItems = [...this.items].filter(item => item.type == type);
 					let sortValue = Math.max(...typeItems.map(item => item.sort));
 					if (!isNaN(sortValue) && sortValue > -Infinity) {
-						for (const entry of data) {
+						for (const entry of localData) {
 							if (entry.type == type) {
 								sortValue = sortValue + 100000;
 								entry.sort = sortValue;
@@ -39,7 +41,7 @@ export class o13Actor extends Actor {
 			console.error(`Error during 13 Omens pre item sort:`, error);
 		}
 		
-		super.createEmbeddedDocuments(embeddedName, data, operation);
+		super.createEmbeddedDocuments(embeddedName, localData, operation);
 	}
 	
 	prepareDerivedData() {
@@ -261,9 +263,9 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 		if (this.actor.type == "pc") {
 			const perkID = target.getAttribute("perk-id");
 			const gearID = target.getAttribute("gear-id");
-			
+
 			if (perkID) {
-				
+				this.actor.perktoChatMessage(perkID);
 			}
 			
 			if (gearID) {

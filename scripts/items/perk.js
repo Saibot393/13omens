@@ -2,6 +2,8 @@ const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDo
 
 import {virtualItem} from "./virtualItem.js";
 
+import {utils} from "../utils.js";
+
 const USESPEROPTIONS = ["passive", "act", "story", "custom"];
 
 export class o13perkItem extends virtualItem {
@@ -87,6 +89,11 @@ export class o13perkItem extends virtualItem {
 		}
 		
 		return change;
+	}
+	
+	//chat
+	async toChatMessage(chatMessageData = {}) {
+		return utils.createHBSChatMessage({item : this, enrichables : this.enrichables}, chatMessageData, "chat/perk");
 	}
 	
 	//data preperation/handling

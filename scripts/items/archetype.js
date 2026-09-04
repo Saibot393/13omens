@@ -93,15 +93,18 @@ export class o13archetypeItem {
 		}
 	}
 	
-	//Gear
+	//perks
 	async createNewPerk(data = {}) {
-		const perk = new this.constructor({name : game.i18n.localize("13omens.titles.perk"), ...data, type : "perk"});
+		const maxSort = Math.max(...Object.values(this.system.perks).map(entry => entry.sort || 0), 0);
+		const perk = new this.constructor({name : game.i18n.localize("13omens.titles.perk"), ...data, type : "perk", sort : maxSort + 10000});
 
 		return this.addSubItem(perk);
 	}
 	
+	//Gear
 	async createNewGear(data = {}) {
-		const gear = new this.constructor({name : game.i18n.localize("13omens.titles.gear"), ...data, type : "gear"});
+		const maxSort = Math.max(...Object.values(this.system.gear).map(entry => entry.sort || 0), 0);
+		const gear = new this.constructor({name : game.i18n.localize("13omens.titles.gear"), ...data, type : "gear", sort : maxSort + 10000});
 		
 		return this.addSubItem(gear);
 	}
@@ -247,7 +250,7 @@ export class o13archetypeItem {
 				}
 
 				if ((prepared.sortBefore || prepared.sortBefore == undefined) && object.sort < target.sort && !siblings.some(sibling => sibling.sort > object.sort && sibling.sort < target.sort)) prepared.sortBefore = false;
-				if (prepared.sortBefore == undefined && !)
+				if (prepared.sortBefore == undefined && !siblings.some(sibling => sibling.sort > target.sort )) prepared.sortBefore = false;
 
 				const sorted = foundry.utils.performIntegerSort(object, {
 					target: target,
