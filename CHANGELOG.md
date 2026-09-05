@@ -1,3 +1,6 @@
+## v1.4.1
+- Players can now correctly change task risk and task difficulty in the roll config
+
 ## v1.4.0
 - Added story tab to story actors to store story text and notes
 - Portraits of actors and items can now be shown to players by the Host

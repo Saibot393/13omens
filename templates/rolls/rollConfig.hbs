@@ -6,20 +6,14 @@
 		</div>
 		<div class="flexrow">
 			<div class="flexrow">
-				<label class="o13-label o13-content-centered">{{localize "13omens.titles.taskRisk"}}:
-				{{#if config.hostView}}
-					</label>
-					<select class="o13-input o13-underline o13-smalltext" name="taskRisk">
-						{{#each taskRisks as |risk|}}
-							<option value="{{risk}}" {{#if (eq risk ../config.taskRisk)}}selected{{/if}}>{{localize (concat "13omens.titles.taskrisks." risk)}}</option>
-						{{/each}}
-					</select>
-				{{else}}
-					{{localize (concat "13omens.titles.taskrisks." config.taskRisk)}}
-					</label>
-				{{/if}}
+				<label class="o13-label o13-content-centered">{{localize "13omens.titles.taskRisk"}}:</label>
+				<select class="o13-input o13-underline o13-smalltext" name="taskRisk">
+					{{#each taskRisks as |risk|}}
+						<option value="{{risk}}" {{#if (eq risk ../config.taskRisk)}}selected{{/if}}>{{localize (concat "13omens.titles.taskrisks." risk)}}</option>
+					{{/each}}
+				</select>
 			</div>
-			<label class="o13-label o13-content-centered">{{localize "13omens.titles.taskDifficulty"}}: {{#if config.hostView}}<i class="fa-solid fa-minus o13-smalltext o13-clickable" data-action="reduceTaskDifficulty"></i>{{/if}} {{config.taskDifficulty}} {{#if config.hostView}}<i class="fa-solid fa-plus o13-smalltext o13-clickable" data-action="increaseTaskDifficulty"></i>{{/if}} </b></label>
+			<label class="o13-label o13-content-centered">{{localize "13omens.titles.taskDifficulty"}}: <i class="fa-solid fa-minus o13-smalltext o13-clickable" data-action="reduceTaskDifficulty"></i> {{config.taskDifficulty}} <i class="fa-solid fa-plus o13-smalltext o13-clickable" data-action="increaseTaskDifficulty"></i> </b></label>
 		</div>
 		<div class="flexrow" style="margin-top:3px">
 			<div class="flexcol o13-flexStart">
