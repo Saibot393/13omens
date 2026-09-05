@@ -204,6 +204,15 @@
 					"notReady" : "when not ready",
 					"never" : "never"
 				}
+			},
+			"screenBorder" : {
+				"name" : "Screen border",
+				"descrp" : "A transparent screen border to indicate the wound status of you character",
+				"options" : {
+					"off" : "off",
+					"ellipse" : "Elliptical",
+					"rectangle" : "Rectangular"
+				}
 			}
 		}
 	}

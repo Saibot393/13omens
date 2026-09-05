@@ -19,6 +19,7 @@ import {registerEnrichments} from "./scripts/components/enrichments.js";
 import {initNews, o13News} from "./scripts/meta/news.js";
 
 import {showBanner} from "./scripts/components/banner.js";
+import {setScreenBorder} from "./scripts/components/screenBorder.js";
 
 Hooks.once("init", () => {
 	//CONST
@@ -85,6 +86,7 @@ Hooks.once("init", () => {
 		o13Roll,
 		utils,
 		showBanner,
+		setScreenBorder,
 		o13News
 	}
 	

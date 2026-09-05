@@ -1,3 +1,5 @@
+import {syncScreenBordertoSettings} from "./components/screenBorder.js";
+
 export function registerSettings() {
 	game.settings.register("13omens", "showActBanner", {
 		name: "13omens.settings.showActBanner.name",
@@ -23,4 +25,23 @@ export function registerSettings() {
 		},
 		default: "always"	
 	})
+	
+	game.settings.register("13omens", "screenBorder", {
+		name: "13omens.settings.screenBorder.name",
+		hint: "13omens.settings.screenBorder.descrp",
+		scope: "user",       
+		config: true,        
+		requiresReload: false,
+		type: String,
+		choices : {
+			"off" : "13omens.settings.screenBorder.options.off",
+			"ellipse" :"13omens.settings.screenBorder.options.ellipse",
+			"rectangle" : "13omens.settings.screenBorder.options.rectangle",
+		},
+		default: "ellipse",
+		onChange: (value) => {
+			syncScreenBordertoSettings();
+		}
+	})
+	syncScreenBordertoSettings();
 }

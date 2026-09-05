@@ -1,6 +1,18 @@
 import {o13Roll} from "./roll.js";
 
 export function onO13Hooks() {
+	Hooks.once("ready", async () => {
+		game.user.character?.syncScreenBorder();
+	});
+	
+	Hooks.on("updateUser", async (user, change, options) => {
+		if (user.id == this.user.id) {
+			if (change?.hasOwnProperty("character")) {
+				game.user.character?.syncScreenBorder();
+			}
+		}
+	});
+	
 	Hooks.on("createChatMessage", async (message, options, userId) => {
 		if (game.user.isGM) {
 			//this handles omen dice added to the bag through player rolls with omen flaws
