@@ -4,6 +4,8 @@ import {utils} from "../utils.js";
 
 import { o13rollConfig } from "../roll.js";
 
+import {setScreenBorder} from "../components/screenBorder.js";
+
 const EMPTYWOUND = {safe : {filled : false, face : null, act : null}, omen : {filled : false, face : null, act : null}};
 
 function newRating() {
@@ -96,6 +98,10 @@ export class o13pcActor {
 			}
 		}
 		
+		if (changed.system?.hasOwnProperty("wounds")) {
+			this.syncScreenBorder();
+		}
+		
 		if (game.user.isActiveGM) {
 			if (changed.system?.death) {
 				await this.storyActor?.updateMaxWounds();
@@ -118,6 +124,12 @@ export class o13pcActor {
 					await item.resetUses();
 				}
 			}
+		}
+	}
+	
+	syncScreenBorder() {
+		if (this == game.user.character) {
+			setScreenBorder({state : this.healthState})
 		}
 	}
 	
@@ -619,8 +631,18 @@ export class o13pcActor {
 		return isDead;
 	}
 	
+	get isDying() {
+		return this.woundDiceCount.omen == this.maxWounds - 1;
+	}
+	
 	get canValiantSacrifice() {
 		return this.woundDiceCount.omen == this.maxWounds - 1; //rules are a bit unclear here, but this seems right
+	}
+	
+	get healthState() {
+		if (this.isDead) return "dead";
+		if (this.isDying) return "dying";
+		return "healthy";
 	}
 	
 	//Cheat death

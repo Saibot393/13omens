@@ -1,0 +1,26 @@
+.o13-screen-border {
+	position: fixed;
+	top: 0%;
+	height: 100%;
+	left: 0%;
+	width : 100%;
+	background-color: var(--screen-border-color);
+	
+	pointer-events: none;
+	z-index: 13013;
+}
+
+.o13-screen-border.o13-ellipse-shadow {
+	mask: radial-gradient(
+		ellipse at center,
+		transparent 65%,
+		#000 100%
+	);
+}
+
+.o13-screen-border.o13-rectangle-shadow {
+	mask:
+		linear-gradient(to bottom, #000 0%, transparent 10%, transparent 90%, #000 100%),
+		linear-gradient(to right, #000 0%, transparent 10%, transparent 90%, #000 100%);
+	mask-composite: add;
+}
