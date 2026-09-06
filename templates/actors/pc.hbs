@@ -23,7 +23,7 @@
 			<div class="form-group flexrow">
 				<label for="archetype-name" class="o13-label" style="flex:0.5">{{localize "13omens.titles.archetype"}}:</label>
 				{{#if actor.hasOwnArchetype}}
-					<span class="o13-input o13-underline" type="text" style="align-self:flex-end;padding-bottom:3px;margin-top:6px;">{{actor.archetype.name}} <i class="fa-solid fa-x o13-label o13-icon o13-hover-icon o13-clickable" data-action="removeOwnArchetype"></i></span>
+					<span class="o13-input o13-underline" type="text" style="align-self:flex-end;padding-bottom:3px;margin-top:6px;">{{actor.archetype.name}} {{#if actor.canPrepare}}<i class="fa-solid fa-x o13-label o13-icon o13-hover-icon o13-clickable" data-action="removeOwnArchetype"></i>{{/if}}</span>
 				{{else}}
 					<select class="o13-input o13-underline" name="system.archetype" {{#unless actor.canPrepare}}disabled{{/unless}}>
 						<option value=""></option>
