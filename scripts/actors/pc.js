@@ -794,8 +794,10 @@ export class o13pcActor {
 		}
 
 		if (object.isArchetype) {
-			await this.setOwnArchetype(object);
-			handled = true;
+			if (this.canPrepare) {
+				await this.setOwnArchetype(object);
+				handled = true;
+			}
 		}
 		
 		return handled;
