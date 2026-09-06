@@ -98,7 +98,7 @@ export class o13pcActor {
 			}
 		}
 		
-		if (changed.system?.hasOwnProperty("wounds")) {
+		if (changed.system?.hasOwnProperty("wounds") || changed.system?.hasOwnProperty("death")) {
 			this.syncScreenBorder();
 		}
 		
@@ -677,7 +677,7 @@ export class o13pcActor {
 	}
 	
 	get isDying() {
-		return this.woundDiceCount.omen == this.maxWounds - 1;
+		return this.woundDiceCount.omen >= this.maxWounds - 1;
 	}
 	
 	get canValiantSacrifice() {
