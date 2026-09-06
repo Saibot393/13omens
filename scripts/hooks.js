@@ -6,7 +6,7 @@ export function onO13Hooks() {
 	});
 	
 	Hooks.on("updateUser", async (user, change, options) => {
-		if (user.id == this.user.id) {
+		if (user.id == game.user.id) {
 			if (change?.hasOwnProperty("character")) {
 				game.user.character?.syncScreenBorder();
 			}
