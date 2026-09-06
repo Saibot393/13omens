@@ -139,7 +139,8 @@ export class o13pcActor {
 			archetype: this.archetypePrepState,
 			aspects: this.aspectPrepState, 
 			perks: this.perkPrepState,
-			gear: this.gearPrepState
+			gear: this.gearPrepState,
+			character : this.characterPrepState
 		};
 	}
 	
@@ -151,6 +152,10 @@ export class o13pcActor {
 		if (states.some(state => state == "pending")) return "pending";
 		
 		return "ready";
+	}
+	
+	get characterPrepState() {
+		return [...game.users].some(user => user.character == this) ? "ready" : "pending";
 	}
 	
 	//Story
@@ -215,7 +220,7 @@ export class o13pcActor {
 	}
 	
 	get archetype() {
-		const archetype = this.storyActor?.items.get(this.system.archetype);
+		const archetype = this.ownArchetype || this.storyActor?.items.get(this.system.archetype);
 		
 		return archetype?.type == "archetype" ? archetype : undefined;
 	}
@@ -224,15 +229,55 @@ export class o13pcActor {
 		return this.storyActor?.archetypes.filter(archetype => archetype != this.archetype) ?? [];
 	}
 	
+	async setOwnArchetype(archetype) {
+		if (archetype.isArchetype) {
+			await this.removeOwnArchetype();
+			
+			await this.createEmbeddedDocuments("Item", [archetype.toObject()]);
+			
+			//for some reason foundry item indexing takes longer than the createEmbeddedDocuments above, so we need to wait some time
+			let attempts = 0;
+			while (!this.ownArchetype && attempts < 10) {
+				await new Promise(resolve => setTimeout(resolve, 20));
+				attempts = attempts + 1;
+			}
+			
+			if (!this.ownArchetype) {
+				console.error(`Actor ${this.name} was not able to update its archetype on time (>200ms). The archetype could not be synced, please try again.`);
+				await this.removeOwnArchetype();
+			}
+			else {
+				await this.updateArchetypeItems();
+				await this.synctoArchetypeBackground();
+			}
+		}
+	}
+	
+	async removeOwnArchetype() {
+		const oldArchetypes = [...this.items].filter(item => item.isArchetype);
+			
+		await this.deleteEmbeddedDocuments("Item", oldArchetypes.map(archetype => archetype.id));
+		
+		await this.updateArchetypeItems();
+	}
+	
+	get ownArchetype() {
+		return [...this.items].find(item => item.isArchetype);
+	}
+	
+	get hasOwnArchetype() {
+		return [...this.items].some(item => item.isArchetype);
+	}
+	
 	async removeArchetypeItems() {
 		return this.deleteEmbeddedDocuments("Item", Array.from(this.items).filter(item => item.isArchetypeOrigin).map(item => item.id))
 	}
 	
 	async updateArchetypeItems(removeold = true) {
 		if (removeold) await this.removeArchetypeItems();
-		
+
 		const archetype = this.archetype;
-		
+
 		if (archetype) {
 			return this.createEmbeddedDocuments("Item", [...Object.values(archetype.perksData), ...Object.values(archetype.guaranteedGear)]);
 		}
@@ -745,6 +790,11 @@ export class o13pcActor {
 		
 		if (object.isPerk || object.isGear) {
 			await this.createEmbeddedDocuments("Item", [object.toObject()]);
+			handled = true;
+		}
+
+		if (object.isArchetype) {
+			await this.setOwnArchetype(object);
 			handled = true;
 		}
 		

@@ -43,6 +43,12 @@ export class o13prepState extends o13WaitMixIn(o13SheetMixin(HandlebarsApplicati
 		}
 	}
 	
+	async _onUpdateUser(actor, changes, options, userId) {
+		if (changes?.hasOwnProperty("character")) {
+			return true;
+		}
+	}
+	
 	async _onUpdateItem(item, changes, options, userId) {
 		if (item.isGear && item.parent?.isPC) {
 			if (item.parent.storyActor == this.baseStory) {

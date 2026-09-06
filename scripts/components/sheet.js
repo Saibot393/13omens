@@ -15,6 +15,13 @@ export function o13SheetMixin(baseSheet) {
 			this._boundonAction = this._onAction.bind(this);
 			
 			//custom Hooks
+			this._externalUserUpdateRender = Hooks.on("updateUser", async (user, changes, options, userId) => {
+				if (this.rendered) {
+					const rerender = await this._onUpdateUser(user, changes, options, userId);
+					if (rerender) this.render({force : false, window : {focus : false}});
+				}
+			});
+			
 			this._externalItemUpdateRender = Hooks.on("updateItem", async (item, changes, options, userId) => {
 				if (this.rendered) {
 					const rerender = await this._onUpdateItem(item, changes, options, userId);
@@ -238,6 +245,10 @@ export function o13SheetMixin(baseSheet) {
 			return context;
 		}
 		
+		async _onUpdateUser(user, changes, options, userId) {
+			
+		}
+		
 		async _onUpdateItem(item, changes, options, userId) {
 			
 		}
@@ -392,6 +403,8 @@ export function o13SheetMixin(baseSheet) {
 		}
 		
 		_disableExternalRenderHooks() {
+			Hooks.off("updateUser", this._externalUserUpdateRender);
+			this._externalUserUpdateRender = null;
 			Hooks.off("updateItem", this._externalItemUpdateRender);
 			this._externalItemUpdateRender = null;
 			Hooks.off("createItem", this._externalItemCreateRender);
