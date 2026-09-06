@@ -11,6 +11,20 @@ export function registerSettings() {
 		default: true	
 	})
 	
+	game.settings.register("13omens", "showRemoteRollConfig", {
+		name: "13omens.settings.showRemoteRollConfig.name",
+		hint: "13omens.settings.showRemoteRollConfig.descrp",
+		scope: "world",       
+		config: true,        
+		requiresReload: false,
+		type: String,
+		choices : {
+			"always" : "13omens.settings.showRemoteRollConfig.options.always",
+			"never" :"13omens.settings.showRemoteRollConfig.options.never"
+		},
+		default: "always"	
+	})
+	
 	game.settings.register("13omens", "showStoryPrepState", {
 		name: "13omens.settings.showStoryPrepState.name",
 		hint: "13omens.settings.showStoryPrepState.descrp",

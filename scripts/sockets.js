@@ -1,7 +1,9 @@
 import {showBanner} from "./components/banner.js";
+import {o13rollConfig} from "./roll.js";
 
 const ACTIONS = {
-	showBanner
+	showBanner,
+	updateRemoteRollConfig : o13rollConfig.updateRemote
 }
 
 export function callSocket(action, data) {
