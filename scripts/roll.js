@@ -539,7 +539,7 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 		
 		const rollInstances = instances.filter(instance => instance instanceof o13rollConfig);
 		
-		const idInstance = rollInstances.find(instance => instance._id = configID);
+		const idInstance = rollInstances.find(instance => instance._id == configID);
 		
 		if (idInstance) {
 			if (socketData.closed && idInstance.isSecondaryView) {
