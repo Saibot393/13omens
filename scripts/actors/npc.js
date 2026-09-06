@@ -1,6 +1,8 @@
 const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDocumentField, DocumentIdField, BooleanField, FilePathField, ObjectField } = foundry.data.fields;
 
-export class o13npcActor {
+import {inventoryActor} from "./inventoryActor.js";
+
+export class o13npcActor extends inventoryActor {
 	//data preperation
 	get enrichables() {
 		return {

@@ -11,19 +11,34 @@
 			</div>
 		</div>
 	</header>
-	<main class="flexcol o13-scrollable" style="flex:1; min-height:0;" scroll-id="main">
-		<div class="o13-notes flexcol">
-		<prose-mirror
-			class="o13-text-editor"
-			name="system.description"
-			document-uuid="{{actor.uuid}}"
-			value="{{actor.system.description}}"
-			button
-			toggled
-			editable
-			collaborative="false"
-			{{{enriched.description}}}
-		</prose-mirror>
-		</div>
+	<main class="flexcol">
+		<nav class="o13-nav" nav-group="main" style="margin-bottom:3px">
+			<a data-group="main" nav-tab="description">{{localize "13omens.titles.description"}}</a>
+			<a data-group="main" nav-tab="inventory">{{localize "13omens.titles.inventory"}}</a>
+		</nav>
+		
+		<section class="o13-tab o13-scrollable flexcol" nav-group="main" nav-tab="description" scroll-id="description">
+			<div class="o13-notes flexcol">
+				<prose-mirror
+					class="o13-text-editor"
+					name="system.description"
+					document-uuid="{{actor.uuid}}"
+					value="{{actor.system.description}}"
+					button
+					toggled
+					editable
+					collaborative="false"
+					{{{enriched.description}}}
+				</prose-mirror>
+			</div>
+		</section>
+		
+		<section class="o13-tab o13-scrollable flexcol" nav-group="main" nav-tab="inventory" scroll-id="inventory">
+			<span class="o13-label o13-header-label">{{localize "13omens.titles.gears"}} <i class="fa-solid fa-plus o13-icon o13-clickable" data-action="createNewGear"></i> </span>
+			{{> "systems/13omens/templates/actors/components/inventory.hbs" 
+				actor=actor
+				enriched=enriched
+			}}
+		</section>
 	</main>
 </div>

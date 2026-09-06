@@ -26,4 +26,29 @@ export class inventoryActor {
 			gear.toChatMessage(messageData);
 		}
 	}
+	
+	async handleDrop(data, event, prepared) {
+		let handled = false;
+		
+		const object = prepared.object;
+		if (!object || prepared.selfOrigin) return handled;
+		
+		if (object.isGear) {
+			await this.createEmbeddedDocuments("Item", [object.toObject()]);
+			handled = true;
+		}
+		
+		return handled;
+	}
+	
+	prepareDragData(data, event) {
+		if (data.gearID) {
+			const item = this.items.get(data.gearID);
+			
+			if (item.isGear) {
+				data.type = "Item",
+				data.uuid = item.uuid;
+			}
+		}
+	}
 }
