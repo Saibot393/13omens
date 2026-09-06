@@ -1,6 +1,6 @@
 const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDocumentField, DocumentIdField, BooleanField, FilePathField, ObjectField, DocumentUUIDField } = foundry.data.fields;
 
-import {virtualItem} from "./virtualItem.js";
+import {virtualItem, virtualItemDataModel} from "./virtualItem.js";
 
 import {utils} from "../utils.js";
 
@@ -47,24 +47,17 @@ export class o13gearItem extends virtualItem {
 	}
 }
 
-export class gearDataModel extends foundry.abstract.TypeDataModel {
+export class gearDataModel extends virtualItemDataModel {
 	static defineSchema() {
 		return {
+			...super.defineSchema(),
+			
 			description: new HTMLField({ required: true, initial: ""}),
 			
 			quantity: new SchemaField({
 				max : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: 1 }),
 				value : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: null })
-			}),
-			
-			origin: new SchemaField({
-				id: new DocumentIdField({required: false, nullable: true, initial: null}),
-				parentArchetype: new DocumentUUIDField({required: false, nullable: true, initial: null})
 			})
 		};
-	}
-	
-	prepareDerivedData() {
-		
 	}
 }

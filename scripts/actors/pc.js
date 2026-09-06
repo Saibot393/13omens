@@ -1,5 +1,7 @@
 const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDocumentField, DocumentIdField, BooleanField, FilePathField, ObjectField } = foundry.data.fields;
 
+import {inventoryActor} from "./inventoryActor.js";
+
 import {utils} from "../utils.js";
 
 import { o13rollConfig } from "../roll.js";
@@ -12,7 +14,7 @@ function newRating() {
 	return new NumberField({ required: true, integer: true, nullable : true, min: Math.min(...CONFIG["13OMENS"].ASPECTRATINGS), max : Math.max(...CONFIG["13OMENS"].ASPECTRATINGS), initial: CONFIG["13OMENS"].ASPECTRATINGS[0] });
 } 
 
-export class o13pcActor {
+export class o13pcActor extends inventoryActor {
 	//Updates & Create
 	async _preCreate(data, options, user) {
 		await this.superPD._preCreate(data, options, user);
@@ -360,33 +362,6 @@ export class o13pcActor {
 	}
 	
 	//Gear
-	async removeGear(id) {
-		let gear = this.items.get(id);
-		
-		if (gear?.isGear) {
-			return this.deleteEmbeddedDocuments("Item", [id]);
-		}
-	}
-	
-	get gear() {
-		let gear = this.items.filter(item => item.isGear).sort((a,b) => a.sort - b.sort);
-		
-		return Object.fromEntries(gear.map(item => [item.id, item]));
-	}
-	
-	async createNewGear(data) {
-		const gear = {name : game.i18n.localize("13omens.titles.gear"), ...data, type : "gear"};
-		
-		return this.createEmbeddedDocuments("Item", [gear]);
-	}
-	
-	async geartoChatMessage(id, messageData = {}) {
-		const gear = this.items.get(id);
-		
-		if (gear?.isGear) {
-			gear.toChatMessage(messageData);
-		}
-	}
 	
 	//Select gear (from archetype)
 	get selectableGearCount() {
