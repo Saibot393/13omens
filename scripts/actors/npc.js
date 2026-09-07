@@ -14,6 +14,10 @@ export class o13npcActor extends inventoryActor {
 	get lootable() {
 		return this.system.lootable;
 	}
+	
+	get freeView() {
+		return this.lootable;
+	}
 }
 
 export class npcDataModel extends foundry.abstract.TypeDataModel {

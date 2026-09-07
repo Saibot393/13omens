@@ -44,6 +44,14 @@ export class o13Actor extends Actor {
 		super.createEmbeddedDocuments(embeddedName, localData, operation);
 	}
 	
+	testUserPermission(user, permission, options = {}) {
+		if (permission == "LIMITED" && this.freeView) {
+			return true;
+		}
+		
+		return super.testUserPermission(user, permission, options)
+	}
+	
 	prepareDerivedData() {
         super.prepareDerivedData();
 		

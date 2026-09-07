@@ -66,6 +66,22 @@ export function o13SheetMixin(baseSheet) {
 			});
 		}
 		
+		_canUserView(user) {
+			if (this.document?.freeView) {
+				return true;
+			}
+			
+			return super._canUserView(user);
+		}
+		
+		_canDragDrop(selector) {
+			if (this.document?.freeView) {
+				return true;
+			}
+			
+			return super._canDragDrop(selector);
+		}
+		
 		_configureRenderParts(options) {
 			let directory = "";
 			

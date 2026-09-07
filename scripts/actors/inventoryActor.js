@@ -8,7 +8,6 @@ export class inventoryActor {
 	}
 	
 	async removeGear(id) {
-		console.log(id);
 		let gear = this.items.get(id);
 		
 		if (gear?.isGear) {
@@ -44,7 +43,6 @@ export class inventoryActor {
 	}
 	
 	//drag n drop
-	
 	async handleDrop(data, event, prepared) {
 		let handled = false;
 		
@@ -89,7 +87,7 @@ export class inventoryActor {
 					}).wait(true);
 				}
 			}
-			
+
 			if (!(options.quantity >= 0)) return;
 			
 			if (!(await inventoryActor.handleGearTransfer(sourceActor, targetActor, transferGear, options))) {
