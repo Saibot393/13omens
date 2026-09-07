@@ -139,7 +139,10 @@
 			"confirmAdvanceAct" : "Confirm act advancement",
 			"confirmResettoPrologue" : "Confrim reset to prologue",
 			
-			"rollConfig" : "Roll configuration: {pcName}"
+			"rollConfig" : "Roll configuration: {pcName}",
+			
+			"lootable" : "Can be looted",
+			"revealDescription" : "Reveal Description"
 		},
 		
 		"actions" : {

@@ -10,9 +10,13 @@ export class o13npcActor extends inventoryActor {
 		}
 	}
 	
-	//looting
+	//looting & description
 	get lootable() {
 		return this.system.lootable;
+	}
+	
+	get revealDescription() {
+		return this.system.revealdescription;
 	}
 	
 	get freeView() {
@@ -25,7 +29,8 @@ export class npcDataModel extends foundry.abstract.TypeDataModel {
 		return {
 			description: new HTMLField({ required: true, blank: true, initial: "" }),
 			
-			lootable : new BooleanField({ required: true, initial: false})
+			lootable : new BooleanField({ required: true, initial: false}),
+			revealdescription : new BooleanField({ required: true, initial: false})
 		};
 	}
 }
