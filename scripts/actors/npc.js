@@ -20,7 +20,7 @@ export class o13npcActor extends inventoryActor {
 	}
 	
 	get freeView() {
-		return this.lootable;
+		return this.lootable || this.revealDescription;
 	}
 }
 
