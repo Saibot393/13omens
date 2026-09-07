@@ -175,7 +175,7 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 	}
 	
 	async removeGear(event, target) {
-		if (this.actor.type == "pc") {
+		if (this.actor.isInventoryActor) {
 			const gearID = target.getAttribute("gear-id");
 			
 			return this.actor.removeGear(gearID);
@@ -183,7 +183,7 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 	}
 	
 	async openGear(event, target) {
-		if (this.actor.type == "pc") {
+		if (this.actor.isInventoryActor) {
 			const gearid = target.getAttribute("gear-id");
 			
 			const gear = this.actor.items.get(gearid);
@@ -195,7 +195,7 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 	}
 	
 	async breakGear(event, target) {
-		if (this.actor.type == "pc") {
+		if (this.actor.isInventoryActor) {
 			const gearid = target.getAttribute("gear-id");
 			
 			const gear = this.actor.items.get(gearid);
@@ -207,7 +207,7 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 	}
 	
 	async repairGear(event, target) {
-		if (this.actor.type == "pc") {
+		if (this.actor.isInventoryActor) {
 			const gearid = target.getAttribute("gear-id");
 			
 			const gear = this.actor.items.get(gearid);
@@ -260,7 +260,7 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 	}
 	
 	async posttoChat(event, target) {
-		if (this.actor.type == "pc") {
+		if (this.actor.isInventoryActor) {
 			const perkID = target.getAttribute("perk-id");
 			const gearID = target.getAttribute("gear-id");
 

@@ -1,11 +1,14 @@
 import {utils} from "../utils.js";
 
+import {o13quantityQuery} from "../dialogues/quantityQuery.js";
+
 export class inventoryActor {
 	get isInventoryActor() {
 		return true;
 	}
 	
 	async removeGear(id) {
+		console.log(id);
 		let gear = this.items.get(id);
 		
 		if (gear?.isGear) {
@@ -50,7 +53,7 @@ export class inventoryActor {
 		
 		if (object.isGear) {
 			if (object.parent?.isInventoryActor) {
-				await this.transferGear(gear, event.shiftKey ? Infinity : undefined);
+				await this.transferGear(object, event.shiftKey ? Infinity : undefined);
 			}
 			else {
 				await this.createEmbeddedDocuments("Item", [object.toObject()]);
@@ -76,8 +79,15 @@ export class inventoryActor {
 	static async startGearTransfer(sourceActor, targetActor, transferGear, options = {quantity : undefined}) {
 		if (transferGear.parent == sourceActor && transferGear.isGear && sourceActor.isInventoryActor && targetActor.isInventoryActor) {
 			if (options.quantity == undefined) {
-				//quantity querry here
-				options.quantity = 1;
+				if (transferGear.quantityMax == 1) {
+					options.quantity = 1;
+				}
+				else {
+					options.quantity = await new o13quantityQuery({
+						max : transferGear.quantityValue, 
+						query : game.i18n.format("13omens.dialogues.transferGearQuery", {gear : transferGear.name, sourceActor : sourceActor.name, targetActor : targetActor.name})
+					}).wait(true);
+				}
 			}
 			
 			if (!(options.quantity >= 0)) return;

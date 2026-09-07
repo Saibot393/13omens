@@ -148,7 +148,9 @@
 			"rollcheck" : "{aspect} check",
 			"rollacheck" : "Aspect check",
 			"startStory" : "Start story",
-			"returnToPrep" : "Return to preperation"
+			"returnToPrep" : "Return to preperation",
+			"accept" : "Accept",
+			"cancel" : "Cancel"
 		},
 		
 		"tooltips" : {
@@ -180,7 +182,8 @@
 			"confirmOmenDiceAddition" : "Omen dice addition",
 			"playerOmenFlawRoll" : "{pcName} rolled a check with {flawCount} omen flaw, do you want to add the omen die to the {storyName} dice bag?",
 			"confirmAdvanceAct" : "Do you want to advance to {act}?",
-			"confirmResettoPrologue" : "Do you want to reset the story to the prologue? This will also reset all players characters to the prologue state"
+			"confirmResettoPrologue" : "Do you want to reset the story to the prologue? This will also reset all players characters to the prologue state",
+			"transferGearQuery" : "Transfer {gear} from {sourceActor} to {targetActor}:"
 		},
 		
 		"warnings" : {
