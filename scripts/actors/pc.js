@@ -758,12 +758,13 @@ export class o13pcActor extends inventoryActor {
 	}
 	
 	async handleDrop(data, event, prepared) {
-		let handled = false;
+		let handled = super.handleDrop(data, event, prepared);
+		if (handled) return handled;
 		
 		const object = prepared.object;
 		if (!object || prepared.selfOrigin) return handled;
 		
-		if (object.isPerk || object.isGear) {
+		if (object.isPerk) {
 			await this.createEmbeddedDocuments("Item", [object.toObject()]);
 			handled = true;
 		}
@@ -779,10 +780,12 @@ export class o13pcActor extends inventoryActor {
 	}
 	
 	prepareDragData(data, event) {
-		if (data.gearID || data.perkID) {
-			const item = this.items.get(data.gearID || data.perkID);
+		super.prepareDragData(data, event);
+		
+		if (data.perkID) {
+			const item = this.items.get(data.perkID);
 			
-			if (item.isGear || item.isPerk) {
+			if (item.isPerk) {
 				data.type = "Item",
 				data.uuid = item.uuid;
 			}
