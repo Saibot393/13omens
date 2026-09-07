@@ -1,9 +1,13 @@
+import {utils} from "./utils.js";
+
 import {showBanner} from "./components/banner.js";
 import {o13rollConfig} from "./roll.js";
+import {inventoryActor} from "./actors/inventoryActor.js";
 
 const ACTIONS = {
 	showBanner,
-	updateRemoteRollConfig : o13rollConfig.updateRemote
+	updateRemoteRollConfig : o13rollConfig.updateRemote,
+	handleGearTransfer : inventoryActor.inventoryActor
 }
 
 export function callSocket(action, data, recipients = {onlyPrimeGM : false}) {
@@ -31,7 +35,7 @@ export function onO13Sockets() {
 			if (CONFIG.debug.o13?.sockets) console.warn(`13 Omens socket call received:`, data);
 			
 			const notSender = game.user.id != data.userid;
-			const matchingPrimeGM = !data.recipients?.onlyPrimeGM || [...game.users].find(user => user.isGM) == game.user;
+			const matchingPrimeGM = !data.recipients?.onlyPrimeGM || utils.primeGM() == game.user;
 			
 			if (notSender && matchingPrimeGM) {
 				const action = ACTIONS[data.action];

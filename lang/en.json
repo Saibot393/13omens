@@ -185,7 +185,8 @@
 		
 		"warnings" : {
 			"selectRating" : "Please select an aspect rating before rolling",
-			"selectActor" : "Please select an actor or open a character sheet before rolling"
+			"selectActor" : "Please select an actor or open a character sheet before rolling",
+			"actionRequiresGM" : "Please wait for a host to be online and try again"
 		},
 		
 		"news" : {

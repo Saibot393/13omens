@@ -1,4 +1,10 @@
+import {utils} from "../utils.js";
+
 export class inventoryActor {
+	get isInventoryActor() {
+		return true;
+	}
+	
 	async removeGear(id) {
 		let gear = this.items.get(id);
 		
@@ -27,6 +33,15 @@ export class inventoryActor {
 		}
 	}
 	
+	async transferGear(gear, quantity = undefined) {
+		if (gear.parent?.isInventoryActor && gear.parent != this) {
+			await inventoryActor.startGearTransfer(gear.parent, this, gear, {quantity : quantity});
+		}
+		return false;
+	}
+	
+	//drag n drop
+	
 	async handleDrop(data, event, prepared) {
 		let handled = false;
 		
@@ -34,7 +49,12 @@ export class inventoryActor {
 		if (!object || prepared.selfOrigin) return handled;
 		
 		if (object.isGear) {
-			await this.createEmbeddedDocuments("Item", [object.toObject()]);
+			if (object.parent?.isInventoryActor) {
+				await this.transferGear(gear);
+			}
+			else {
+				await this.createEmbeddedDocuments("Item", [object.toObject()]);
+			}
 			handled = true;
 		}
 		
@@ -50,5 +70,42 @@ export class inventoryActor {
 				data.uuid = item.uuid;
 			}
 		}
+	}
+	
+	//transfer
+	static async startGearTransfer(sourceActor, targetActor, transferGear, options = {quantity : undefined}) {
+		if (transferGear.parent == sourceActor && transferGear.isGear && sourceActor.isInventoryActor && targetActor.isInventoryActor) {
+			if (options.quantity == undefined) {
+				//quantity querry here
+				options.quantity = 1;
+			}
+			
+			if (!(options.quantity >= 0)) return;
+			
+			if (!(await inventoryActor.handleGearTransfer(sourceActor, targetActor, transferGear, options))) {
+				if (utils.primeGM()) {
+					game.system.callSocket("handleGearTransfer", [sourceActor, targetActor, transferGear, options], {onlyPrimeGM : true});
+				}
+				else {
+					ui.notifications.warn(game.i18n.localize("13omens.warnings.actionRequiresGM"), {console : false});
+				}
+			}
+		}
+	}
+	
+	static async handleGearTransfer(sourceActor, targetActor, transferGear, options = {quantity : 0}) {
+		if (sourceActor.isOwner && targetActor.isOwner && transferGear.parent == sourceActor && transferGear.isGear && sourceActor.isInventoryActor && targetActor.isInventoryActor) {
+			const quantity = Math.min(transferGear.quantityValue, options.quantity);
+			
+			await transferGear.changeQuantity(-quantity);
+			
+			const transferObject = transferGear.toObject();
+			transferObject.system.quantity.value = quantity;
+			
+			await targetActor.createNewGear(transferObject);
+			
+			return true;
+		}
+		return false;
 	}
 }
