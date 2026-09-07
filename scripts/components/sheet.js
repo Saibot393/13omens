@@ -74,6 +74,14 @@ export function o13SheetMixin(baseSheet) {
 			return super._canUserView(user);
 		}
 		
+		get isVisible() {
+			if (this.document?.freeView) {
+				return true;
+			}
+			
+			return super.isVisible;
+		}
+		
 		_canDragDrop(selector) {
 			if (this.document?.freeView) {
 				return true;
