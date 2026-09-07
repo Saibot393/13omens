@@ -50,7 +50,7 @@ export class inventoryActor {
 		
 		if (object.isGear) {
 			if (object.parent?.isInventoryActor) {
-				await this.transferGear(gear);
+				await this.transferGear(gear, event.shiftKey ? Infinity : undefined);
 			}
 			else {
 				await this.createEmbeddedDocuments("Item", [object.toObject()]);
