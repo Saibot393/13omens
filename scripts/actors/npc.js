@@ -1,26 +1,28 @@
 const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDocumentField, DocumentIdField, BooleanField, FilePathField, ObjectField } = foundry.data.fields;
 
-import {inventoryActor} from "./inventoryActor.js";
+import {inventoryActorMixin} from "./inventoryActor.js";
 
-export class o13npcActor extends inventoryActor {
-	//data preperation
-	get enrichables() {
-		return {
-			description : this.system.description
+export function o13npcActorMixin(base) {
+	return class o13npcActor extends inventoryActorMixin(base) {
+		//data preperation
+		get enrichables() {
+			return {
+				description : this.system.description
+			}
 		}
-	}
-	
-	//looting & description
-	get lootable() {
-		return this.system.lootable;
-	}
-	
-	get revealDescription() {
-		return this.system.revealdescription;
-	}
-	
-	get freeView() {
-		return this.lootable || this.revealDescription;
+		
+		//looting & description
+		get lootable() {
+			return this.system.lootable;
+		}
+		
+		get revealDescription() {
+			return this.system.revealdescription;
+		}
+		
+		get freeView() {
+			return this.lootable || this.revealDescription;
+		}
 	}
 }
 

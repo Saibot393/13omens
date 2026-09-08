@@ -38,9 +38,9 @@ Hooks.once("init", () => {
 		...actorDMs
 	};
 	
-	disPatcher.patch(o13Actor);
+	const patchedActor = disPatcher.patch(o13Actor);
 	
-	CONFIG.Actor.documentClass = o13Actor;
+	CONFIG.Actor.documentClass = patchedActor;
 	
 	foundry.documents.collections.Actors.registerSheet("thirteen-omens", o13ActorSheet, {
 		types: ["pc", "npc", "story"],
@@ -56,9 +56,9 @@ Hooks.once("init", () => {
 		...itemDMs
 	};
 	
-	disPatcher.patch(o13Item);
+	const patchedItem = disPatcher.patch(o13Item);
 	
-	CONFIG.Item.documentClass = o13Item;
+	CONFIG.Item.documentClass = patchedItem;
 	
 	foundry.documents.collections.Items.registerSheet("thirteen-omens", o13ItemSheet, {
 		types: ["archetype", "perk", "gear"],
