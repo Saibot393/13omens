@@ -1,3 +1,5 @@
+const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDocumentField, DocumentIdField, BooleanField, FilePathField, ObjectField, DocumentUUIDField } = foundry.data.fields;
+
 export class virtualItem {
 	//virtual items can be imbedded in archetypes, so basically gear and perks, make sure they have an origin in their data model, otherwise oh oh
 	
@@ -127,5 +129,16 @@ export class virtualItem {
 		else {
 			return this.superPD.deleteEmbeddedDocuments(embeddedName, data, operation);
 		}
+	}
+}
+
+export class virtualItemDataModel extends foundry.abstract.TypeDataModel {
+	static defineSchema() {
+		return {
+			origin: new SchemaField({
+				id: new DocumentIdField({required: false, nullable: true, initial: null}),
+				parentArchetype: new DocumentUUIDField({required: false, nullable: true, initial: null})
+			})
+		};
 	}
 }
