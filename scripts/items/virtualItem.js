@@ -1,133 +1,135 @@
 const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDocumentField, DocumentIdField, BooleanField, FilePathField, ObjectField, DocumentUUIDField } = foundry.data.fields;
 
-export class virtualItem {
-	//virtual items can be imbedded in archetypes, so basically gear and perks, make sure they have an origin in their data model, otherwise oh oh
-	
-	//basics
-	get hasParentAchetype() {
-		return Boolean(this.system.origin.parentArchetype);
-	}
-	
-	get parentArchetype() {
-		const parentUUID = this.system.origin.parentArchetype;
+export function virtualItemMixin(base) {
+	return class virtualItem extends base {
+		//virtual items can be imbedded in archetypes, so basically gear and perks, make sure they have an origin in their data model, otherwise oh oh
 		
-		return fromUuidSync(parentUUID);
-	}
-	
-	get isVirtualItem() {
-		return this.hasParentAchetype && !this.parent;
-	}
-	
-	get originID() {
-		return this.system.origin.id
-	}
-	
-	get isArchetypeOrigin() {
-		return Boolean(this.system.origin?.id && this.system.origin?.parentArchetype);
-	}	
-	
-	isFromOrigin(originid) {
-		return this.originID == originid;
-	}
-	
-	get parentArchetype() {
-		if (this.isPerk || this.isGear) {
-			const uuid = this.system.origin.parentArchetype;
+		//basics
+		get hasParentAchetype() {
+			return Boolean(this.system.origin.parentArchetype);
+		}
+		
+		get parentArchetype() {
+			const parentUUID = this.system.origin.parentArchetype;
 			
-			if (uuid) {
-				const archetype = fromUuidSync(uuid);
+			return fromUuidSync(parentUUID);
+		}
+		
+		get isVirtualItem() {
+			return this.hasParentAchetype && !this.parent;
+		}
+		
+		get originID() {
+			return this.system.origin.id
+		}
+		
+		get isArchetypeOrigin() {
+			return Boolean(this.system.origin?.id && this.system.origin?.parentArchetype);
+		}	
+		
+		isFromOrigin(originid) {
+			return this.originID == originid;
+		}
+		
+		get parentArchetype() {
+			if (this.isPerk || this.isGear) {
+				const uuid = this.system.origin.parentArchetype;
 				
-				if (archetype.isArchetype) {
-					return archetype;
+				if (uuid) {
+					const archetype = fromUuidSync(uuid);
+					
+					if (archetype.isArchetype) {
+						return archetype;
+					}
 				}
 			}
 		}
-	}
-	
-	isFromArchetype(archetype) {
-		if (this.isPerk && this.isGear) {
-			return this.system.origin.parentArchetype == archetype?.id;
-		}
-	}
-	
-	//overwrites
-	async update(data={}, options={}) {
-		if (this.hasParentAchetype && !this.parent) {
-			await this.parentArchetype.updateSubItem(this.originID, data);
-			
-			let source = {}
-			
-			switch (this.type) {
-				case "perk" : source = this.parentArchetype.perksData[this.id]; break;
-				case "gear" : source = this.parentArchetype.gearData[this.id]; break;
+		
+		isFromArchetype(archetype) {
+			if (this.isPerk && this.isGear) {
+				return this.system.origin.parentArchetype == archetype?.id;
 			}
-			
-			this.updateSource(source);
-			
-			for (const id of [...this.effects.keys()].filter(key => !source.effects.find(entry => entry._id == key))) {
-				this.effects.delete(id);
-			}
-			
-			this.sheet?.render(false);
-            return this;
 		}
 		
-		return super.update(data, options);
-	}
+		//overwrites
+		async update(data={}, options={}) {
+			if (this.hasParentAchetype && !this.parent) {
+				await this.parentArchetype.updateSubItem(this.originID, data);
+				
+				let source = {}
+				
+				switch (this.type) {
+					case "perk" : source = this.parentArchetype.perksData[this.id]; break;
+					case "gear" : source = this.parentArchetype.gearData[this.id]; break;
+				}
+				
+				this.updateSource(source);
+				
+				for (const id of [...this.effects.keys()].filter(key => !source.effects.find(entry => entry._id == key))) {
+					this.effects.delete(id);
+				}
+				
+				this.sheet?.render(false);
+				return this;
+			}
+			
+			return super.update(data, options);
+		}
 
-	async createEmbeddedDocuments(embeddedName, data = [], operation = {}) {
-		if (this.isVirtualItem) {
-			if (embeddedName == "ActiveEffect") {
-				const currentCollection = [...this.effects];
-				
-				if (currentCollection) {
-					for (const d of data) if (d._id == undefined) d._id = foundry.utils.randomID();
+		async createEmbeddedDocuments(embeddedName, data = [], operation = {}) {
+			if (this.isVirtualItem) {
+				if (embeddedName == "ActiveEffect") {
+					const currentCollection = [...this.effects];
 					
-					const newCollection = currentCollection.concat(data);
-					
-					await this.update({effects : newCollection});
+					if (currentCollection) {
+						for (const d of data) if (d._id == undefined) d._id = foundry.utils.randomID();
+						
+						const newCollection = currentCollection.concat(data);
+						
+						await this.update({effects : newCollection});
+					}
 				}
 			}
-		}
-		else {
-			return super.createEmbeddedDocuments(embeddedName, data, operation);
-		}
-	}
-	
-	async updateEmbeddedDocuments(embeddedName, data = [], operation = {}) {
-        if (this.isVirtualItem) {
-            if (embeddedName == "ActiveEffect") {
-                const currentCollection = this.toObject().effects || [];
-                
-				if (currentCollection) {
-					const newCollection = currentCollection.map(effect => {
-						const update = data.find(d => d._id == effect._id);
-						return update ? foundry.utils.mergeObject(effect, update) : effect;
-					})
-					
-					await this.update({ effects: newCollection });
-				}
-            }
-        }
-        else {
-            return super.updateEmbeddedDocuments(embeddedName, data, operation);
-        }
-    }
-	
-	async deleteEmbeddedDocuments(embeddedName, data = [], operation = {}) {
-		if (this.isVirtualItem) {
-			if (embeddedName == "ActiveEffect") {
-				const currentCollection = [...this.effects];
-				
-				if (currentCollection) {
-					const newCollection = currentCollection.filter(effect => !data.includes(effect.id))
-					
-					await this.update({effects : newCollection});
-				}
+			else {
+				return super.createEmbeddedDocuments(embeddedName, data, operation);
 			}
 		}
-		else {
-			return super.deleteEmbeddedDocuments(embeddedName, data, operation);
+		
+		async updateEmbeddedDocuments(embeddedName, data = [], operation = {}) {
+			if (this.isVirtualItem) {
+				if (embeddedName == "ActiveEffect") {
+					const currentCollection = this.toObject().effects || [];
+					
+					if (currentCollection) {
+						const newCollection = currentCollection.map(effect => {
+							const update = data.find(d => d._id == effect._id);
+							return update ? foundry.utils.mergeObject(effect, update) : effect;
+						})
+						
+						await this.update({ effects: newCollection });
+					}
+				}
+			}
+			else {
+				return super.updateEmbeddedDocuments(embeddedName, data, operation);
+			}
+		}
+		
+		async deleteEmbeddedDocuments(embeddedName, data = [], operation = {}) {
+			if (this.isVirtualItem) {
+				if (embeddedName == "ActiveEffect") {
+					const currentCollection = [...this.effects];
+					
+					if (currentCollection) {
+						const newCollection = currentCollection.filter(effect => !data.includes(effect.id))
+						
+						await this.update({effects : newCollection});
+					}
+				}
+			}
+			else {
+				return super.deleteEmbeddedDocuments(embeddedName, data, operation);
+			}
 		}
 	}
 }

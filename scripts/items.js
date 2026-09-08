@@ -2,18 +2,18 @@ const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ItemSheetV2 } = foundry.applications.sheets;
 import {o13SheetMixin} from "./components/sheet.js";
 
-import { o13archetypeItem, archetypeDataModel } from "./items/archetype.js";
-import { o13perkItem, perkDataModel } from "./items/perk.js";
-import { o13gearItem, gearDataModel } from "./items/gear.js";
+import { o13archetypeItemMixin, archetypeDataModel } from "./items/archetype.js";
+import { o13perkItemMixin, perkDataModel } from "./items/perk.js";
+import { o13gearItemMixin, gearDataModel } from "./items/gear.js";
 
 export const itemDMs = {archetype : archetypeDataModel, perk : perkDataModel, gear : gearDataModel}
 
 export class o13Item extends Item {
 	static _disPatchInfo = {
 		typePatches : {
-			archetype : o13archetypeItem,
-			perk : o13perkItem,
-			gear : o13gearItem
+			archetype : o13archetypeItemMixin(o13Item),
+			perk : o13perkItemMixin(o13Item),
+			gear : o13gearItemMixin(o13Item)
 		}
 	}
 	

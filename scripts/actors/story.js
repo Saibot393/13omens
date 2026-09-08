@@ -6,478 +6,480 @@ import {showBanner} from "../components/banner.js";
 
 import {o13prepState} from "../dialogues/prepState.js";
 
-export class o13storyActor {
-	//Updates % Create
-	async _preCreate(data, options, user) {
-		await this.super._preCreate(data, options, user);
+export function o13storyActorMixin(base) {
+	return class o13storyActor extends base {
+		//Updates % Create
+		async _preCreate(data, options, user) {
+			await super._preCreate(data, options, user);
 
-		if (!data.prototypeToken) {
-			this.updateSource({
-				prototypeToken: {
-					actorLink: true,
-					disposition: CONST.TOKEN_DISPOSITIONS.FRIENDLY
-				}
-			});
+			if (!data.prototypeToken) {
+				this.updateSource({
+					prototypeToken: {
+						actorLink: true,
+						disposition: CONST.TOKEN_DISPOSITIONS.FRIENDLY
+					}
+				});
+			}
 		}
-	}
-	
-	async _preUpdate(changed, options, user) {
-		if (changed.system) {
-			if (changed.system.acts) {
-				//prevent null overrides
-				changed.system.acts = changed.system.acts.map((info, index) => ({
-					...info,
-					omenDiceThreshold : info.omenDiceThreshold ?? this.system.acts[index].omenDiceThreshold ?? CONFIG["13OMENS"].DEFAULTACTOMENDCIETHRESHOLD[index]
-				}))
-				
-				//logic safety
-				const min = 0;
-				const max = CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE;
-				
-				for (let i = 0; i < changed.system.acts.length; i++) {
-					changed.system.acts[i].omenDiceThreshold = Math.clamp(changed.system.acts[i].omenDiceThreshold, min, max);
-				}
-				
-				let newmin = min;
-				let newmax = max;
-				
-				if (changed.system.acts[0] > newmax - changed.system.acts.length + 1) changed.system.acts[0] = newmax - changed.system.acts.length + 1;
-				for (let i = 0; i < changed.system.acts.length - 1; i++) {
-					newmax = changed.system.acts[i+1].omenDiceThreshold - 1;
+		
+		async _preUpdate(changed, options, user) {
+			if (changed.system) {
+				if (changed.system.acts) {
+					//prevent null overrides
+					changed.system.acts = changed.system.acts.map((info, index) => ({
+						...info,
+						omenDiceThreshold : info.omenDiceThreshold ?? this.system.acts[index].omenDiceThreshold ?? CONFIG["13OMENS"].DEFAULTACTOMENDCIETHRESHOLD[index]
+					}))
 					
-					if (changed.system.acts[i].omenDiceThreshold < newmin) changed.system.acts[i].omenDiceThreshold = newmin;
+					//logic safety
+					const min = 0;
+					const max = CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE;
 					
-					if (changed.system.acts[i].omenDiceThreshold > newmax) {
-						if (changed.system.acts[i].omenDiceThreshold - 1 >= newmin) changed.system.acts[i].omenDiceThreshold -= 1
-						else changed.system.acts[i+1].omenDiceThreshold += 1;
+					for (let i = 0; i < changed.system.acts.length; i++) {
+						changed.system.acts[i].omenDiceThreshold = Math.clamp(changed.system.acts[i].omenDiceThreshold, min, max);
 					}
 					
-					newmin = changed.system.acts[i].omenDiceThreshold + 1;
-				}
-			}
-		}
-		
-		await this.super._preUpdate(changed, options, user);
-	}
-	
-	async _onUpdate(changed, options, userId) {
-		await this.super._onUpdate(changed, options, userId);
-		
-		if (game.user.id != userId) return;
-		
-		if (changed.system) {
-			if (changed.system.pcs) {
-				this.updateMaxWounds();
-			}
-		}
-	}
-	
-	//Acts
-	async checkAct() {
-		if (!this.isPrologue && this.autoProgressActs) {
-			const hostOmenDice = this.omenDiceinPlay;
-
-			const thresholds = this.actOmenDiceThresholds;
-
-			const targetAct = Math.max(...thresholds.filter(thresh => thresh <= hostOmenDice).map((thresh, index) => index));
-
-			return this.advanceAct(targetAct);
-		}
-		if (this.isPrologue) {
-			return this.advanceAct(1);
-		}
-	}
-	
-	async advanceAct(target = null, force = false) {
-		const targetAct = target ?? this.activeAct + 1;
-		
-		if (targetAct > this.activeAct && targetAct <= 3 && targetAct >= 0) {
-			if (!force) {
-				const prepSetting = game.settings.get("13omens", "showStoryPrepState");
-				const askPrepState = (this.activeAct == 0 && targetAct > this.activeAct)
-				&& (prepSetting == "always" || (prepSetting == "notReady" && this.prepState != "ready"))
-				
-				if (askPrepState) {
-					const advance = await new o13prepState(this).wait(true);
+					let newmin = min;
+					let newmax = max;
 					
-					if (!advance) return;
-				}
-				else {
-					const advance = await foundry.applications.api.DialogV2.confirm({
-						window: { title: game.i18n.localize("13omens.titles.confirmAdvanceAct") },
-						content: await foundry.applications.handlebars.renderTemplate("systems/13omens/templates/dialogues/general.hbs", {
-							content : {
-								text : game.i18n.format("13omens.dialogues.confirmAdvanceAct", {act : game.i18n.localize("13omens.titles.actNames." + targetAct)})
-							}
-						}),
-						rejectClose: false
-					});
-					
-					if (!advance) return;
+					if (changed.system.acts[0] > newmax - changed.system.acts.length + 1) changed.system.acts[0] = newmax - changed.system.acts.length + 1;
+					for (let i = 0; i < changed.system.acts.length - 1; i++) {
+						newmax = changed.system.acts[i+1].omenDiceThreshold - 1;
+						
+						if (changed.system.acts[i].omenDiceThreshold < newmin) changed.system.acts[i].omenDiceThreshold = newmin;
+						
+						if (changed.system.acts[i].omenDiceThreshold > newmax) {
+							if (changed.system.acts[i].omenDiceThreshold - 1 >= newmin) changed.system.acts[i].omenDiceThreshold -= 1
+							else changed.system.acts[i+1].omenDiceThreshold += 1;
+						}
+						
+						newmin = changed.system.acts[i].omenDiceThreshold + 1;
+					}
 				}
 			}
 			
-			const omenDicetoAdd = Math.max(targetAct - Math.max(this.activeAct, 1), 0); //prologue->act1 does not add dice
-
-			if (targetAct > 0) {
-				if (game.settings.get("13omens", "showActBanner")) showBanner({content : {title : game.i18n.localize("13omens.titles.actNames." + targetAct)}, duration : 3.5});
+			await super._preUpdate(changed, options, user);
+		}
+		
+		async _onUpdate(changed, options, userId) {
+			await super._onUpdate(changed, options, userId);
+			
+			if (game.user.id != userId) return;
+			
+			if (changed.system) {
+				if (changed.system.pcs) {
+					this.updateMaxWounds();
+				}
 			}
-			await this.update({system : {activeact : targetAct}});
+		}
+		
+		//Acts
+		async checkAct() {
+			if (!this.isPrologue && this.autoProgressActs) {
+				const hostOmenDice = this.omenDiceinPlay;
 
-			if (omenDicetoAdd != 0 && this.addOmenDiceonActStart) {
-				await this.addOmenDice(omenDicetoAdd);
+				const thresholds = this.actOmenDiceThresholds;
+
+				const targetAct = Math.max(...thresholds.filter(thresh => thresh <= hostOmenDice).map((thresh, index) => index));
+
+				return this.advanceAct(targetAct);
 			}
+			if (this.isPrologue) {
+				return this.advanceAct(1);
+			}
+		}
+		
+		async advanceAct(target = null, force = false) {
+			const targetAct = target ?? this.activeAct + 1;
+			
+			if (targetAct > this.activeAct && targetAct <= 3 && targetAct >= 0) {
+				if (!force) {
+					const prepSetting = game.settings.get("13omens", "showStoryPrepState");
+					const askPrepState = (this.activeAct == 0 && targetAct > this.activeAct)
+					&& (prepSetting == "always" || (prepSetting == "notReady" && this.prepState != "ready"))
+					
+					if (askPrepState) {
+						const advance = await new o13prepState(this).wait(true);
+						
+						if (!advance) return;
+					}
+					else {
+						const advance = await foundry.applications.api.DialogV2.confirm({
+							window: { title: game.i18n.localize("13omens.titles.confirmAdvanceAct") },
+							content: await foundry.applications.handlebars.renderTemplate("systems/13omens/templates/dialogues/general.hbs", {
+								content : {
+									text : game.i18n.format("13omens.dialogues.confirmAdvanceAct", {act : game.i18n.localize("13omens.titles.actNames." + targetAct)})
+								}
+							}),
+							rejectClose: false
+						});
+						
+						if (!advance) return;
+					}
+				}
+				
+				const omenDicetoAdd = Math.max(targetAct - Math.max(this.activeAct, 1), 0); //prologue->act1 does not add dice
+
+				if (targetAct > 0) {
+					if (game.settings.get("13omens", "showActBanner")) showBanner({content : {title : game.i18n.localize("13omens.titles.actNames." + targetAct)}, duration : 3.5});
+				}
+				await this.update({system : {activeact : targetAct}});
+
+				if (omenDicetoAdd != 0 && this.addOmenDiceonActStart) {
+					await this.addOmenDice(omenDicetoAdd);
+				}
+				
+				for (const pc of this.pcActors) {
+					await pc.prepareNewAct();
+				}
+			}
+		}
+		
+		async resettoPrologue(force = false) {
+			if (!force) {
+				const resetTo = await foundry.applications.api.DialogV2.confirm({
+					window: { title: game.i18n.localize("13omens.titles.confirmResettoPrologue") },
+					content: await foundry.applications.handlebars.renderTemplate("systems/13omens/templates/dialogues/general.hbs", {
+						content : {
+							text : game.i18n.format("13omens.dialogues.confirmResettoPrologue")
+						}
+					}),
+					rejectClose: false // Returns false instead of rejecting the promise on window close (X or ESC)
+				});
+				
+				if (!resetTo) return;
+			}
+			
+			await this.update({
+				system : {
+					activeact : 0,
+					hostomendice : CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE
+				}
+			});
 			
 			for (const pc of this.pcActors) {
-				await pc.prepareNewAct();
+				await pc.resettoPrologue();
 			}
 		}
-	}
-	
-	async resettoPrologue(force = false) {
-		if (!force) {
-			const resetTo = await foundry.applications.api.DialogV2.confirm({
-				window: { title: game.i18n.localize("13omens.titles.confirmResettoPrologue") },
-				content: await foundry.applications.handlebars.renderTemplate("systems/13omens/templates/dialogues/general.hbs", {
-					content : {
-						text : game.i18n.format("13omens.dialogues.confirmResettoPrologue")
-					}
-				}),
-				rejectClose: false // Returns false instead of rejecting the promise on window close (X or ESC)
-			});
+		
+		get activeAct() {
+			return this.system.activeact;
+		}
+		
+		get isPrologue() {
+			return this.activeAct == 0;
+		}
+		
+		get autoProgressActs() {
+			return this.system.autoprogressacts;
+		}	
+		
+		get addOmenDiceonActStart() {
+			return this.system.addomendiceonactstart;
+		}
+		
+		get actOmenDiceThresholds() {
+			return this.system.acts.map(act => act.omenDiceThreshold);
+		}
+		
+		getActOmenDiceThreshold(act) {
+			if (act >= 0 && act <= this.system.acts.length) {
+				return this.system.acts[act].omenDiceThreshold;
+			}
+		}
+		
+		get actOmenDiceThreshold() {
+			return this.getActOmenDiceThreshold(this.activeAct);
+		}
+		
+		//PCs
+		get pcActors() {
+			return this.system.pcs.map(pc => game.actors.get(pc.id)).filter(actor => actor?.isPC);
+		}
+		
+		get pcCount() {
+			return this.pcActors.length;
+		}
+		
+		get pcliveCount() {
+			return this.pcActors.filter(actor => !actor.isDead).length;
+		}
+		
+		hasPC(actor) {
+			return this.pcActors.includes(actor);
+		}
+		
+		async addPC(actor) {
+			if (Array.isArray(actor)) {
+				const actors = actor.filter(a => a.isPC);
+				
+				if (actors.length) {
+					this.update({system : {pcs : [...this.system.pcs, ...actors.map(a => ({id : a.id}))]}});
+				}
+			}
+			else {
+				if (actor.isPC && !actor.storyActor) {
+					this.update({system : {pcs : [...this.system.pcs, {id : actor.id}]}});
+				}
+			}
+		}
+		
+		async removePC(id) {
+			this.update({system : {pcs : this.system.pcs.filter(pc => pc.id != id)}});
+		}
+		
+		async autoPopulatePCs() {
+			const tagetFolder = this.folder?.id;
 			
-			if (!resetTo) return;
-		}
-		
-		await this.update({
-			system : {
-				activeact : 0,
-				hostomendice : CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE
-			}
-		});
-		
-		for (const pc of this.pcActors) {
-			await pc.resettoPrologue();
-		}
-	}
-	
-	get activeAct() {
-		return this.system.activeact;
-	}
-	
-	get isPrologue() {
-		return this.activeAct == 0;
-	}
-	
-	get autoProgressActs() {
-		return this.system.autoprogressacts;
-	}	
-	
-	get addOmenDiceonActStart() {
-		return this.system.addomendiceonactstart;
-	}
-	
-	get actOmenDiceThresholds() {
-		return this.system.acts.map(act => act.omenDiceThreshold);
-	}
-	
-	getActOmenDiceThreshold(act) {
-		if (act >= 0 && act <= this.system.acts.length) {
-			return this.system.acts[act].omenDiceThreshold;
-		}
-	}
-	
-	get actOmenDiceThreshold() {
-		return this.getActOmenDiceThreshold(this.activeAct);
-	}
-	
-	//PCs
-	get pcActors() {
-		return this.system.pcs.map(pc => game.actors.get(pc.id)).filter(actor => actor?.isPC);
-	}
-	
-	get pcCount() {
-		return this.pcActors.length;
-	}
-	
-	get pcliveCount() {
-		return this.pcActors.filter(actor => !actor.isDead).length;
-	}
-	
-	hasPC(actor) {
-		return this.pcActors.includes(actor);
-	}
-	
-	async addPC(actor) {
-		if (Array.isArray(actor)) {
-			const actors = actor.filter(a => a.isPC);
+			const currentActors = this.pcActors;
 			
-			if (actors.length) {
-				this.update({system : {pcs : [...this.system.pcs, ...actors.map(a => ({id : a.id}))]}});
+			const currentUsers = [...game.users].filter(user => currentActors.some(actor => actor.testUserPermission(user, "OWNER")));
+			
+			const targetUsers = [...game.users].filter(user => !currentUsers.includes(user)).filter(user => !user.isGM);
+			
+			const actors = [];
+			
+			for (const user of targetUsers) {
+				const newActor = await Actor.create({
+					name : game.i18n.format("13omens.titles.newActor", {user : user.name}),
+					type : "pc",
+					ownership : {
+						default: CONST.DOCUMENT_OWNERSHIP_LEVELS.NONE,
+						[user.id] : CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER
+					},
+					folder : tagetFolder
+				});
+				actors.push(newActor)
+			}
+			
+			return this.addPC(actors);
+		}
+		
+		get prepStateDetailed() {
+			const prepState = {};
+			
+			for (const pc of this.pcActors) {
+				prepState[pc.id] = {total : pc.prepState, ...pc.prepStateDetailed}
+			}
+			
+			return prepState;
+		}
+		
+		get prepState() {
+			const states = this.pcActors.map(pc => pc.prepState);
+			
+			if (states.some(state => state == "problem")) return "problem";
+			
+			if (states.some(state => state == "pending")) return "pending";
+			
+			return "ready";
+		}
+		
+		//Wounds
+		getmaxWounds(actor = undefined) {
+			const pcCount = this.pcCount;
+			const pcliveCount = this.pcliveCount;
+			const pcdeadCount = pcCount - pcliveCount;
+			
+			if (pcCount == 1) return CONFIG["13OMENS"].DEFAULTMAXWOUNDS + 2;
+			if (pcCount == 2) return CONFIG["13OMENS"].DEFAULTMAXWOUNDS + 1;
+			if (pcCount == 3) return CONFIG["13OMENS"].DEFAULTMAXWOUNDS;
+			if (pcCount == 4) return CONFIG["13OMENS"].DEFAULTMAXWOUNDS;
+			if (pcCount == 5) return CONFIG["13OMENS"].DEFAULTMAXWOUNDS - 1;
+			if (pcCount >= 6) {
+				if (pcdeadCount < 2 || actor?.isDead) return CONFIG["13OMENS"].DEFAULTMAXWOUNDS - 2
+				else return CONFIG["13OMENS"].DEFAULTMAXWOUNDS - 1;
 			}
 		}
-		else {
-			if (actor.isPC && !actor.storyActor) {
-				this.update({system : {pcs : [...this.system.pcs, {id : actor.id}]}});
+		
+		get woundDiceCount() {
+			const pcwoundcounts = this.pcActors.filter(actor => !actor.isDead).map(actor => actor.woundDiceCount);
+			
+			return {safe : pcwoundcounts.reduce((acc, cur) => acc + cur.safe, 0), omen : pcwoundcounts.reduce((acc, cur) => acc + cur.omen, 0)}
+		}
+		
+		async updateMaxWounds(forceupdate = false) {
+			for (const pc of this.pcActors) {
+				await pc.updateMaxWounds();
 			}
 		}
-	}
-	
-	async removePC(id) {
-		this.update({system : {pcs : this.system.pcs.filter(pc => pc.id != id)}});
-	}
-	
-	async autoPopulatePCs() {
-		const tagetFolder = this.folder?.id;
 		
-		const currentActors = this.pcActors;
-		
-		const currentUsers = [...game.users].filter(user => currentActors.some(actor => actor.testUserPermission(user, "OWNER")));
-		
-		const targetUsers = [...game.users].filter(user => !currentUsers.includes(user)).filter(user => !user.isGM);
-		
-		const actors = [];
-		
-		for (const user of targetUsers) {
-			const newActor = await Actor.create({
-				name : game.i18n.format("13omens.titles.newActor", {user : user.name}),
-				type : "pc",
-				ownership : {
-					default: CONST.DOCUMENT_OWNERSHIP_LEVELS.NONE,
-					[user.id] : CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER
-				},
-				folder : tagetFolder
-			});
-			actors.push(newActor)
+		async checkDeath() {
+			for (const pc of this.pcActors) {
+				return  pc.checkDeath();
+			}
 		}
 		
-		return this.addPC(actors);
-	}
-	
-	get prepStateDetailed() {
-		const prepState = {};
-		
-		for (const pc of this.pcActors) {
-			prepState[pc.id] = {total : pc.prepState, ...pc.prepStateDetailed}
+		//Cheat death
+		get canCheatDeath() {
+			return !this.pcActors.some(actor => actor.hasCheatedDeath(this.activeAct));
 		}
 		
-		return prepState;
-	}
-	
-	get prepState() {
-		const states = this.pcActors.map(pc => pc.prepState);
-		
-		if (states.some(state => state == "problem")) return "problem";
-		
-		if (states.some(state => state == "pending")) return "pending";
-		
-		return "ready";
-	}
-	
-	//Wounds
-	getmaxWounds(actor = undefined) {
-		const pcCount = this.pcCount;
-		const pcliveCount = this.pcliveCount;
-		const pcdeadCount = pcCount - pcliveCount;
-		
-		if (pcCount == 1) return CONFIG["13OMENS"].DEFAULTMAXWOUNDS + 2;
-		if (pcCount == 2) return CONFIG["13OMENS"].DEFAULTMAXWOUNDS + 1;
-		if (pcCount == 3) return CONFIG["13OMENS"].DEFAULTMAXWOUNDS;
-		if (pcCount == 4) return CONFIG["13OMENS"].DEFAULTMAXWOUNDS;
-		if (pcCount == 5) return CONFIG["13OMENS"].DEFAULTMAXWOUNDS - 1;
-		if (pcCount >= 6) {
-			if (pcdeadCount < 2 || actor?.isDead) return CONFIG["13OMENS"].DEFAULTMAXWOUNDS - 2
-			else return CONFIG["13OMENS"].DEFAULTMAXWOUNDS - 1;
+		cheatedDeathCount(act = null) {
+			return this.pcActors.map(actor => actor.cheatedDeathCount(act)).reduce((sum, value) => sum + value, 0)
 		}
-	}
-	
-	get woundDiceCount() {
-		const pcwoundcounts = this.pcActors.filter(actor => !actor.isDead).map(actor => actor.woundDiceCount);
 		
-		return {safe : pcwoundcounts.reduce((acc, cur) => acc + cur.safe, 0), omen : pcwoundcounts.reduce((acc, cur) => acc + cur.omen, 0)}
-	}
-	
-	async updateMaxWounds(forceupdate = false) {
-		for (const pc of this.pcActors) {
-			await pc.updateMaxWounds();
+		//Archetypes
+		get archetypes() {
+			return [...this.items].filter(item => item.type == "archetype").sort((a,b) => a.sort - b.sort);
 		}
-	}
-	
-	async checkDeath() {
-		for (const pc of this.pcActors) {
-			return  pc.checkDeath();
-		}
-	}
-	
-	//Cheat death
-	get canCheatDeath() {
-		return !this.pcActors.some(actor => actor.hasCheatedDeath(this.activeAct));
-	}
-	
-	cheatedDeathCount(act = null) {
-		return this.pcActors.map(actor => actor.cheatedDeathCount(act)).reduce((sum, value) => sum + value, 0)
-	}
-	
-	//Archetypes
-	get archetypes() {
-		return [...this.items].filter(item => item.type == "archetype").sort((a,b) => a.sort - b.sort);
-	}
-	
-	get availableArchetype() {
-		return this.archetypes.filter(archetype => !this.pcActors.find(pc => pc.archetype == archetype));
-	}
-	
-	async createNewArchetype() {
-		const archetype = await this.createEmbeddedDocuments("Item", [{
-			name: game.i18n.localize("13omens.titles.archetype"),
-			type: "archetype"
-		}]);
-		await this.registerArchetype(archetype[0]);
 		
-		this.updateArchetypeRelations();
-	}
-	
-	async registerArchetype(archetype) {
-		if (archetype) {
-			await this.update({system : {archetypeaspects : {[archetype.id] : -1}}})
+		get availableArchetype() {
+			return this.archetypes.filter(archetype => !this.pcActors.find(pc => pc.archetype == archetype));
+		}
+		
+		async createNewArchetype() {
+			const archetype = await this.createEmbeddedDocuments("Item", [{
+				name: game.i18n.localize("13omens.titles.archetype"),
+				type: "archetype"
+			}]);
+			await this.registerArchetype(archetype[0]);
 			
 			this.updateArchetypeRelations();
 		}
-	}
-	
-	async deleteArchetype(id) {
-		if (this.items.get(id)?.type == "archetype") {
-			await this.deleteEmbeddedDocuments("Item", [id]);
-			
-			this.updateArchetypeRelations();
+		
+		async registerArchetype(archetype) {
+			if (archetype) {
+				await this.update({system : {archetypeaspects : {[archetype.id] : -1}}})
+				
+				this.updateArchetypeRelations();
+			}
 		}
-	}
-	
-	async updateArchetypeRelations() {
-		for (const archetype of this.archetypes) {
-			await archetype.reorganiseRelations();
+		
+		async deleteArchetype(id) {
+			if (this.items.get(id)?.type == "archetype") {
+				await this.deleteEmbeddedDocuments("Item", [id]);
+				
+				this.updateArchetypeRelations();
+			}
 		}
-	}
-	
-	//Aspects
-	getArchetypeAspect(archetype) {
-		archetype = archetype instanceof Item ? archetype : this.items.get(archetype);
+		
+		async updateArchetypeRelations() {
+			for (const archetype of this.archetypes) {
+				await archetype.reorganiseRelations();
+			}
+		}
+		
+		//Aspects
+		getArchetypeAspect(archetype) {
+			archetype = archetype instanceof Item ? archetype : this.items.get(archetype);
 
-		if (this.archetypes?.includes(archetype)) {
-			return this.system.archetypeaspects[archetype.id];
-		}
-	}
-	
-	get storyAspectNames() {
-		return this.system.storyaspects.map(aspect => aspect.name);
-	}
-	
-	//Dice
-	get hostOmenDice() {
-		const current = this.system.hostomendice;
-		const max = CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE;
-		
-		return Array.from({length : max}).map((v, i) => i + 1).map(i => ({type : i <= current ? "omen" : "blank", face : 6}));
-	}
-	
-	get omenDiceinPlay() {
-		return CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE - this.system.hostomendice + CONFIG["13OMENS"].DEFAULTDICEBAGCOUNT.omen;
-	}
-	
-	get diceBagCount() {
-		const wounddice = this.woundDiceCount;
-		let bag = {};
-		
-		bag.safe = CONFIG["13OMENS"].DEFAULTDICEBAGCOUNT.safe - wounddice.safe;
-		bag.omen = CONFIG["13OMENS"].DEFAULTDICEBAGCOUNT.omen + (CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE - this.system.hostomendice) - wounddice.omen;
-		
-		return bag;
-	}
-	
-	get diceBag() {
-		return utils.counttobag(this.diceBagCount);
-	}
-	
-	get diceBagDice() {
-		return this.diceBag.map(die => ({type : die, face : 6}));
-	}
-	
-	get canAddOmenDice() {
-		return this.system.hostomendice >= 1;
-	}
-	
-	async addOmenDice(add = 1) {
-		const diceAdd = Math.min(Math.max(add, 0), this.system.hostomendice);
-		
-		if (diceAdd > 0) {
-			await this.update({system : {hostomendice : this.system.hostomendice - diceAdd}});
-			
-			return await this.checkAct();
-		}
-	}
-	
-	get canRemoveOmenDice() {
-		return this.system.hostomendice <= CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE;
-	}
-	
-	async removeOmenDice(remove = 1) {
-		const diceRemove = Math.min(Math.max(remove, 0), CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE - this.system.hostomendice);
-		
-		if (diceRemove > 0) {
-			return this.update({system : {hostomendice : this.system.hostomendice + diceRemove}});
-		}
-	}
-	
-	//Data prep/handling
-	get enrichables() {
-		return {
-			story: {
-				acts : this.system.story.acts.map(act => ({story : act.story}))
+			if (this.archetypes?.includes(archetype)) {
+				return this.system.archetypeaspects[archetype.id];
 			}
 		}
-	}
-	
-	async handleDrop(data, event, prepared) {
-		let handled = false;
 		
-		if (prepared.sourceID?.pcID && prepared.targetID?.pcID) {
-			const item = this.system.pcs.find(pc => pc.id == prepared.sourceID.pcID);
-			const target = this.system.pcs.find(pc => pc.id == prepared.targetID.pcID);
-			if (item && target) {
-				const newSort = utils.changeOrder(item, this.system.pcs, target, prepared.sortBefore);
+		get storyAspectNames() {
+			return this.system.storyaspects.map(aspect => aspect.name);
+		}
+		
+		//Dice
+		get hostOmenDice() {
+			const current = this.system.hostomendice;
+			const max = CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE;
+			
+			return Array.from({length : max}).map((v, i) => i + 1).map(i => ({type : i <= current ? "omen" : "blank", face : 6}));
+		}
+		
+		get omenDiceinPlay() {
+			return CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE - this.system.hostomendice + CONFIG["13OMENS"].DEFAULTDICEBAGCOUNT.omen;
+		}
+		
+		get diceBagCount() {
+			const wounddice = this.woundDiceCount;
+			let bag = {};
+			
+			bag.safe = CONFIG["13OMENS"].DEFAULTDICEBAGCOUNT.safe - wounddice.safe;
+			bag.omen = CONFIG["13OMENS"].DEFAULTDICEBAGCOUNT.omen + (CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE - this.system.hostomendice) - wounddice.omen;
+			
+			return bag;
+		}
+		
+		get diceBag() {
+			return utils.counttobag(this.diceBagCount);
+		}
+		
+		get diceBagDice() {
+			return this.diceBag.map(die => ({type : die, face : 6}));
+		}
+		
+		get canAddOmenDice() {
+			return this.system.hostomendice >= 1;
+		}
+		
+		async addOmenDice(add = 1) {
+			const diceAdd = Math.min(Math.max(add, 0), this.system.hostomendice);
+			
+			if (diceAdd > 0) {
+				await this.update({system : {hostomendice : this.system.hostomendice - diceAdd}});
 				
-				await this.update({system : {pcs : newSort}});
-				
+				return await this.checkAct();
+			}
+		}
+		
+		get canRemoveOmenDice() {
+			return this.system.hostomendice <= CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE;
+		}
+		
+		async removeOmenDice(remove = 1) {
+			const diceRemove = Math.min(Math.max(remove, 0), CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE - this.system.hostomendice);
+			
+			if (diceRemove > 0) {
+				return this.update({system : {hostomendice : this.system.hostomendice + diceRemove}});
+			}
+		}
+		
+		//Data prep/handling
+		get enrichables() {
+			return {
+				story: {
+					acts : this.system.story.acts.map(act => ({story : act.story}))
+				}
+			}
+		}
+		
+		async handleDrop(data, event, prepared) {
+			let handled = false;
+			
+			if (prepared.sourceID?.pcID && prepared.targetID?.pcID) {
+				const item = this.system.pcs.find(pc => pc.id == prepared.sourceID.pcID);
+				const target = this.system.pcs.find(pc => pc.id == prepared.targetID.pcID);
+				if (item && target) {
+					const newSort = utils.changeOrder(item, this.system.pcs, target, prepared.sortBefore);
+					
+					await this.update({system : {pcs : newSort}});
+					
+					handled = true;
+				}
+			}
+			
+			const object = prepared.object;
+			if (!object || handled) return handled;
+			
+			if (object.isPC) {
+				await this.addPC(object);
 				handled = true;
 			}
-		}
-		
-		const object = prepared.object;
-		if (!object || handled) return handled;
-		
-		if (object.isPC) {
-			await this.addPC(object);
-			handled = true;
-		}
-		
-		if (!prepared.selfOrigin) {
-			if (object.isArchetype) {
-				const archetype = await this.createEmbeddedDocuments("Item", [object.toObject()]);
-				await this.registerArchetype(archetype);
-				handled = true;
-			}
-		}
-		
-		return handled;
-	}
-	
-	prepareDragData(data, event) {
-		if (data.archetypeID) {
-			const item = this.items.get(data.archetypeID);
 			
-			if (item.isArchetype) {
-				data.type = "Item",
-				data.uuid = item.uuid;
+			if (!prepared.selfOrigin) {
+				if (object.isArchetype) {
+					const archetype = await this.createEmbeddedDocuments("Item", [object.toObject()]);
+					await this.registerArchetype(archetype);
+					handled = true;
+				}
+			}
+			
+			return handled;
+		}
+		
+		prepareDragData(data, event) {
+			if (data.archetypeID) {
+				const item = this.items.get(data.archetypeID);
+				
+				if (item.isArchetype) {
+					data.type = "Item",
+					data.uuid = item.uuid;
+				}
 			}
 		}
 	}

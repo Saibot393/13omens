@@ -16,7 +16,7 @@ export class disPatcher {
 			//patches
 			const typePatches = patched._disPatchInfo.typePatches;
 						
-			const types = Object.keys(typePatches).filter(key => typeof typePatches[key] === "function" /*&& patched.prototype.isPrototypeOf(typePatches[key].prototype)*/);
+			const types = Object.keys(typePatches).filter(key => typeof typePatches[key] === "function" && documentClass.prototype.isPrototypeOf(typePatches[key].prototype));
 			
 			if (types.length) {
 				const descriptors = {};
@@ -28,7 +28,7 @@ export class disPatcher {
 					descriptors[type] = {};
 					let currentProto = typePatches[type].prototype;
 					
-					while (currentProto && currentProto !== Object.prototype && currentProto !== patched.prototype) {
+					while (currentProto && currentProto !== Object.prototype && currentProto !== documentClass.prototype) {
 						const currentDescriptors = Object.getOwnPropertyDescriptors(currentProto);
 
 						for (const [key, descriptor] of Object.entries(currentDescriptors)) {
