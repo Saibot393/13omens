@@ -1,6 +1,6 @@
 const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDocumentField, DocumentIdField, BooleanField, FilePathField, ObjectField, DocumentUUIDField } = foundry.data.fields;
 
-import {virtualItem} from "./virtualItem.js";
+import {virtualItem, virtualItemDataModel} from "./virtualItem.js";
 
 import {utils} from "../utils.js";
 
@@ -137,9 +137,11 @@ export class o13perkItem extends virtualItem {
 	}
 }
 
-export class perkDataModel extends foundry.abstract.TypeDataModel {
+export class perkDataModel extends virtualItemDataModel {
 	static defineSchema() {
 		return {
+			...super.defineSchema(),
+			
 			description: new HTMLField({ required: true, initial: ""}),
 			
 			usesper:  new SchemaField({
@@ -156,11 +158,6 @@ export class perkDataModel extends foundry.abstract.TypeDataModel {
 				acts : new ArrayField(new SchemaField({
 					uses : new NumberField({ required: true, integer: true, min: 0, initial: 0 })
 				}), {initial: () => Array.from({length : 4}, () => ({uses : 0}))})
-			}),
-			
-			origin: new SchemaField({
-				id: new DocumentIdField({required: false, nullable: true, initial: null}),
-				parentArchetype: new DocumentUUIDField({required: false, nullable: true, initial: null})
 			})
 		};
 	}
