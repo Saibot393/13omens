@@ -14,8 +14,7 @@ export class o13Actor extends Actor {
 			pc : o13pcActor,
 			story : o13storyActor,
 			npc : o13npcActor
-		},
-		superPD : ["update", "_preCreate", "_preUpdate", "_onUpdate", "_onCreateDescendantDocuments", "prepareBaseData", "prepareEmbeddedDocuments", "prepareDerivedData"]
+		}
 	}
 		
 	async createEmbeddedDocuments(embeddedName, data = [], operation = {}) {

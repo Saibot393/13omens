@@ -14,8 +14,7 @@ export class o13Item extends Item {
 			archetype : o13archetypeItem,
 			perk : o13perkItem,
 			gear : o13gearItem
-		},
-		superPD : ["update", "_preCreate", "_preUpdate", "_onUpdate", "createEmbeddedDocuments", "updateEmbeddedDocuments", "deleteEmbeddedDocuments"]
+		}
 	}
 	
 	get isArchetype() {

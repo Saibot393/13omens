@@ -17,7 +17,7 @@ export class o13archetypeItem {
 			changed.system.background.relations = currentRelations;
 		}
 		
-		await this.superPD._preUpdate(changed, options, user);
+		await super._preUpdate(changed, options, user);
 	}
 	
 	//Story

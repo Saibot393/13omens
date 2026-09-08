@@ -70,7 +70,7 @@ export class virtualItem {
             return this;
 		}
 		
-		return this.superPD.update(data, options);
+		return super.update(data, options);
 	}
 
 	async createEmbeddedDocuments(embeddedName, data = [], operation = {}) {
@@ -88,7 +88,7 @@ export class virtualItem {
 			}
 		}
 		else {
-			return this.superPD.createEmbeddedDocuments(embeddedName, data, operation);
+			return super.createEmbeddedDocuments(embeddedName, data, operation);
 		}
 	}
 	
@@ -108,7 +108,7 @@ export class virtualItem {
             }
         }
         else {
-            return this.superPD.updateEmbeddedDocuments(embeddedName, data, operation);
+            return super.updateEmbeddedDocuments(embeddedName, data, operation);
         }
     }
 	
@@ -125,7 +125,7 @@ export class virtualItem {
 			}
 		}
 		else {
-			return this.superPD.deleteEmbeddedDocuments(embeddedName, data, operation);
+			return super.deleteEmbeddedDocuments(embeddedName, data, operation);
 		}
 	}
 }

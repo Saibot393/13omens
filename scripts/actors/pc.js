@@ -15,7 +15,7 @@ function newRating() {
 export class o13pcActor {
 	//Updates & Create
 	async _preCreate(data, options, user) {
-		await this.superPD._preCreate(data, options, user);
+		await this.super._preCreate(data, options, user);
 
 		if (!data.prototypeToken) {
 			this.updateSource({
@@ -83,11 +83,11 @@ export class o13pcActor {
 			}
 		}
 		
-		await this.superPD._preUpdate(changed, options, user);
+		await this.super._preUpdate(changed, options, user);
 	}
 	
 	async _onUpdate(changed, options, userId) {
-		await this.superPD._onUpdate(changed, options, userId);
+		await this.super._onUpdate(changed, options, userId);
 		
 		if (game.user.id == userId) {
 			if (changed.system) {
@@ -116,7 +116,7 @@ export class o13pcActor {
 	}
 	
 	async _onCreateDescendantDocuments(parent, collection, documents, data, options, usedId) {
-		await this.superPD._onCreateDescendantDocuments(parent, collection, documents, data, options, usedId);
+		await this.super._onCreateDescendantDocuments(parent, collection, documents, data, options, usedId);
 
 		if (game.user.id == usedId) {
 			for (const item of documents) {
@@ -815,7 +815,7 @@ export class o13pcActor {
 	}
 	
 	prepareBaseData() { //pre AE
-		this.superPD.prepareBaseData();
+		this.super.prepareBaseData();
 		
 		this.system.maxwounds = this.storyActor?.getmaxWounds(this) || CONFIG["13OMENS"].DEFAULTMAXWOUNDS;
 		
@@ -843,7 +843,7 @@ export class o13pcActor {
 	
 	prepareEmbeddedDocuments() {
 		this.checkPerkEffectActivation();
-		this.superPD.prepareEmbeddedDocuments();
+		this.super.prepareEmbeddedDocuments();
 	}
 }
 

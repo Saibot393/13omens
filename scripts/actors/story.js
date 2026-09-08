@@ -9,7 +9,7 @@ import {o13prepState} from "../dialogues/prepState.js";
 export class o13storyActor {
 	//Updates % Create
 	async _preCreate(data, options, user) {
-		await this.superPD._preCreate(data, options, user);
+		await this.super._preCreate(data, options, user);
 
 		if (!data.prototypeToken) {
 			this.updateSource({
@@ -57,11 +57,11 @@ export class o13storyActor {
 			}
 		}
 		
-		await this.superPD._preUpdate(changed, options, user);
+		await this.super._preUpdate(changed, options, user);
 	}
 	
 	async _onUpdate(changed, options, userId) {
-		await this.superPD._onUpdate(changed, options, userId);
+		await this.super._onUpdate(changed, options, userId);
 		
 		if (game.user.id != userId) return;
 		
