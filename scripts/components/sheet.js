@@ -66,14 +66,6 @@ export function o13SheetMixin(baseSheet) {
 			});
 		}
 		
-		_canUserView(user) {
-			if (this.document?.freeView) {
-				return true;
-			}
-			
-			return super._canUserView(user);
-		}
-		
 		get isVisible() {
 			if (this.document?.freeView) {
 				return true;
