@@ -18,6 +18,10 @@ export class disPatcher {
 						
 			const types = Object.keys(typePatches).filter(key => typeof typePatches[key] === "function" && documentClass.prototype.isPrototypeOf(typePatches[key].prototype));
 			
+			if (types.length != Object.keys(typePatches).length) {
+				console.error(`disPatcher has encountered problem while patching a document class: The following classes can not be patched onto the provided document class`, documentClass, Object.keys(typePatches).filter(key => !types.includes(key)));
+			}
+			
 			if (types.length) {
 				const descriptors = {};
 				let propertyKeys = [];
