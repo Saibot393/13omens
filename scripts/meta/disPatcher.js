@@ -1,53 +1,22 @@
 export class disPatcher {
 	/*	The disPatcher patches dis
 		dis being document classes, as FoundryVTT only allows once class per actor/item/et.c. document and i do not like using the data models for functions/getters/setter etc.,
-		this class will allow for seperate type dependent document types to be written and then be patched into the base class, super methods that are overwritten will be stored in superPD
+		this class will allow for seperate type dependent document types to be written and then be patched into the base class
 		The following is either smart js usage or abuse of it, your choice
 	*/
 	
 	static patch(documentClass) {
-		if (documentClass._disPatchInfo) {
-			//super PD
-			const superPD = documentClass._disPatchInfo.superPD; //pre dispatch super function to be saved, can later be refered to as superPD.xyz instead of super.xyz, usefull when overwriting base methods
-			
-			const superPDFunctions = {};
-			
-			for (const pd of superPD) {
-				let currentProto = documentClass.prototype;
-				let pdFunction;
-
-				while (currentProto && !pdFunction) {
-					pdFunction = Object.getOwnPropertyDescriptor(currentProto, pd);
-					if (!pdFunction) currentProto = Object.getPrototypeOf(currentProto);
-				}
-
-				if (pdFunction && typeof pdFunction.value == "function") {
-					superPDFunctions[pd] = pdFunction.value;
-				} else {
-					console.warn(`disPatcher has not foundry an function for "${pd}" in the prototype chain`, documentClass);
-				}
+		class patched extends documentClass {
+			get isDisPatched() {
+				return true;
 			}
+		}
 		
-			Object.defineProperty(documentClass.prototype, "superPD", {
-				get() {
-					const instance = this;
-					return new Proxy(superPDFunctions, {
-						get(target, sFunction) {
-							const baseMethod = target[sFunction];
-							
-							if (!baseMethod) return undefined;
-							
-							return baseMethod.bind(instance);
-						}
-					});
-				},
-				configurable: true
-			});
-			
+		if (patched._disPatchInfo) {		
 			//patches
-			const typePatches = documentClass._disPatchInfo.typePatches;
+			const typePatches = patched._disPatchInfo.typePatches;
 						
-			const types = Object.keys(typePatches).filter(key => typeof typePatches[key] === "function" /*&& documentClass.prototype.isPrototypeOf(typePatches[key].prototype)*/);
+			const types = Object.keys(typePatches).filter(key => typeof typePatches[key] === "function" && documentClass.prototype.isPrototypeOf(typePatches[key].prototype));
 			
 			if (types.length) {
 				const descriptors = {};
@@ -97,23 +66,23 @@ export class disPatcher {
 					}
 					
 					if (!targetTypes.length) {
-						console.error(`disPatcher has encountered problem while patching a document class: Key "${pKey}" does not have a patchable property type, skipping Key`, documentClass);
+						console.error(`disPatcher has encountered problem while patching a document class: Key "${pKey}" does not have a patchable property type, skipping Key`, patched);
 						continue;
 					}
 					
 					const allEqual = targetTypes.every(target => target === targetTypes[0]);
 					
 					if (!allEqual) {
-						console.error(`disPatcher has encountered problem while patching a document class: Not all patch entries of key "${pKey}" are of the same type, types are:`, targetTypes, `skipping Key`, documentClass);
+						console.error(`disPatcher has encountered problem while patching a document class: Not all patch entries of key "${pKey}" are of the same type, types are:`, targetTypes, `skipping Key`, patched);
 						continue;
 					}
 
 					//apply descriptors
 					switch (targetTypes[0]) {
 						case "function":
-							const pdFunction = documentClass.prototype[pKey];
+							const pdFunction = patched.prototype[pKey];
 							
-							Object.defineProperty(documentClass.prototype, pKey, {
+							Object.defineProperty(patched.prototype, pKey, {
 								value : function(...args) {
 									if (patches[this.type]?.value) {
 										return patches[this.type].value.call(this, ...args);
@@ -128,9 +97,9 @@ export class disPatcher {
 							});
 							break;
 						case "getset": 
-							const pdDescriptor = Object.getOwnPropertyDescriptor(documentClass.prototype, pKey);
+							const pdDescriptor = Object.getOwnPropertyDescriptor(patched.prototype, pKey);
 						
-							Object.defineProperty(documentClass.prototype, pKey, {
+							Object.defineProperty(patched.prototype, pKey, {
 								get() {
 									if (patches[this.type]?.get) {
 										return patches[this.type].get.call(this)
@@ -156,5 +125,7 @@ export class disPatcher {
 				}
 			}
 		}
+		
+		return patched;
 	}
 }
