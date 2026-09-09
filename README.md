@@ -10,7 +10,7 @@ This system is intended for Paizo's new horror pen & paper system [13 Omens](htt
 **Actor Types**
 - **Story:** The story actor allows the GM to plan a story and organise Story Aspects, Archetypes, and Players. It also displays the currently available Omen-Dice and the dice bag. Player characters (PC) can be added to a story by dropping their actor onto the sheet. It is intended as the general control hub for a given story.
 - **PC:** The player actor allows players to track their wounds and choose their aspect ratings. Once an archetype is chosen, the player can also pick perks and select gear. Perks and gear can also directly be dropped into the sheet. Note that some functionality is only available once a player character is connected to a story. In the background tab the description and the relations from the current archetype will be synched and can be edited.
-- **NPC:** A minimalistic sheet to take notes, give NPCs a portrait and a token.
+- **NPC:** A minimalistic sheet to take notes, give NPCs a portrait and a token. The sheet also includes an inventory section which can be configured to allows players to access the inventory by double clicking the token on the map.
 
 **Item Types**
 - **Archetype:** An archetype can be added to a story and chosen by a PC. Perks and items can be added to it. Items can be set as guaranteed or selectable, the amount of selectable items can be set. In the background tab, a general description, suggested traits and relations to other archetypes can be set.
@@ -35,7 +35,8 @@ I have multiple additions to the system planned, the following is an incomplete 
 - ~~Posting Gear and Perks to chat~~
 - ~~Implementation of the final sacrifice mechanic~~
 - ~~Allowing for perks to add roll rules (edges, roll behaviour)~~
-- Story independent archetypes on the PC sheet
+- ~~Story independent archetypes on the PC sheet~~
+A of v1.5.0 all items of the original release roadmap have been implemented. Further plans can be found in the issue section of the github page.
 
 ## Bugs and Feature requests
 
