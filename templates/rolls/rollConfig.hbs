@@ -44,6 +44,8 @@
 				{{/each}}
 			</div>
 		</div>
-		<button type="button" data-action="roll">{{localize "13omens.actions.roll"}} <i class="fa-solid fa-dice"></i> </button>
+		{{#unless config.isSecondaryView}}
+			<button type="button" data-action="roll">{{localize "13omens.actions.roll"}} <i class="fa-solid fa-dice"></i> </button>
+		{{/unless}}
 	</div>
 </div>

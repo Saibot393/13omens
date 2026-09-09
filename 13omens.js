@@ -4,6 +4,8 @@ import {registerSettings} from "./scripts/settings.js";
 import {o13Actor, o13ActorSheet, actorDMs} from "./scripts/actors.js";
 import {o13Item, o13ItemSheet, itemDMs} from "./scripts/items.js";
 
+import {o13Token} from "./scripts/tokens.js";
+
 import {patch} from "./scripts/patches.js";
 
 import  {disPatcher} from "./scripts/meta/disPatcher.js";
@@ -19,6 +21,7 @@ import {registerEnrichments} from "./scripts/components/enrichments.js";
 import {initNews, o13News} from "./scripts/meta/news.js";
 
 import {showBanner} from "./scripts/components/banner.js";
+import {setScreenBorder} from "./scripts/components/screenBorder.js";
 
 Hooks.once("init", () => {
 	//CONST
@@ -35,9 +38,9 @@ Hooks.once("init", () => {
 		...actorDMs
 	};
 	
-	disPatcher.patch(o13Actor);
+	const patchedActor = disPatcher.patch(o13Actor);
 	
-	CONFIG.Actor.documentClass = o13Actor;
+	CONFIG.Actor.documentClass = patchedActor;
 	
 	foundry.documents.collections.Actors.registerSheet("thirteen-omens", o13ActorSheet, {
 		types: ["pc", "npc", "story"],
@@ -45,14 +48,17 @@ Hooks.once("init", () => {
 		label: "13OMENS.ActorSheet"
 	});
 	
+	//Tokens
+	CONFIG.Token.objectClass = o13Token;
+	
 	//Items
 	CONFIG.Item.dataModels = {
 		...itemDMs
 	};
 	
-	disPatcher.patch(o13Item);
+	const patchedItem = disPatcher.patch(o13Item);
 	
-	CONFIG.Item.documentClass = o13Item;
+	CONFIG.Item.documentClass = patchedItem;
 	
 	foundry.documents.collections.Items.registerSheet("thirteen-omens", o13ItemSheet, {
 		types: ["archetype", "perk", "gear"],
@@ -85,6 +91,7 @@ Hooks.once("init", () => {
 		o13Roll,
 		utils,
 		showBanner,
+		setScreenBorder,
 		o13News
 	}
 	

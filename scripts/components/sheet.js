@@ -15,6 +15,13 @@ export function o13SheetMixin(baseSheet) {
 			this._boundonAction = this._onAction.bind(this);
 			
 			//custom Hooks
+			this._externalUserUpdateRender = Hooks.on("updateUser", async (user, changes, options, userId) => {
+				if (this.rendered) {
+					const rerender = await this._onUpdateUser(user, changes, options, userId);
+					if (rerender) this.render({force : false, window : {focus : false}});
+				}
+			});
+			
 			this._externalItemUpdateRender = Hooks.on("updateItem", async (item, changes, options, userId) => {
 				if (this.rendered) {
 					const rerender = await this._onUpdateItem(item, changes, options, userId);
@@ -59,6 +66,22 @@ export function o13SheetMixin(baseSheet) {
 			});
 		}
 		
+		get isVisible() {
+			if (this.document?.freeView) {
+				return true;
+			}
+			
+			return super.isVisible;
+		}
+		
+		_canDragDrop(selector) {
+			if (this.document?.freeView) {
+				return true;
+			}
+			
+			return super._canDragDrop(selector);
+		}
+		
 		_configureRenderParts(options) {
 			let directory = "";
 			
@@ -76,6 +99,16 @@ export function o13SheetMixin(baseSheet) {
 					template: `systems/13omens/templates/${directory}/${this.document.type}.hbs`
 				}
 			};
+		}
+		
+		async render(options={}, _options={}) {
+			if (this.document && !this.isVisible) {
+				console.warn("Lost permission to view sheet, closing");
+				this.close();
+			}
+			else {
+				super.render(options, _options);
+			}
 		}
 		
 		async _onRender(context, options) {
@@ -105,16 +138,29 @@ export function o13SheetMixin(baseSheet) {
 			})
 		}
 		
-		async _activeo13Tab(group, tab) {
+		async _activeo13Tab(group, tab, fallback = true) {
 			const html = this.element;
 			
-			html.querySelector(`nav.o13-nav[nav-group="${group}"]`)?.querySelectorAll("a[nav-tab]").forEach(a => {
-				a.classList.toggle("active", a.getAttribute("nav-tab") == tab);
-			})
-			
-			html.querySelectorAll(`section.o13-tab[nav-group="${group}"]`).forEach(section => {
-				section.classList.toggle("active", section.getAttribute("nav-tab") == tab);
-			})
+			if (html.querySelector(`nav.o13-nav[nav-group="${group}"]`)?.querySelector(`a[nav-tab="${tab}"]`)) {
+				html.querySelector(`nav.o13-nav[nav-group="${group}"]`)?.querySelectorAll("a[nav-tab]").forEach(a => {
+					a.classList.toggle("active", a.getAttribute("nav-tab") == tab);
+				})
+				
+				html.querySelectorAll(`section.o13-tab[nav-group="${group}"]`).forEach(section => {
+					section.classList.toggle("active", section.getAttribute("nav-tab") == tab);
+				})
+			}
+			else {
+				if (fallback) {
+					const fallback = html.querySelector(`nav.o13-nav[nav-group="${group}"]`)?.querySelector(`a[nav-tab]`);
+
+					const fallbbackTab = fallback?.getAttribute("nav-tab");
+					
+					if (fallbbackTab) {
+						this._activeo13Tab(group, fallbbackTab, false);
+					}
+				}
+			}
 		}
 		
 		async _replaceHTML(result, content, options) {
@@ -238,6 +284,10 @@ export function o13SheetMixin(baseSheet) {
 			return context;
 		}
 		
+		async _onUpdateUser(user, changes, options, userId) {
+			
+		}
+		
 		async _onUpdateItem(item, changes, options, userId) {
 			
 		}
@@ -303,7 +353,7 @@ export function o13SheetMixin(baseSheet) {
 			
 			const handled = await this.document.handleDrop(dragData, event, prepared);
 			
-			if (!handled && sortBehaviour == "AUTO") {
+			if (!handled && sortBehaviour == "AUTO" && this.document?.isOwner) {
 				this._autoSort(dragData, event, prepared);
 			}
 		}
@@ -392,6 +442,8 @@ export function o13SheetMixin(baseSheet) {
 		}
 		
 		_disableExternalRenderHooks() {
+			Hooks.off("updateUser", this._externalUserUpdateRender);
+			this._externalUserUpdateRender = null;
 			Hooks.off("updateItem", this._externalItemUpdateRender);
 			this._externalItemUpdateRender = null;
 			Hooks.off("createItem", this._externalItemCreateRender);

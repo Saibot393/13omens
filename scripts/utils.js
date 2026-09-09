@@ -21,6 +21,10 @@ export class utils {
 		return indexes;
 	}
 	
+	static primeGM() {
+		return [...game.users].find(user => user.isGM);
+	}
+	
 	static changeOrder(item, array, target, before = true) {
 		let orderArray = [...array];
 		if (!orderArray.includes(item)) {

@@ -28,9 +28,11 @@
 			"story" : "Story",
 			"game" : "Game",
 			
+			"ischaracter" : "User character",
 			"character" : "Character",
 			"background" : "Background",
 			"perksandgear" : "Perks & Gear",
+			"inventory" : "Inventory",
 			
 			"description" : "Description",
 			"goal" : "Goal",
@@ -135,7 +137,12 @@
 			"newActor" : "{user}'s Character",
 			
 			"confirmAdvanceAct" : "Confirm act advancement",
-			"confirmResettoPrologue" : "Confrim reset to prologue"
+			"confirmResettoPrologue" : "Confrim reset to prologue",
+			
+			"rollConfig" : "Roll configuration: {pcName}",
+			
+			"lootable" : "Can be looted",
+			"revealDescription" : "Reveal Description"
 		},
 		
 		"actions" : {
@@ -144,7 +151,9 @@
 			"rollcheck" : "{aspect} check",
 			"rollacheck" : "Aspect check",
 			"startStory" : "Start story",
-			"returnToPrep" : "Return to preperation"
+			"returnToPrep" : "Return to preperation",
+			"accept" : "Accept",
+			"cancel" : "Cancel"
 		},
 		
 		"tooltips" : {
@@ -176,12 +185,14 @@
 			"confirmOmenDiceAddition" : "Omen dice addition",
 			"playerOmenFlawRoll" : "{pcName} rolled a check with {flawCount} omen flaw, do you want to add the omen die to the {storyName} dice bag?",
 			"confirmAdvanceAct" : "Do you want to advance to {act}?",
-			"confirmResettoPrologue" : "Do you want to reset the story to the prologue? This will also reset all players characters to the prologue state"
+			"confirmResettoPrologue" : "Do you want to reset the story to the prologue? This will also reset all players characters to the prologue state",
+			"transferGearQuery" : "Transfer {gear} from {sourceActor} to {targetActor}:"
 		},
 		
 		"warnings" : {
 			"selectRating" : "Please select an aspect rating before rolling",
-			"selectActor" : "Please select an actor or open a character sheet before rolling"
+			"selectActor" : "Please select an actor or open a character sheet before rolling",
+			"actionRequiresGM" : "Please wait for a host to be online and try again"
 		},
 		
 		"news" : {
@@ -196,6 +207,14 @@
 				"name" : "Show act banner",
 				"descrp" : "Show a banner to all users when a storie's act is changed"
 			},
+			"showRemoteRollConfig" : {
+				"name" : "Show remote roll config",
+				"descrp" : "Shows a mirrored version of players roll config to the GM, which allows the GM to directly controll the roll",
+				"options" : {
+					"always" : "alway",
+					"never" : "never"
+				}
+			},
 			"showStoryPrepState" : {
 				"name" : "Show preperation state check",
 				"descrp" : "Show a list to the host containing details regarding the players preperation state before starting Act I",
@@ -203,6 +222,15 @@
 					"always" : "always",
 					"notReady" : "when not ready",
 					"never" : "never"
+				}
+			},
+			"screenBorder" : {
+				"name" : "Screen border",
+				"descrp" : "A transparent screen border to indicate the wound status of you character",
+				"options" : {
+					"off" : "off",
+					"ellipse" : "Elliptical",
+					"rectangle" : "Rectangular"
 				}
 			}
 		}
