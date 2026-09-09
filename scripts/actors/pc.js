@@ -759,7 +759,7 @@ export function o13pcActorMixin(base) {
 		}
 		
 		async handleDrop(data, event, prepared) {
-			let handled = super.handleDrop(data, event, prepared);
+			let handled = await super.handleDrop(data, event, prepared);
 			if (handled) return handled;
 			
 			const object = prepared.object;
