@@ -211,7 +211,7 @@
 				"name" : "Show remote roll config",
 				"descrp" : "Shows a mirrored version of players roll config to the GM, which allows the GM to directly controll the roll",
 				"options" : {
-					"always" : "alway",
+					"always" : "always",
 					"never" : "never"
 				}
 			},
