@@ -36,7 +36,8 @@ I have multiple additions to the system planned, the following is an incomplete 
 - ~~Implementation of the final sacrifice mechanic~~
 - ~~Allowing for perks to add roll rules (edges, roll behaviour)~~
 - ~~Story independent archetypes on the PC sheet~~
-A of v1.5.0 all items of the original release roadmap have been implemented. Further plans can be found in the issue section of the github page.
+
+As of v1.5.0 all items of the original release roadmap have been implemented. Further plans can be found in the issue section of the github page.
 
 ## Bugs and Feature requests
 
