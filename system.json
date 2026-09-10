@@ -35,7 +35,7 @@
   },
   "socket": true,
   "grid": {
-    "distance": 3,
+    "distance": 1.5,
     "units": "m"
   },
   "primaryTokenAttribute": "resources.health",
