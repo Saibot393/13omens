@@ -1,3 +1,18 @@
+## v1.5.0
+- NPC Actor now have an inventory tab
+  - NPC Actors now have a "Reveal Description" setting
+  - NPC Actors now have a "Can be looted" setting
+  - If either of the above is checked all players can double click npc tokens to reveal the respective tab or loot
+- Drag and drop transfer of gear will now show a quantity query for the amount of transfered gear (unless quantity is 1)
+  - Holding shift during the drop will directly transfer the maximum amount
+- Added health state screen border (bound to character)
+  - Added setting "Screen border" to set the screen border design or disable it
+- Added "is character" check to preperation check to check if a player chose the pc as a character
+- Story independent archetypes can now dropped into pc sheets to set the archetype (this will disable story archetype choice until removed)
+- Added mirrored roll config for host to alter players roll config
+  - Added setting "Show remote roll config" to set when a player roll config is mirrored
+- Various internal refactors
+
 ## v1.4.1
 - Players can now correctly change task risk and task difficulty in the roll config
 

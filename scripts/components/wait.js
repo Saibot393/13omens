@@ -5,6 +5,8 @@ export function o13WaitMixIn(baseClass) {
 			
 			this._waitResolver = null;
 			this._waitResolved = false;
+			
+			this._closeResolve = null;
 		}
 	
 		async wait(render = false) {
@@ -26,7 +28,7 @@ export function o13WaitMixIn(baseClass) {
 		
 		async close(...args) {
 			if (!this._waitResolved) {
-				this._resolveWait(null);
+				this._resolveWait(this._closeResolve);
 			}
 			
 			return super.close(...args);

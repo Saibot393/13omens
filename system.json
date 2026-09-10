@@ -1,8 +1,8 @@
 {
   "id": "13omens",
   "title": "13 Omens",
-  "description": "A Foundry VTT system fpr Paizos horror P&P 13 Omens",
-  "version": "1.4.1",
+  "description": "A Foundry VTT system for Paizos horror P&P 13 Omens",
+  "version": "1.5.0",
   "compatibility": {
     "minimum": 13,
     "verified": 14,
@@ -11,7 +11,8 @@
   "styles": [
 	"styles/13omens.css",
 	"styles/dice.css",
-	"styles/banner.css"
+	"styles/banner.css",
+	"styles/screenBorder.css"
   ],
   "esmodules": ["13omens.js"],
   "socket": true,
@@ -40,7 +41,7 @@
   "primaryTokenAttribute": "resources.health",
   "secondaryTokenAttribute": "resources.power",
   "url": "https://github.com/Saibot393/13omens",
-  "download": "https://github.com/Saibot393/13omens/archive/refs/tags/v1.4.1.zip",
+  "download": "https://github.com/Saibot393/13omens/archive/refs/tags/v1.5.0.zip",
   "manifest": "https://github.com/Saibot393/13omens/releases/latest/download/system.json",
   "readme": "https://github.com/Saibot393/13omens/blob/main/README.md",
   "changelog": "https://github.com/Saibot393/13omens/blob/main/CHANGELOG.md",

@@ -9,21 +9,50 @@
 				<label for="actor-name" class="o13-label" style="flex:0.5"><b>{{localize "13omens.titles.name"}}:</b></label>
 				<input class="o13-input o13-underline" type="text" name="name" value="{{actor.name}}" />
 			</div>
+			{{#if actor.isHostView}}
+				<div class="form-group flexrow">
+					<label for="actor-revealdescription" class="o13-label" style="flex:0.5">{{localize "13omens.titles.revealDescription"}}:</label>
+					<input class="o13-checkbox" type="checkbox" name="system.revealdescription" {{checked actor.revealDescription}}/>
+				</div>
+				<div class="form-group flexrow">
+					<label for="actor-lootable" class="o13-label" style="flex:0.5">{{localize "13omens.titles.lootable"}}:</label>
+					<input class="o13-checkbox" type="checkbox" name="system.lootable" {{checked actor.lootable}}/>
+				</div>
+			{{/if}}
 		</div>
 	</header>
-	<main class="flexcol o13-scrollable" style="flex:1; min-height:0;" scroll-id="main">
-		<div class="o13-notes flexcol">
-		<prose-mirror
-			class="o13-text-editor"
-			name="system.description"
-			document-uuid="{{actor.uuid}}"
-			value="{{actor.system.description}}"
-			button
-			toggled
-			editable
-			collaborative="false"
-			{{{enriched.description}}}
-		</prose-mirror>
-		</div>
+	<main class="flexcol">
+		<nav class="o13-nav" nav-group="main" style="margin-bottom:3px">
+			{{#if (or actor.isHostView actor.revealDescription)}}<a data-group="main" nav-tab="description">{{localize "13omens.titles.description"}}</a>{{/if}}
+			{{#if (or actor.isHostView actor.lootable)}}<a data-group="main" nav-tab="inventory">{{localize "13omens.titles.inventory"}}</a>{{/if}}
+		</nav>
+		
+		{{#if (or actor.isHostView actor.revealDescription)}}
+			<section class="o13-tab o13-scrollable flexcol" nav-group="main" nav-tab="description" scroll-id="description">
+				<div class="o13-notes flexcol">
+					<prose-mirror
+						class="o13-text-editor"
+						name="system.description"
+						document-uuid="{{actor.uuid}}"
+						value="{{actor.system.description}}"
+						button
+						toggled
+						editable
+						collaborative="false"
+						{{{enriched.description}}}
+					</prose-mirror>
+				</div>
+			</section>
+		{{/if}}
+		
+		{{#if (or actor.isHostView actor.lootable)}}
+			<section class="o13-tab o13-scrollable flexcol" nav-group="main" nav-tab="inventory" scroll-id="inventory">
+				<span class="o13-label o13-header-label">{{localize "13omens.titles.gears"}} <i class="fa-solid fa-plus o13-icon o13-clickable" data-action="createNewGear"></i> </span>
+				{{> "systems/13omens/templates/actors/components/inventory.hbs" 
+					actor=actor
+					enriched=enriched
+				}}
+			</section>
+		{{/if}}
 	</main>
 </div>

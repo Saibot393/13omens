@@ -6,6 +6,7 @@
 			<th> <label class="o13-label o13-header-label">{{localize "13omens.titles.aspects"}}</label> </th>
 			<th> <label class="o13-label o13-header-label">{{localize "13omens.titles.perks"}}</label> </th>
 			<th> <label class="o13-label o13-header-label">{{localize "13omens.titles.gears"}}</label> </th>
+			<th> <label class="o13-label o13-header-label">{{localize "13omens.titles.ischaracter"}}</label> </th>
 		</tr>
 		{{#with baseStory.prepStateDetailed as |prepList|}}
 			{{#each ../baseStory.pcActors as |pc|}}
@@ -14,7 +15,7 @@
 						<span class="o13-label o13-clickable" data-action="openPC" pc-id="{{pc.id}}">{{pc.name}}</span>
 					</td>
 					
-					{{#each (array "archetype" "aspects" "perks" "gear") as |type|}}
+					{{#each (array "archetype" "aspects" "perks" "gear" "character") as |type|}}
 						<td class="o13-content-centered">
 							{{#with (lookup (lookup prepList pc.id) type) as |state|}}
 								{{#if (eqLoose state "ready")}}

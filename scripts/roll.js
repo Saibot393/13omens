@@ -492,7 +492,7 @@ export class o13Roll extends Roll {
 }
 
 export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
-	constructor(actor, data, quickRoll = false) {
+	constructor(actor, data, quickRoll = false, isSecondary = false) {
 		super();
 		
 		this._actor = actor;
@@ -506,16 +506,53 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 		
 		this._id = foundry.utils.randomID();
 		
-		this._secondaryView = false;
+		this._secondaryView = isSecondary;
+		this._closed = false;
 		
 		if (CONFIG.debug.o13?.rolls) console.log(this);
 		
-		if (quickRoll) o13rollConfig.roll.call(this);
-		else this.render(true)
+		if (quickRoll) o13rollConfig.roll.call(this)
+		else if (!this._secondaryView) this._applyUpdate();
 	}
 	
-	static newSecondary(socketData) {
-		return new o13rollConfig(actor, data, false, true);
+	static newRemote(socketData) {
+		if (game.user.isGM) {
+			if (game.settings.get("13omens", "showRemoteRollConfig") == "never") return;
+			
+			const actor = fromUuidSync(socketData.actorUuid);
+			if (actor && !socketData.closed) {
+				const rollConfig = new o13rollConfig(actor, socketData.rollData, false, true);
+				rollConfig._id = socketData.configID;
+				
+				rollConfig.render(true);
+				
+				return rollConfig;
+			}
+		}
+	}
+	
+	static updateRemote(socketData) {
+		const configID = socketData.configID;
+		const rollData = socketData.rollData;
+		
+		const instances = [...foundry.applications.instances.values()];
+		
+		const rollInstances = instances.filter(instance => instance instanceof o13rollConfig);
+		
+		const idInstance = rollInstances.find(instance => instance._id == configID);
+		
+		if (idInstance) {
+			if (socketData.closed && idInstance.isSecondaryView) {
+				idInstance.close();
+			}
+			else {
+				idInstance._data = foundry.utils.mergeObject(idInstance._data, rollData);
+				idInstance._applyUpdate(true);
+			}
+		}
+		else {
+			o13rollConfig.newRemote(socketData);
+		}
 	}
 	
 	updateData(data) {
@@ -527,6 +564,10 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 		this.render();
 	}
 	
+	get title() {
+		return game.i18n.format("13omens.titles.rollConfig", {pcName : this.actor?.name});
+	}
+	
 	get actor() {
 		return this._actor;
 	}
@@ -535,7 +576,7 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 		return this._data.aspect;
 	}
 	
-	get secondaryView() {
+	get isSecondaryView() {
 		return this._secondaryView;
 	}
 	
@@ -657,11 +698,18 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 			foundry.utils.setProperty(this._data, key, formData.object[key]);
 		}
 		
-		this.render(true);
+		//this.render(true);
+		this._applyUpdate();
 	}
 	
-	_applyUpdate() {
+	_applyUpdate(fromRemote = false) {
 		this.render(true);
+		
+		if (!fromRemote) this._updateRemote();
+	}
+	
+	_updateRemote() {
+		game.system.callSocket("updateRemoteRollConfig", {configID : this._id, rollData : this._data, actorUuid : this.actor.uuid, closed : this._closed});
 	}
 	
 	static async DAreduceTaskDifficulty(event, target) {
@@ -741,6 +789,14 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 		this.close();
 		
 		return roll;
+	}
+	
+	async _onClose(options) {
+		await super._onClose(options);
+		
+		this._closed = true;
+		
+		if (!this.isSecondaryView) this._updateRemote();
 	}
 }
 
