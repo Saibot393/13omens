@@ -23,6 +23,8 @@ import {initNews, o13News} from "./scripts/meta/news.js";
 import {showBanner} from "./scripts/components/banner.js";
 import {setScreenBorder} from "./scripts/components/screenBorder.js";
 
+import {o13tokenCreator} from "./scripts/dialogues/tokenCreator.js";
+
 Hooks.once("init", () => {
 	//CONST
 	CONFIG["13OMENS"] = {...CONSTANTS}
@@ -92,7 +94,8 @@ Hooks.once("init", () => {
 		utils,
 		showBanner,
 		setScreenBorder,
-		o13News
+		o13News,
+		o13tokenCreator
 	}
 	
 	//debug
