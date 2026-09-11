@@ -54,6 +54,12 @@ export function o13perkItemMixin(base) {
 			}
 		}
 		
+		async restoreUse() {
+			if (this.canBeUsed) {
+				this.update({system : {usesper : {value : Math.min(this.usesLeft + 1, this.usesMax)}}});
+			}
+		}
+		
 		//Effects
 		async createNewEffect(data) {
 			const effect = {name : game.i18n.localize("DOCUMENT.ActiveEffect"), ...data};

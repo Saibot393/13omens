@@ -171,7 +171,8 @@
 			"viewPortrait" : "View portrait",
 			"ready" : "Ready",
 			"pending" : "Pending",
-			"problem" : "Problem"
+			"problem" : "Problem",
+			"restoreUse" : "Restore use" 
 		},
 		
 		"chats" : {
