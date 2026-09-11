@@ -89,7 +89,7 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 				event.preventDefault();
 				
 				const scale = parseFloat(placementImage.style.scale);
-				const newscale = Math.clamp(scale + Math.sign(event.deltaY) * 0.05, 0.1, 5);
+				const newscale = Math.clamp(scale - Math.sign(event.deltaY) * 0.05, 0.1, 5);
 				
 				placementImage.style.scale = `${newscale}`;
 			});
