@@ -21,12 +21,14 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 	_onRender(context, options) {
 		super._onRender(context, options);
 		
-		this._initDragging();
+		this._initToken();
 	}
 	
-	_initDragging() {
+	_initToken() {
 		const placementImage = this.element.querySelector(".o13-placement-image");
 		const containment = placementImage?.parentElement;
+		
+		placementImage.style.scale = "1";
 		
 		const centerImage = () => {
 			const containmentwidth = containment.clientWidth;
@@ -83,16 +85,18 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 				}
 			});
 			
-			placementImage.addEventListener("mousewheel", (event) => {
+			placementImage.addEventListener("wheel", (event) => {
+				event.preventDefault();
+				
 				const scale = parseFloat(placementImage.style.scale);
-				const newscale = Math.clamp(scale + Math.sign(event.wheelDelta) * 0.05, 0.1, 5);
+				const newscale = Math.clamp(scale + Math.sign(event.deltaY) * 0.05, 0.1, 5);
 				
 				placementImage.style.scale = `${newscale}`;
 			});
 		}
 	}
 	
-	async saveToken() {
+	async saveToken(saveName = "", savePath = "") {
 		const placementImage = this.element.querySelector(".o13-placement-image");
 		const containment = placementImage?.parentElement;
 		
@@ -115,6 +119,9 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 		const imageTop = parseFloat(placementImage.style.top);
 		const imageScale = parseFloat(placementImage.style.scale);
 		
+		const visualImageLeft = imageLeft - placementImage.naturalWidth * (imageScale-1)/2;
+		const visualImageTop = imageTop - placementImage.naturalHeight * (imageScale-1)/2;
+		
 		const drawWidth = placementImage.naturalWidth * imageScale;
 		const drawHeight = placementImage.naturalHeight * imageScale;
 		
@@ -125,8 +132,8 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 		
 		context.drawImage(
 			placementImage,
-			imageLeft - ringLeft,
-			imageTop - ringTop,
+			visualImageLeft - ringLeft,
+			visualImageTop - ringTop,
 			drawWidth,
 			drawHeight
 		);
@@ -152,18 +159,20 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 
 		let path = undefined;
 		
-		canvas.toBlob(async (blob) => {
-			if (!blob) {
-				ui.notifications.error("Token could not be created");
-				return;
-			}
-
-			const fileName = `token-${Date.now()}.webp`;
-			const filePath = `worlds/${game.world.id}`;
+		const blob = await new Promise(resolve => {
+			canvas.toBlob(resolve, "image/webp", 0.95)
+		})
+		
+		if (!blob) {
+			ui.notifications.error("Token could not be created");
+		}
+		else {
+			const fileName = saveName || `token-${Date.now()}.webp`;
+			const filePath = savePath || `worlds/${game.world.id}`;
 			const file = new File([blob], fileName, { type: "image/webp" });
 
 			try {
-				const response = await FilePicker.upload("data", filePath, file);
+				const response = await foundry.applications.apps.FilePicker.implementation.upload("data", filePath, file);
 				ui.notifications.info(`Token saved successfully to ${response.path}`);
 				console.log("Saved token file to:", response.path);
 				path = response.path;
@@ -171,7 +180,7 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 				console.error("Failed to upload token file:", err);
 				ui.notifications.error("Could not save token file.");
 			}
-		}, "image/webp", 0.95);
+		}
 		
 		return path;
 	}
@@ -189,6 +198,7 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 	}
 	
 	async setToken() {
-		this.saveToken();
+		const path = await this.saveToken();
+		console.log(path);
 	}
 }

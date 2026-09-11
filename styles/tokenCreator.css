@@ -1,3 +1,9 @@
+.o13-placement-image {
+	position: absolute;
+    user-select: none;
+    cursor: grab;
+}
+
 .o13-token-ring {
 	position: absolute;
 	top: 50%; 
