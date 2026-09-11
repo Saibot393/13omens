@@ -10,6 +10,10 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 		this._imageSource = imageSource;
 	}
 	
+	get title() {
+		return game.i18n.localize("13omens.titles.tokenCreator");
+	}
+	
 	_configureRenderParts(options) {
 		return {
 			main: {
