@@ -80,7 +80,7 @@ export function o13pcActorMixin(base) {
 						
 						//updates might mess with relations archetypel links
 						for (let i = 0; i < newRelations.length; i++) {
-							newRelations[i].archetype = newRelations[i].archetype || currentRelations[i]?.archetype || siblingArchetypes[i]?.id;
+							newRelations[i].archetype = siblingArchetypes[i]?.id || newRelations[i].archetype || currentRelations[i]?.archetype;
 						}
 					}
 				}
