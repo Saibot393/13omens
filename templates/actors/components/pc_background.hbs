@@ -25,7 +25,7 @@
 			<div>
 				<div class="o13-notes flexcol" style="flex:0.1;min-height:100px;">
 					<label for="traits" class="o13-label"><b>{{localize "13omens.titles.possibletraits"}}:</b></label>
-					<prose-mirror class="o13-text-editor" style="min-height:100px;" name="system.background.traits" document-uuid="{{actor.uuid}}" value="{{actor.system.background.traits}}" toggled disabled collaborative="false">
+					<prose-mirror class="o13-text-editor" style="min-height:100px;" name="system.background.traits" document-uuid="{{actor.uuid}}" value="{{actor.system.background.traits}}" toggled {{#if actor.isHostView}}editable button{{else}}disabled{{/if}} collaborative="false">
 						{{{enriched.background.traits}}}
 					</prose-mirror>
 				</div>

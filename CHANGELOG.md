@@ -1,3 +1,9 @@
+## v1.5.1
+- GMs can now edit the suggested character traits in the pc sheet
+- Fixed bug that could cause the background field in the pc sheet to show the wrong relations/stay empty
+- Fixed bug with archetype creation in story actor
+- Fixed typo in settings translation
+
 ## v1.5.0
 - NPC Actor now have an inventory tab
   - NPC Actors now have a "Reveal Description" setting
