@@ -12,7 +12,8 @@
 	"styles/13omens.css",
 	"styles/dice.css",
 	"styles/banner.css",
-	"styles/screenBorder.css"
+	"styles/screenBorder.css",
+	"styles/tokenCreator.css"
   ],
   "esmodules": ["13omens.js"],
   "socket": true,

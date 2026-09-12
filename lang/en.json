@@ -142,7 +142,9 @@
 			"rollConfig" : "Roll configuration: {pcName}",
 			
 			"lootable" : "Can be looted",
-			"revealDescription" : "Reveal Description"
+			"revealDescription" : "Reveal Description",
+			
+			"tokenCreator" : "Token creator"
 		},
 		
 		"actions" : {
@@ -153,7 +155,8 @@
 			"startStory" : "Start story",
 			"returnToPrep" : "Return to preperation",
 			"accept" : "Accept",
-			"cancel" : "Cancel"
+			"cancel" : "Cancel",
+			"setToken" : "Set token"
 		},
 		
 		"tooltips" : {
@@ -172,6 +175,7 @@
 			"ready" : "Ready",
 			"pending" : "Pending",
 			"problem" : "Problem",
+			"openTokenCreator" : "Open token creator",
 			"restoreUse" : "Restore use" 
 		},
 		
@@ -193,7 +197,8 @@
 		"warnings" : {
 			"selectRating" : "Please select an aspect rating before rolling",
 			"selectActor" : "Please select an actor or open a character sheet before rolling",
-			"actionRequiresGM" : "Please wait for a host to be online and try again"
+			"actionRequiresGM" : "Please wait for a host to be online and try again",
+			"usercantCreateFiles" : "You lack the permissions to create files, please ask your Host"
 		},
 		
 		"news" : {
@@ -233,6 +238,18 @@
 					"ellipse" : "Elliptical",
 					"rectangle" : "Rectangular"
 				}
+			},
+			"tokenTargetDirectory" : {
+				"name" : "Token target directory",
+				"descrp" : "Directory to store tokens created with the build in token creator, this directory should be located somewhere in your worlds main directory"
+			},
+			"autoTokenCreator" : {
+				"name" : "Auto token creator",
+				"descrp" : "Automatically open token creator when setting a new portrait for an actor"
+			},
+			"tokenCreatorButton" : {
+				"name" : "Show token creator button",
+				"descrp" : "Show a token creator button at the bottom left of an actor portrait when hovering over it"
 			}
 		}
 	}

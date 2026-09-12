@@ -112,7 +112,7 @@ export function o13pcActorMixin(base) {
 			}
 		}
 		
-		_onAROverrideChange(adddiff, remdiff) {
+		_onAEOverrideChange(adddiff, remdiff) {
 			if (adddiff.system?.hasOwnProperty("maxwounds") || remdiff.system?.hasOwnProperty("maxwounds")) {
 				this.updateMaxWounds();
 			}

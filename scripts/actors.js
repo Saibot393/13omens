@@ -6,6 +6,8 @@ import { o13pcActorMixin, pcDataModel } from "./actors/pc.js";
 import { o13storyActorMixin, storyDataModel } from "./actors/story.js";
 import { o13npcActorMixin, npcDataModel } from "./actors/npc.js";
 
+import {o13tokenCreator} from "./dialogues/tokenCreator.js";
+
 export const actorDMs = {story : storyDataModel, pc : pcDataModel, npc : npcDataModel}
 
 export class o13Actor extends Actor {
@@ -43,26 +45,54 @@ export class o13Actor extends Actor {
 		super.createEmbeddedDocuments(embeddedName, localData, operation);
 	}
 	
+	async _onUpdate(changed, options, userId) {
+		await super._onUpdate(changed, options, userId);
+		
+		if (game.user.id == userId) {
+			if (changed.img) {
+				if (this.openTokenCreator()) {
+
+				}
+			}
+		}
+	}
+	
+	async openTokenCreator() {
+		if (o13tokenCreator.usercanUse(true)) {
+			const tokenPath = await new o13tokenCreator(this.img, {tokenName : this.name}).wait(true);
+			
+			if (tokenPath) {
+				this.update({
+					prototypeToken: {
+						texture : {
+							src : tokenPath
+						}
+					}
+				});
+			}
+		}
+	}
+	
 	prepareDerivedData() {
         super.prepareDerivedData();
 		
 		const currentAEOverrides = foundry.utils.deepClone(this.overrides ?? {});
 		
-		if (!this._lastAROverrides) {
-			this._lastAROverrides = {};
+		if (!this._lastAEOverrides) {
+			this._lastAEOverrides = {};
 		}
 		
-		const adddiff = foundry.utils.diffObject(this._lastAROverrides, currentAEOverrides);
-		const remdiff = foundry.utils.diffObject(currentAEOverrides, this._lastAROverrides);
+		const adddiff = foundry.utils.diffObject(this._lastAEOverrides, currentAEOverrides);
+		const remdiff = foundry.utils.diffObject(currentAEOverrides, this._lastAEOverrides);
 
-		this._lastAROverrides = currentAEOverrides;
+		this._lastAEOverrides = currentAEOverrides;
 		
 		if (!foundry.utils.isEmpty(adddiff) || !foundry.utils.isEmpty(remdiff)) {
-			this._onAROverrideChange(adddiff, remdiff);
+			this._onAEOverrideChange(adddiff, remdiff);
 		}
 	}
 	
-	_onAROverrideChange(adddiff, remdiff) {
+	_onAEOverrideChange(adddiff, remdiff) {
 
 	}
 	
@@ -88,6 +118,14 @@ export class o13Actor extends Actor {
   
 	get inventory() {
 		return [...this.items].filter(item => item.type == "gear");
+	}
+	
+	get autoTokenCreator() {
+		return game.settings.get("13omens", "autoTokenCreator");
+	}
+	
+	get tokenCreatorButton() {
+		return game.settings.get("13omens", "tokenCreatorButton") && this.isOwner;
 	}
 }
 
