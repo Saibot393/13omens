@@ -25,9 +25,9 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 	}
 	
 	get directory() {
-		const specific = this._options.directory || CONFIG["13OMENS"].DEFAULTTOKENDIRECTORY;
+		const directory = this._options.directory || game.settings.get("13omens", "tokenTargetDirectory")
 		
-		return `worlds/${game.world.id}/${specific}`;
+		return directory;
 	}
 	
 	_configureRenderParts(options) {
@@ -117,6 +117,7 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 	}
 	
 	async saveToken(saveName = "", savePath = "") {
+		//Drawing
 		const placementImage = this.element.querySelector(".o13-placement-image");
 		const containment = placementImage?.parentElement;
 		
@@ -177,6 +178,7 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 		context.strokeStyle = innerRingColor;
 		context.stroke();	
 
+		//Saving
 		let path = undefined;
 		
 		const blob = await new Promise(resolve => {
@@ -229,8 +231,12 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 		this.close();
 	}
 	
-	static usercanUse() {
-		return game.user.hasPermission("FILES_UPLOAD");
+	static usercanUse(notification = false) {
+		const canUse = game.user.hasPermission("FILES_UPLOAD");
+		
+		if (!canUse && notification) ui.notifications.warn(game.i18n.localize("13omens.warnings.usercantCreateFiles"))
+			
+		return canUse;
 	}
 	
 	static async directoryExists(directory) {
@@ -243,7 +249,7 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 	}
 	
 	static async ensureDirectory(directory) {
-		if (directory.startsWith(`worlds/${game.world.id}/`)) {
+		if (true || directory.startsWith(`worlds/${game.world.id}/`)) {
 			if (await this.directoryExists(directory)) {
 				return true;
 			}
@@ -258,7 +264,7 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 			}
 		}
 		else {
-			console.error(`Target directory can not be created as it does not exist within this world: "${directory}"`);
+			console.error(`Target directory could not be created as it is not within this worlds directory: "${directory}"`);
 		}
 		
 		return false;

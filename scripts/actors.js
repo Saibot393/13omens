@@ -58,10 +58,8 @@ export class o13Actor extends Actor {
 	}
 	
 	async openTokenCreator() {
-		if (o13tokenCreator.usercanUse()) {
-			console.log(this);
+		if (o13tokenCreator.usercanUse(true)) {
 			const tokenPath = await new o13tokenCreator(this.img, {tokenName : this.name}).wait(true);
-			console.log(tokenPath);
 			
 			if (tokenPath) {
 				this.update({
@@ -123,11 +121,11 @@ export class o13Actor extends Actor {
 	}
 	
 	get autoTokenCreator() {
-		return true;
+		return game.settings.get("13omens", "autoTokenCreator");
 	}
 	
 	get tokenCreatorButton() {
-		return true;
+		return game.settings.get("13omens", "tokenCreatorButton") && this.isOwner;
 	}
 }
 
