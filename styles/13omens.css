@@ -257,7 +257,7 @@ select:disabled {
 }
 
 .o13-checkbox:disabled{
-	--checkbox-checkmark-color: var(--o13-ink-grey);
+	background-color: var(--o13-dark-smoke-grey);
 }
 
 .checkmark {

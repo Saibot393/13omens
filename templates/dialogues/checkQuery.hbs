@@ -1,0 +1,22 @@
+<div class="o13-sheet">
+	<table class="o13-table">
+		<tr class="o13-table-header">
+			<th> <label class="o13-label o13-header-label">{{localize "13omens.titles.name"}}</label> </th>
+			<th> <label class="o13-label o13-header-label">{{checkQuery.query}}</label> </th>
+		</tr>
+		{{#each checkQuery.checks as |check|}}
+			<tr>
+				<td>
+					<label class="o13-label">{{check.name}}</label>
+				</td>
+				<td class="o13-content-centered">
+					<input class="o13-checkbox" type="checkbox" name="{{concat @key ".checked"}}" {{checked check.checked}} {{#if check.locked}}disabled{{/if}}/>
+				</td>
+			</tr>
+		{{/each}}
+	</table>
+	<div class="flexrow" style="gap:5px">
+		<button class="o13-button o13-clickable" type="button" data-action="accept">{{localize "13omens.actions.accept"}} <i class="fa-solid fa-check"></i> </button>
+		<button class="o13-button o13-clickable" type="button" data-action="cancel">{{localize "13omens.actions.cancel"}} <i class="fa-solid fa-x"></i> </button>
+	</div>
+</div>
