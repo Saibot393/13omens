@@ -50,8 +50,8 @@ export class o13Actor extends Actor {
 		
 		if (game.user.id == userId) {
 			if (changed.img) {
-				if (this.openTokenCreator()) {
-
+				if (this.autoTokenCreator) {
+					this.openTokenCreator()
 				}
 			}
 		}
@@ -126,6 +126,10 @@ export class o13Actor extends Actor {
 	
 	get tokenCreatorButton() {
 		return game.settings.get("13omens", "tokenCreatorButton") && this.isOwner;
+	}
+	
+	get defaultToken() {
+		return "icons/svg/mystery-man.svg";
 	}
 }
 
