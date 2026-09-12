@@ -142,7 +142,9 @@
 			"rollConfig" : "Roll configuration: {pcName}",
 			
 			"lootable" : "Can be looted",
-			"revealDescription" : "Reveal Description"
+			"revealDescription" : "Reveal Description",
+			
+			"tokenCreator" : "Token creator"
 		},
 		
 		"actions" : {
@@ -153,7 +155,8 @@
 			"startStory" : "Start story",
 			"returnToPrep" : "Return to preperation",
 			"accept" : "Accept",
-			"cancel" : "Cancel"
+			"cancel" : "Cancel",
+			"setToken" : "Set token"
 		},
 		
 		"tooltips" : {

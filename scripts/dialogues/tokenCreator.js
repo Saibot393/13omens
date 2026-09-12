@@ -4,14 +4,30 @@ import {o13WaitMixIn} from "../components/wait.js";
 const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
 
 export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplicationMixin(ApplicationV2))) {
-	constructor (imageSource, options = {}) {
+	constructor (imageSource, options = {tokenName : "", directory : ""}) {
 		super();
 		
 		this._imageSource = imageSource;
+		
+		this._options = options || {};
+		
+		this._randomID = foundry.utils.randomID();
 	}
 	
 	get title() {
 		return game.i18n.localize("13omens.titles.tokenCreator");
+	}
+	
+	get tokenName() {
+		const base = this._options?.tokenName || new Date().toISOString();
+		
+		return `${base}_${this._randomID}`;
+	}
+	
+	get directory() {
+		const specific = this._options.directory || CONFIG["13OMENS"].DEFAULTTOKENDIRECTORY;
+		
+		return `worlds/${game.world.id}/${specific}`;
 	}
 	
 	_configureRenderParts(options) {
@@ -171,12 +187,14 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 			ui.notifications.error("Token could not be created");
 		}
 		else {
-			const fileName = saveName || `token-${Date.now()}.webp`;
-			const filePath = savePath || `worlds/${game.world.id}`;
-			const file = new File([blob], fileName, { type: "image/webp" });
+			const tokenName = `${this.tokenName}.webp`;
+			const directory = this.directory;
+			const file = new File([blob], tokenName, { type: "image/webp" });
 
 			try {
-				const response = await foundry.applications.apps.FilePicker.implementation.upload("data", filePath, file);
+				await o13tokenCreator.ensureDirectory(directory);
+				
+				const response = await foundry.applications.apps.FilePicker.implementation.upload("data", directory, file);
 				ui.notifications.info(`Token saved successfully to ${response.path}`);
 				console.log("Saved token file to:", response.path);
 				path = response.path;
@@ -203,6 +221,46 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 	
 	async setToken() {
 		const path = await this.saveToken();
-		console.log(path);
+		
+		this._resolveWait(path, true);
+	}
+	
+	async cancel(event, target) {
+		this.close();
+	}
+	
+	static usercanUse() {
+		return game.user.hasPermission("FILES_UPLOAD");
+	}
+	
+	static async directoryExists(directory) {
+		try {
+			await foundry.applications.apps.FilePicker.implementation.browse("data", directory);
+			return true;
+		} catch (error) {
+			return false;
+		}
+	}
+	
+	static async ensureDirectory(directory) {
+		if (directory.startsWith(`worlds/${game.world.id}/`)) {
+			if (await this.directoryExists(directory)) {
+				return true;
+			}
+			else {
+				try {
+					await foundry.applications.apps.FilePicker.implementation.createDirectory("data", directory);
+					console.warn(`Target directory "${directory}" created`);
+					return true;
+				} catch (error) {
+					console.error(`Target directory "${directory}" could not be created:`, error);
+				}
+			}
+		}
+		else {
+			console.error(`Target directory can not be created as it does not exist within this world: "${directory}"`);
+		}
+		
+		return false;
 	}
 }

@@ -48,6 +48,8 @@ const DEFAULTROLLMODIFIERS = {
 	}
 }
 
-export const CONSTANTS = { CAPTYPES, COREASPECTSIDS, ASPECTRATINGS, ASPECTTN, ARCHETYPEASPECTRATING, DEFAULTMAXWOUNDS, DEFAULTMAXHOSTOMENDICE, DEFAULTDICEBAGCOUNT, DEFAULTACTOMENDCIETHRESHOLD, MAXFE, MAXTD, MINTD, TASKRISKS, DEFAULTROLLOPTIONS, DEFAULTROLLMODIFIERS };
+const DEFAULTTOKENDIRECTORY = "o13Tokens";
+
+export const CONSTANTS = { CAPTYPES, COREASPECTSIDS, ASPECTRATINGS, ASPECTTN, ARCHETYPEASPECTRATING, DEFAULTMAXWOUNDS, DEFAULTMAXHOSTOMENDICE, DEFAULTDICEBAGCOUNT, DEFAULTACTOMENDCIETHRESHOLD, MAXFE, MAXTD, MINTD, TASKRISKS, DEFAULTROLLOPTIONS, DEFAULTROLLMODIFIERS, DEFAULTTOKENDIRECTORY };
 
 export const templatePaths = ["actors/pc", "actors/components/pc_character", "actors/components/pc_background", "actors/story", "actors/components/story_game", "actors/components/story_story", "actors/components/aspects", "actors/components/inventory", "items/perk", "items/components/archetype_perksngear", "items/components/archetype_background", "dice/dice", "dice/dicebar", "dice/minidicebar", "dice/dicebag", "rolls/rollConfig", "rolls/chatRoll", "dialogues/general", "dialogues/confirmOmenDiceRoll", "dialogues/prepState", "chat/gear", "chat/perk", "banner/banner"].map((path) => `systems/13omens/templates/${path}.hbs`);
