@@ -318,8 +318,6 @@ export function o13pcActorMixin(base) {
 		}
 		
 		get shouldSynchArchetypePortrait() {
-			console.log(this.hasArchetypePortrait);
-			console.log(this.hasDefaultPortrait);
 			return this.hasArchetypePortrait || this.hasDefaultPortrait;
 		}
 		
