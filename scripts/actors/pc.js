@@ -86,6 +86,10 @@ export function o13pcActorMixin(base) {
 				}
 			}
 			
+			options.o13 = options.o13 ?? {};
+			
+			options.o13.shouldSyncImage = this.shouldSynchArchetypePortrait;
+			
 			await super._preUpdate(changed, options, user);
 		}
 		
@@ -97,6 +101,10 @@ export function o13pcActorMixin(base) {
 					if (changed.system.hasOwnProperty("archetype")) {
 						await this.updateArchetypeItems();
 						await this.synctoArchetypeBackground();
+						
+						if (options.o13?.shouldSyncImage) {
+							await this.synchArchetypePortrait();
+						}
 					}
 				}
 			}
@@ -234,6 +242,8 @@ export function o13pcActorMixin(base) {
 		
 		async setOwnArchetype(archetype) {
 			if (archetype.isArchetype) {
+				const shouldSyncImage = this.shouldSynchArchetypePortrait;
+				
 				await this.removeOwnArchetype();
 				
 				await this.createEmbeddedDocuments("Item", [archetype.toObject()]);
@@ -252,6 +262,7 @@ export function o13pcActorMixin(base) {
 				else {
 					await this.updateArchetypeItems();
 					await this.synctoArchetypeBackground();
+					if (shouldSyncImage) await this.synchArchetypePortrait();
 				}
 			}
 		}
@@ -259,9 +270,12 @@ export function o13pcActorMixin(base) {
 		async removeOwnArchetype() {
 			const oldArchetypes = [...this.items].filter(item => item.isArchetype);
 				
+			const shouldSyncImage = this.shouldSynchArchetypePortrait;
+				
 			await this.deleteEmbeddedDocuments("Item", oldArchetypes.map(archetype => archetype.id));
 			
 			await this.updateArchetypeItems();
+			if (shouldSyncImage) await this.synchArchetypePortrait();
 		}
 		
 		get ownArchetype() {
@@ -284,6 +298,29 @@ export function o13pcActorMixin(base) {
 			if (archetype) {
 				return this.createEmbeddedDocuments("Item", [...Object.values(archetype.perksData), ...Object.values(archetype.guaranteedGear)]);
 			}
+		}
+		
+		async synchArchetypePortrait() {
+			const archetype = this.archetype;
+			
+			if (archetype?.img) {
+				if (this.img != archetype.img) {
+					return this.update({img : archetype.img})
+				}
+			}
+			else {
+				return this.update({img : this.defaultPortrait})
+			}
+		}
+		
+		get hasArchetypePortrait() {
+			return this.img == this.archetype?.img;
+		}
+		
+		get shouldSynchArchetypePortrait() {
+			console.log(this.hasArchetypePortrait);
+			console.log(this.hasDefaultPortrait);
+			return this.hasArchetypePortrait || this.hasDefaultPortrait;
 		}
 		
 		get archetypePrepState() {

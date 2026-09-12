@@ -128,8 +128,12 @@ export class o13Actor extends Actor {
 		return game.settings.get("13omens", "tokenCreatorButton") && this.isOwner;
 	}
 	
-	get defaultToken() {
+	get defaultPortrait() {
 		return "icons/svg/mystery-man.svg";
+	}
+	
+	get hasDefaultPortrait() {
+		return this.img == this.defaultPortrait;
 	}
 }
 
