@@ -199,6 +199,14 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 		}
 	}
 	
+	async restoreUse(event, target) {
+		if (this.actor.type == "pc") {
+			const perkID = target.getAttribute("perk-id");
+			
+			return this.actor.restorePerkUse(perkID);
+		}
+	}
+	
 	async openPerk(event, target) {
 		if (this.actor.type == "pc") {
 			const perkid = target.getAttribute("perk-id");

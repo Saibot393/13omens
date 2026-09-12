@@ -333,6 +333,12 @@ export function o13pcActorMixin(base) {
 			}
 		}
 		
+		restorePerkUse(id) {
+			if (this.hasPickedPerk(id)) {
+				this.pickedPerks[id]?.restoreUse();
+			}
+		}
+		
 		get perkPrepState() {
 			if (isNaN(this.choosablePerksCount)) return "ready";
 			

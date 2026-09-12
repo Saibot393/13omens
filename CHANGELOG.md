@@ -1,3 +1,6 @@
+## v1.5.2
+- GMs/Hosts can now restore uses for perks with limited uses per Act/story
+
 ## v1.5.1
 - GMs can now edit the suggested character traits in the pc sheet
 - Fixed bug that could cause the background field in the pc sheet to show the wrong relations/stay empty

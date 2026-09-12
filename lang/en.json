@@ -175,7 +175,8 @@
 			"ready" : "Ready",
 			"pending" : "Pending",
 			"problem" : "Problem",
-			"openTokenCreator" : "Open token creator"
+			"openTokenCreator" : "Open token creator",
+			"restoreUse" : "Restore use" 
 		},
 		
 		"chats" : {
