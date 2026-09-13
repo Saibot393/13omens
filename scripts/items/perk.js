@@ -4,7 +4,9 @@ import {virtualItemMixin, virtualItemDataModel} from "./virtualItem.js";
 
 import {utils} from "../utils.js";
 
-const USESPEROPTIONS = ["passive", "act", "story", "custom"];
+import {o13checkQuery} from "../dialogues/checkQuery.js";
+
+const USESPEROPTIONS = ["passive", "act", "story", "character", "custom"];
 
 export function o13perkItemMixin(base) {
 	return class o13perkItem extends virtualItemMixin(base) {
@@ -19,7 +21,7 @@ export function o13perkItemMixin(base) {
 		
 		//Use
 		async resetUses() {
-			return this.update({system : {usesper : {value : this.system.usesper.max}}})
+			return this.update({system : {usesper : {value : this.system.usesper.max, usedcharacters : []}}})
 		}
 		
 		get usesPerOptions() {
@@ -31,7 +33,15 @@ export function o13perkItemMixin(base) {
 		}
 		
 		get usesMax() {
+			if (this.system.usesper.per == "character") {
+				return this.availableCharacters.length;
+			}
+			
 			return this.system.usesper.max;
+		}
+		
+		get availableCharacters() {
+			return this.parent?.siblingCharacters ?? [];
 		}
 		
 		get hasMax() {
@@ -39,7 +49,15 @@ export function o13perkItemMixin(base) {
 		}
 		
 		get usesLeft() {
+			if (this.system.usesper.per == "character") {
+				return this.availableCharacters.filter(actor => !this.usedforCharacter(actor)).length;
+			}
+			
 			return this.system.usesper.value ?? 0;
+		}
+		
+		usedforCharacter(character) {
+			return this.system.usesper.usedcharacters?.includes(character.id);
 		}
 		
 		async newAct() {
@@ -49,8 +67,42 @@ export function o13perkItemMixin(base) {
 		}
 		
 		async use() {
-			if (this.canBeUsed && this.usesLeft > 0) {
-				this.update({system : {usesper : {value : this.usesLeft - 1}}});
+			if (this.system.usesper.per == "character") {
+				this.useCharacter();
+			}
+			else {
+				if (this.canBeUsed && this.usesLeft > 0) {
+					return this.update({system : {usesper : {value : this.usesLeft - 1}}});
+				}
+			}
+		}
+		
+		async useCharacter(locked = true) {
+			const usedCharacterState = Object.fromEntries(this.availableCharacters.map(actor => {
+				return [actor.id, {
+					name : actor.name,
+					checked : this.usedforCharacter(actor),
+					locked : this.usedforCharacter(actor) && locked
+				}]
+			}));
+			
+			console.log(usedCharacterState);
+			
+			const updatedState = await new o13checkQuery(usedCharacterState, {query : game.i18n.localize("13omens.titles.used")}).wait(true);
+			
+			const usedCharacters = Object.keys(updatedState).filter(key => updatedState[key].checked)
+			
+			return this.update({system : {usesper : {usedcharacters : usedCharacters}}})
+		}
+		
+		async restoreUse() {
+			if (this.system.usesper.per == "character") {
+				this.useCharacter(false);
+			}
+			else {
+				if (this.canBeUsed) {
+					this.update({system : {usesper : {value : Math.min(this.usesLeft + 1, this.usesMax)}}});
+				}
 			}
 		}
 		
@@ -149,17 +201,8 @@ export class perkDataModel extends virtualItemDataModel {
 			usesper:  new SchemaField({
 				per : new StringField({ required: true, nullable: true, initial: "passive", choices: USESPEROPTIONS}),
 				max : new NumberField({ required: true, integer: true, nullable: true, min: 1, initial: 1 }),
-				value : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: null })
-			}),
-			
-			used : new SchemaField({
-				story : new SchemaField({
-					uses : new NumberField({ required: true, integer: true, min: 0, initial: 0 })
-				}),
-				
-				acts : new ArrayField(new SchemaField({
-					uses : new NumberField({ required: true, integer: true, min: 0, initial: 0 })
-				}), {initial: () => Array.from({length : 4}, () => ({uses : 0}))})
+				value : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: null }),
+				usedcharacters : new ArrayField(new DocumentIdField({required: true, blank: true, nullable: true, readonly: false}), { initial: [] })
 			})
 		};
 	}

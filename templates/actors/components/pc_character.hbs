@@ -38,7 +38,9 @@
 							<i class="fa-solid fa-message o13-icon o13-clickable o13-hover-icon" gear-id="{{this._id}}" data-action="posttoChat" perk-id="{{this._id}}"></i>
 							{{{lookup (lookup ../enriched.perks this._id) "description"}}}
 							{{#if (and this.canBeUsed this.isChosen)}}
-								<span class="o13-button o13-clickable" data-action="usePerk" perk-id="{{this._id}}">{{localize "13omens.actions.usePerk"}} [{{this.usesLeft}}/{{this.usesMax}}]</span>
+								<span class="o13-button o13-clickable" data-action="usePerk" perk-id="{{this._id}}">
+									{{localize "13omens.actions.usePerk"}} [{{this.usesLeft}}/{{this.usesMax}}] {{#if actor.isHostView}}<i class="fa-solid fa-plus  o13-icon o13-hover-icon o13-clickable" perk-id="{{this._id}}" data-action="restoreUse" data-tooltip="{{localize "13omens.tooltips.restoreUse"}}"></i>{{/if}}
+								</span>
 							{{/if }}
 						</span>
 					</div>
