@@ -86,6 +86,10 @@ export function o13pcActorMixin(base) {
 				}
 			}
 			
+			options.o13 = options.o13 ?? {};
+			
+			options.o13.shouldSyncImage = this.shouldSynchArchetypePortrait;
+			
 			await super._preUpdate(changed, options, user);
 		}
 		
@@ -97,6 +101,10 @@ export function o13pcActorMixin(base) {
 					if (changed.system.hasOwnProperty("archetype")) {
 						await this.updateArchetypeItems();
 						await this.synctoArchetypeBackground();
+						
+						if (options.o13?.shouldSyncImage) {
+							await this.synchArchetypePortrait();
+						}
 					}
 				}
 			}
@@ -112,7 +120,7 @@ export function o13pcActorMixin(base) {
 			}
 		}
 		
-		_onAROverrideChange(adddiff, remdiff) {
+		_onAEOverrideChange(adddiff, remdiff) {
 			if (adddiff.system?.hasOwnProperty("maxwounds") || remdiff.system?.hasOwnProperty("maxwounds")) {
 				this.updateMaxWounds();
 			}
@@ -164,6 +172,10 @@ export function o13pcActorMixin(base) {
 		//Story
 		get storyActor() {
 			return [...game.actors].find(actor => actor.isStory && actor.hasPC(this))
+		}
+		
+		get siblingCharacters() {
+			return this.storyActor?.pcActors?.filter(actor => actor != this) ?? [];
 		}
 		
 		//Acts
@@ -234,6 +246,8 @@ export function o13pcActorMixin(base) {
 		
 		async setOwnArchetype(archetype) {
 			if (archetype.isArchetype) {
+				const shouldSyncImage = this.shouldSynchArchetypePortrait;
+				
 				await this.removeOwnArchetype();
 				
 				await this.createEmbeddedDocuments("Item", [archetype.toObject()]);
@@ -252,6 +266,7 @@ export function o13pcActorMixin(base) {
 				else {
 					await this.updateArchetypeItems();
 					await this.synctoArchetypeBackground();
+					if (shouldSyncImage) await this.synchArchetypePortrait();
 				}
 			}
 		}
@@ -259,9 +274,12 @@ export function o13pcActorMixin(base) {
 		async removeOwnArchetype() {
 			const oldArchetypes = [...this.items].filter(item => item.isArchetype);
 				
+			const shouldSyncImage = this.shouldSynchArchetypePortrait;
+				
 			await this.deleteEmbeddedDocuments("Item", oldArchetypes.map(archetype => archetype.id));
 			
 			await this.updateArchetypeItems();
+			if (shouldSyncImage) await this.synchArchetypePortrait();
 		}
 		
 		get ownArchetype() {
@@ -284,6 +302,27 @@ export function o13pcActorMixin(base) {
 			if (archetype) {
 				return this.createEmbeddedDocuments("Item", [...Object.values(archetype.perksData), ...Object.values(archetype.guaranteedGear)]);
 			}
+		}
+		
+		async synchArchetypePortrait() {
+			const archetype = this.archetype;
+			
+			if (archetype?.img) {
+				if (this.img != archetype.img) {
+					return this.update({img : archetype.img})
+				}
+			}
+			else {
+				return this.update({img : this.defaultPortrait})
+			}
+		}
+		
+		get hasArchetypePortrait() {
+			return this.img == this.archetype?.img;
+		}
+		
+		get shouldSynchArchetypePortrait() {
+			return this.hasArchetypePortrait || this.hasDefaultPortrait;
 		}
 		
 		get archetypePrepState() {
@@ -406,7 +445,12 @@ export function o13pcActorMixin(base) {
 				const gearData = this.archetype?.unguaranteedGear[originid];
 
 				if (gearData) {
-					this.createEmbeddedDocuments("Item", [gearData]);
+					const data = foundry.utils.deepClone(gearData);
+					
+					data.system = data.system ?? {};
+					data.system.selectedinact = this.activeAct;
+					
+					this.createEmbeddedDocuments("Item", [data]);
 				}
 			}
 		}
@@ -421,6 +465,31 @@ export function o13pcActorMixin(base) {
 			if (selectedGearLength == this.selectableGearCount) return "ready";
 			
 			if (selectedGearLength > this.selectableGearCount) return "problem";
+		}
+		
+		getPostSelectedGear(act = undefined) {
+			let postSelectGear = this.inventory.filter(gear => gear.selectedinAct > 0);
+			
+			if (act != undefined) {
+				postSelectGear = postSelectGear.filter(gear => gear.selectedinAct == act);
+			}
+			
+			return postSelectGear ?? [];
+		}
+		
+		get canPostSelectGear() {
+			const perStory = this.system.postselectgearcount?.perstory ?? 0;
+			const perAct = this.system.postselectgearcount?.peract ?? 0;
+			
+			if (!perStory && !perAct) return false;
+			
+			const inStory = this.getPostSelectedGear();
+			
+			if (inStory.length < perStory) return true;
+			
+			const inAct = this.getPostSelectedGear(this.activeAct);
+			
+			if (inAct.length < perAct) return true;
 		}
 		
 		//Aspects
@@ -807,6 +876,11 @@ export function o13pcActorMixin(base) {
 			this.system._activeact = this.activeAct;
 								
 			this.system.selectablegearcount = this.archetype?.selectableGearCount ?? 0;
+			
+			this.system.postselectgearcount = {
+				perstory: 0,
+				peract: 0
+			};
 				
 			this.system.cheatdeathamount = { //these give the maximum
 				perstory: 1,

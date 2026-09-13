@@ -1,3 +1,12 @@
+## v1.6.0
+- Added token creator to create tokens from actor portraits
+  - Added setting "Token target directory" to define where created tokens are stored
+  - Added setting "Auto token creator" to automatically open the token creator when changing the actors portrait
+  - Added setting "Show token creator button" to show a token creator button on the bottom left of the portrait when hovering the portrait of an owned actor
+- PCs now sync their portrait to their archetypes portrait unless they have a custom portrait
+- Added perk use "per character" for perks that can be used for each character in the current story
+- Added a few [active effects](https://github.com/Saibot393/13omens/wiki/Active-effects) flags (`postselectgearcount.perstory`, `postselectgearcount.peract`, `rollbehaviour.edgehnl`)
+
 ## v1.5.2
 - GMs/Hosts can now restore uses for perks with limited uses per Act/story
 
