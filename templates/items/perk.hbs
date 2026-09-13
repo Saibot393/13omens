@@ -12,8 +12,8 @@
 			<div class="form-group flexrow">
 				<label for="gear-uses" class="o13-label" style="flex:0.5"><b>{{localize "13omens.titles.uses.name"}}:</b></label>
 				<span class="o13-input-span o13-label">
-					{{#unless (eq "passive" item.system.usesper.per)}}
-						{{!-- probably no inpit for current uses required
+					{{#unless (includes (array "passive" "character") item.system.usesper.per)}}
+						{{!-- probably no input for current uses required
 						<input class="o13-input o13-underline" type="number" name="system.usesper.value" value="{{item.system.usesper.value}}" />
 						/
 						--}}

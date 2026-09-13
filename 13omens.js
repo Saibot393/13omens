@@ -82,6 +82,7 @@ Hooks.once("init", () => {
 	Handlebars.registerHelper("and", (a, b) => a && b); //nor this???
 	Handlebars.registerHelper("not", (a) => !a); //or this???
 	Handlebars.registerHelper("array", (...args) => [...args])
+	Handlebars.registerHelper("includes", (array, a) => array.includes(a));
 	
 	//enrichments
 	registerEnrichments();

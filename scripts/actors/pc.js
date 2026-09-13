@@ -174,6 +174,10 @@ export function o13pcActorMixin(base) {
 			return [...game.actors].find(actor => actor.isStory && actor.hasPC(this))
 		}
 		
+		get siblingCharacters() {
+			return this.storyActor?.pcActors?.filter(actor => actor != this) ?? [];
+		}
+		
 		//Acts
 		async resettoPrologue() {
 			for (const perk of Object.values(this.getPerks())) {
