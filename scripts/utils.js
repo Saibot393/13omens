@@ -138,7 +138,8 @@ export class utils {
 			combine.rollbehaviour = {
 				redrawomendice : combine.rollbehaviour.redrawomendice + modifier.rollbehaviour.redrawomendice,
 				rerolls : combine.rollbehaviour.rerolls + modifier.rollbehaviour.rerolls,
-				flawhnl : combine.rollbehaviour.flawhnl || modifier.rollbehaviour.flawhnl//use highest and lowest dice when rolling with flaw
+				flawhnl : combine.rollbehaviour.flawhnl || modifier.rollbehaviour.flawhnl,//use highest and lowest dice when rolling with flaw
+				edgehnl : combine.rollbehaviour.edgehnl || modifier.rollbehaviour.edgehnl//use highest and lowest dice when rolling with edge
 			}
 		}
 		

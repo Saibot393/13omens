@@ -170,7 +170,7 @@ export class o13Roll extends Roll {
 	}
 	
 	get FERollMod() {
-		return this.FEDifference == 0 ? "" : this.FEDifference > 0 ? "kh2" : (this.rollBehaviour.flawhnl ? "klh" : "kl2");
+		return this.FEDifference == 0 ? "" : this.FEDifference > 0 ? (this.rollBehaviour.flawhnl ? "klh" : "kh2") : (this.rollBehaviour.flawhnl ? "klh" : "kl2");
 	}	
 	
 	get FEDescription() {

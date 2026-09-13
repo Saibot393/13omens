@@ -445,7 +445,12 @@ export function o13pcActorMixin(base) {
 				const gearData = this.archetype?.unguaranteedGear[originid];
 
 				if (gearData) {
-					this.createEmbeddedDocuments("Item", [gearData]);
+					const data = foundry.utils.deepClone(gearData);
+					
+					data.system = data.system ?? {};
+					data.system.selectedinact = this.activeAct;
+					
+					this.createEmbeddedDocuments("Item", [data]);
 				}
 			}
 		}
@@ -460,6 +465,31 @@ export function o13pcActorMixin(base) {
 			if (selectedGearLength == this.selectableGearCount) return "ready";
 			
 			if (selectedGearLength > this.selectableGearCount) return "problem";
+		}
+		
+		getPostSelectedGear(act = undefined) {
+			let postSelectGear = this.inventory.filter(gear => gear.selectedinAct > 0);
+			
+			if (act != undefined) {
+				postSelectGear = postSelectGear.filter(gear => gear.selectedinAct == act);
+			}
+			
+			return postSelectGear ?? [];
+		}
+		
+		get canPostSelectGear() {
+			const perStory = this.system.postselectgearcount?.perstory ?? 0;
+			const perAct = this.system.postselectgearcount?.peract ?? 0;
+			
+			if (!perStory && !perAct) return false;
+			
+			const inStory = this.getPostSelectedGear();
+			
+			if (inStory.length < perStory) return true;
+			
+			const inAct = this.getPostSelectedGear(this.activeAct);
+			
+			if (inAct.length < perAct) return true;
 		}
 		
 		//Aspects
@@ -846,6 +876,11 @@ export function o13pcActorMixin(base) {
 			this.system._activeact = this.activeAct;
 								
 			this.system.selectablegearcount = this.archetype?.selectableGearCount ?? 0;
+			
+			this.system.postselectgearcount = {
+				perstory: 0,
+				peract: 0
+			};
 				
 			this.system.cheatdeathamount = { //these give the maximum
 				perstory: 1,
