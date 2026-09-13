@@ -126,13 +126,16 @@
 					"passive" : "passive",
 					"act" : "per act",
 					"story" : "per story",
-					"custom" : "per custom"
+					"custom" : "per custom",
+					"character" : "per character"
 				}
 			},
 			
 			"quantity" : {
 				"name" : "Quantity"
 			},
+			
+			"used" : "Used",
 			
 			"newActor" : "{user}'s Character",
 			

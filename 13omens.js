@@ -25,6 +25,9 @@ import {setScreenBorder} from "./scripts/components/screenBorder.js";
 
 import {o13tokenCreator} from "./scripts/dialogues/tokenCreator.js";
 
+import {o13quantityQuery} from "./scripts/dialogues/quantityQuery.js";
+import {o13checkQuery} from "./scripts/dialogues/checkQuery.js";
+
 Hooks.once("init", () => {
 	//CONST
 	CONFIG["13OMENS"] = {...CONSTANTS}
@@ -79,6 +82,7 @@ Hooks.once("init", () => {
 	Handlebars.registerHelper("and", (a, b) => a && b); //nor this???
 	Handlebars.registerHelper("not", (a) => !a); //or this???
 	Handlebars.registerHelper("array", (...args) => [...args])
+	Handlebars.registerHelper("includes", (array, a) => array.includes(a));
 	
 	//enrichments
 	registerEnrichments();
@@ -95,7 +99,11 @@ Hooks.once("init", () => {
 		showBanner,
 		setScreenBorder,
 		o13News,
-		o13tokenCreator
+		o13tokenCreator,
+		queries : {
+			o13quantityQuery,
+			o13checkQuery
+		}
 	}
 	
 	//debug
