@@ -40,6 +40,11 @@ export function o13gearItemMixin(base) {
 			return utils.createHBSChatMessage({item : this, enrichables : this.enrichables}, chatMessageData, "chat/gear");
 		}
 		
+		//meta
+		get selectedinAct() {
+			return this.system.selectedinact;
+		}
+		
 		//data preperation
 		get enrichables() {
 			return {
@@ -59,7 +64,9 @@ export class gearDataModel extends virtualItemDataModel {
 			quantity: new SchemaField({
 				max : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: 1 }),
 				value : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: null })
-			})
+			}),
+			
+			selectedinact : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: null })
 		};
 	}
 }

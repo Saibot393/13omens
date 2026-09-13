@@ -44,7 +44,8 @@ const DEFAULTROLLMODIFIERS = {
 	rollbehaviour : {
 		redrawomendice : 0,
 		rerolls : 0,
-		flawhnl : false //use highest and lowest dice when rolling with flaw
+		flawhnl : false, //use highest and lowest dice when rolling with flaw
+		edgehnl : false //use highest and lowest dice when rolling with edge
 	}
 }
 
