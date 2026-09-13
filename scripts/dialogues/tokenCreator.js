@@ -198,7 +198,7 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 				
 				const response = await foundry.applications.apps.FilePicker.implementation.upload("data", directory, file);
 				ui.notifications.info(`Token saved successfully to ${response.path}`);
-				console.log("Saved token file to:", response.path);
+				console.info("Saved token file to:", response.path);
 				path = response.path;
 			} catch (err) {
 				console.error("Failed to upload token file:", err);

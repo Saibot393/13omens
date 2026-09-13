@@ -22,11 +22,13 @@ import {initNews, o13News} from "./scripts/meta/news.js";
 
 import {showBanner} from "./scripts/components/banner.js";
 import {setScreenBorder} from "./scripts/components/screenBorder.js";
+import {initQuickPaster} from "./scripts/components/quickPaster.js";
 
 import {o13tokenCreator} from "./scripts/dialogues/tokenCreator.js";
 
 import {o13quantityQuery} from "./scripts/dialogues/quantityQuery.js";
 import {o13checkQuery} from "./scripts/dialogues/checkQuery.js";
+
 
 Hooks.once("init", () => {
 	//CONST
@@ -117,4 +119,7 @@ Hooks.once("init", () => {
 	
 	//News
 	initNews();
+	
+	//quick paster
+	initQuickPaster();
 });
