@@ -1,3 +1,6 @@
+## v1.6.1
+- Removed padding from portrait boxes
+
 ## v1.6.0
 - Added token creator to create tokens from actor portraits
   - Added setting "Token target directory" to define where created tokens are stored
