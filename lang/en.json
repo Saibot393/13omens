@@ -197,11 +197,19 @@
 			"transferGearQuery" : "Transfer {gear} from {sourceActor} to {targetActor}:"
 		},
 		
+		"infos" : {
+			"pasteUploaded" : "The pasted image was uploaded"
+		},
+		
 		"warnings" : {
 			"selectRating" : "Please select an aspect rating before rolling",
 			"selectActor" : "Please select an actor or open a character sheet before rolling",
 			"actionRequiresGM" : "Please wait for a host to be online and try again",
 			"usercantCreateFiles" : "You lack the permissions to create files, please ask your Host"
+		},
+		
+		"errors" : {
+			"couldNotPaste" : "Pasted image could not be uploaded"
 		},
 		
 		"news" : {

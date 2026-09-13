@@ -44,7 +44,7 @@ export async function initQuickPaster() {
 						
 						try {
 							await FilePicker.upload("data", targetDirectory, file, {});
-							ui.notifications.notify(game.i18n.localize("13omens.errors.pasteUploaded"));
+							ui.notifications.notify(game.i18n.localize("13omens.infos.pasteUploaded"));
 						} catch(error) {
 							console.error(`Could not paste image due to error:`, error);
 							ui.notifications.error(game.i18n.localize("13omens.errors.couldNotPaste"))
