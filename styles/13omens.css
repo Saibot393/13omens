@@ -185,12 +185,10 @@ select:disabled {
 	display:inline-block;
 	flex: 0 0 auto;
 	position: relative;
-	padding: 5px;
 	width: fit-content;
     height: fit-content;
 	max-height: var(--o13-portrait-height);
 	margin : 5px;
-	padding : 2px;
 	border: 2px solid var(--o13-ink-black);
 	line-height: 0;
 }

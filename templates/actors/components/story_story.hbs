@@ -5,7 +5,7 @@
 </nav>
 
 {{#each actor.system.story.acts}}
-	<section class="o13-tab o13-scrollable flexcol" nav-group="story" nav-tab="{{@key}}" scroll-id="story_{{@key}}">
+	<section class="o13-tab o13-scrollable flexcol" nav-group="story" nav-tab="{{@key}}" scroll-id="story_{{@key}}" style="padding-right:5px;">
 		<div class="flexcol">
 			<label for="notes" class="o13-label" style="flex:0.5"><b>{{localize "13omens.titles.notes"}}:</b></label>
 			<textarea  class="o13-input o13-textarea o13-bordered o13-scrollable" name="system.story.acts.{{@key}}.notes" rows=8" scroll-id="story_{{@key}}_notes" style="flex:none;">{{lookup (lookup ../actor.system.story.acts @key) "notes"}}</textarea>
