@@ -1,3 +1,6 @@
+## ## v1.6.2
+- Changed the way omen flaws are applied to abbide by the the systems rules
+
 ## v1.6.1
 - Removed padding from portrait boxes
 - Added padding to pc background tab and story story tab
