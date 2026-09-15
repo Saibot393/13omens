@@ -107,14 +107,13 @@ export class o13Roll extends Roll {
 		const dicePermut =  [...this.dicePermut];
 		
 		const flaws = this.flaws;
+		const omenflawcount = flaws.filter(flaw => flaw.isomen).length;
 		
-		if (this.FEDifference < 0) {
-			for (let i = 0; i < flaws.length; i++) {
-				if (flaws[i].isomen) {
-					const removedDice = dicePermut[i+2]; //leave first two dice alone
-					dicePermut[i+2] = "omen";
-					dicePermut.push(removedDice); //make sure no dice ist lost, probably irrelevant, better save than sorry
-				}
+		for (let i = this.totalDice-1; i >= this.totalDice-omenflawcount; i--) { //change dice from right to left
+			if (i >= 0) {
+				const removedDice = dicePermut[i];
+				dicePermut[i] = "omen";
+				dicePermut.push(removedDice); //make sure no dice ist lost, probably irrelevant, better save than sorry
 			}
 		}
 		
