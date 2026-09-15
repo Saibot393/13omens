@@ -1,4 +1,4 @@
-## ## v1.6.2
+## v1.6.2
 - Changed the way omen flaws are applied to abbide by the the systems rules
 
 ## v1.6.1
