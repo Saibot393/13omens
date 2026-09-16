@@ -23,7 +23,7 @@ Once a roll is made, dice are randomly drawn from the dice bag and the result is
 
 Rolls can also be triggered via [inline checks](https://github.com/Saibot393/13omens/wiki/Inline-checks).
 
-For more informations you can visit the [Wiki](https://github.com/Saibot393/13omens/wiki)
+For more information you can visit the [Wiki](https://github.com/Saibot393/13omens/wiki)
 
 ---
 ## Roadmap
