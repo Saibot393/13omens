@@ -648,7 +648,7 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 	
 	toggleOmenFlaw(index) {
-		if (this._data.flaw[index]) this._data.flaw[index].isomen = !this._data.flaw[index].isomen;
+		if (this._data.flaws[index]) this._data.flaws[index].isomen = !this._data.flaws[index].isomen;
 	}
 	
 	static DEFAULT_OPTIONS = {
@@ -671,7 +671,6 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 			addEmptyFlaw : o13rollConfig.DAaddEmptyFlaw,
 			addEmptyEdge : o13rollConfig.DAaddEmptyEdge,
 			removeFlaw : o13rollConfig.DAremoveFlaw,
-			toggleFlawOmen : o13rollConfig.DAtoggleFlawOmen,
 			toggleOmenFlaw : o13rollConfig.DAtoggleOmenFlaw,
 			removeEdge : o13rollConfig.DAremoveEdge,
 			removeStrain : o13rollConfig.DAremoveStrain,
@@ -745,22 +744,14 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 		this._applyUpdate();
 	}
 	
-	static async DAtoggleFlawOmen(event, target) {
-		const index = target.getAttribute("index");
-		
-		if (isNaN(index)) return;
-		
-		this._data.flaws[index].isomen = !this._data.flaws[index].isomen;
-		
-		this._applyUpdate();
-	}
-	
 	static async DAtoggleOmenFlaw(event, target) {
 		const index = target.getAttribute("index");
 		
 		if (isNaN(index)) return;
 		
 		this.toggleOmenFlaw(index);
+		
+		this._applyUpdate();
 	}
 	
 	static async DAremoveStrain(event, target) {
