@@ -1,3 +1,7 @@
+## v1.6.3
+- Should a story now have more players than archetypes, archetypes can be chosen more than once
+- Some minor internal clean up in the roll config
+
 ## v1.6.2
 - Changed the way omen flaws are applied to abbide by the the systems rules
 
