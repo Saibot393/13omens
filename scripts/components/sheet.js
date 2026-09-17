@@ -136,6 +136,9 @@ export function o13SheetMixin(baseSheet) {
 					this._activeo13Tab(group, tab);
 				}
 			})
+			
+			//hide secret buttons
+			if (!game.user.isGM) html.querySelectorAll("button.reveal").forEach(button => {console.log(button); button.classList.add("o13-hidden-reveal-button")});
 		}
 		
 		async _activeo13Tab(group, tab, fallback = true) {
@@ -276,7 +279,7 @@ export function o13SheetMixin(baseSheet) {
 			const enrichables = this.document?.enrichables ?? {};
 			
 			context.enriched = foundry.utils.isEmpty(enrichables) ? {} : await utils.enrichHTMLStructure(enrichables, {
-				secrets: this.document.isOwner,
+				secrets: game.user.isGM,
 				async: true,
 				relativeTo: this.document
 			});
