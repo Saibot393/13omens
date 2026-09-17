@@ -324,8 +324,12 @@ export function o13storyActorMixin(base) {
 			return [...this.items].filter(item => item.type == "archetype").sort((a,b) => a.sort - b.sort);
 		}
 		
+		get archetypesUnique() {
+			return this.archetypes.length >= this.pcActors.length;
+		}
+		
 		get availableArchetype() {
-			return this.archetypes.filter(archetype => !this.pcActors.find(pc => pc.archetype == archetype));
+			return this.archetypesUnique ? this.archetypes.filter(archetype => !this.pcActors.find(pc => pc.archetype == archetype)) : this.archetypes;
 		}
 		
 		async createNewArchetype() {
