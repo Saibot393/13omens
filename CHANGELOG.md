@@ -2,7 +2,7 @@
 - Updated actor roll work flow to allow for easier use in macros
 - Only one active roll config can now be open per actor (to prevent ui spam)
 - Open roll configs can now be updated from the rolling actor
-- Added new flags for inline checks and active effects ('ignoredflaws', 'ignorededges')
+- Added new flags for inline checks and active effects (`ignoredflaws`, `ignorededges`)
 
 ## v1.6.3
 - Should a story now have more players than archetypes, archetypes can be chosen more than once
