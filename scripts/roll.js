@@ -131,7 +131,7 @@ export class o13Roll extends Roll {
 	}
 	
 	get flawsCount() {
-		return this._rollData.flaws.length + (this.useStrain ? 1 : 0);
+		return this._rollData.flaws.filter(flaw => !flaw?.ignored).length + (this.useStrain ? 1 : 0);
 	}
 	
 	get omenflaws() {
@@ -143,7 +143,7 @@ export class o13Roll extends Roll {
 	}
 	
 	get edgesCount() {
-		return this._rollData.edges.length;
+		return this._rollData.edges.filter(edge => !edge?.ignored).length;
 	}
 	
 	get FEDifference() {
@@ -566,7 +566,6 @@ export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(Appli
 			...this._data,
 			...data
 		}
-		utils.expandRollData(this._data);
 		
 		return this._applyUpdate();
 	}
@@ -709,6 +708,8 @@ export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(Appli
 	}
 	
 	_applyUpdate(fromRemote = false) {
+		utils.expandRollData(this._data);
+		
 		this.render(true);
 		
 		if (!fromRemote) this._updateRemote();

@@ -179,7 +179,8 @@
 			"pending" : "Pending",
 			"problem" : "Problem",
 			"openTokenCreator" : "Open token creator",
-			"restoreUse" : "Restore use" 
+			"restoreUse" : "Restore use",
+			"ignored" : "Ignored"
 		},
 		
 		"chats" : {

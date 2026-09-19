@@ -33,11 +33,13 @@ const MINTD = -2;
 
 const TASKRISKS = ["risky", "normal", "harmless"];
 
-const DEFAULTROLLOPTIONS = {dicePermut : [], flaws : [], edges : [], strain : null, ignoreStrain : false, targetNumber : null, taskDifficulty : 0, taskRisk : "normal", woundThreshold : null, strainThreshold : null, rollbehaviour : {}};
+const DEFAULTROLLOPTIONS = {dicePermut : [], flaws : [], edges : [], ignoredFlaws : 0, ignoredEdges : 0, strain : null, ignoreStrain : false, targetNumber : null, taskDifficulty : 0, taskRisk : "normal", woundThreshold : null, strainThreshold : null, rollbehaviour : {}};
 
 const DEFAULTROLLMODIFIERS = {
 	addflaws : [],
 	addedges : [],
+	ignoredflaws : 0,
+	ignorededges : 0,
 	nostrain : false,
 	woundthreshold : null,
 	strainthreshold : null,
