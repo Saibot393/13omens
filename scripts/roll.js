@@ -2,6 +2,8 @@ const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 import { utils } from "./utils.js";
 
+import { o13WaitMixIn } from "./components/wait.js";
+
 export class o13Roll extends Roll {
 	constructor(actor, aspect, options = CONFIG["13OMENS"].DEFAULTROLLOPTIONS) {
 		super("0");
@@ -49,6 +51,10 @@ export class o13Roll extends Roll {
 		if (this.total < this.totalDifficulty) {
 			return -1;
 		}
+	}
+	
+	get resultDiff() {
+		return this.total - this.totalDifficulty;
 	}
 	
 	get actor() {
@@ -125,7 +131,7 @@ export class o13Roll extends Roll {
 	}
 	
 	get flawsCount() {
-		return this._rollData.flaws.length + (this.useStrain ? 1 : 0);
+		return this._rollData.flaws.filter(flaw => !flaw?.ignored).length + (this.useStrain ? 1 : 0);
 	}
 	
 	get omenflaws() {
@@ -137,7 +143,7 @@ export class o13Roll extends Roll {
 	}
 	
 	get edgesCount() {
-		return this._rollData.edges.length;
+		return this._rollData.edges.filter(edge => !edge?.ignored).length;
 	}
 	
 	get FEDifference() {
@@ -490,11 +496,12 @@ export class o13Roll extends Roll {
 	}
 }
 
-export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
+export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(ApplicationV2)) {
 	constructor(actor, data, quickRoll = false, isSecondary = false) {
 		super();
 		
 		this._actor = actor;
+		this.actor.activeRollConfig = this;
 		
 		this._data = {
 			...CONFIG["13OMENS"].DEFAULTROLLOPTIONS,
@@ -560,7 +567,7 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 			...data
 		}
 		
-		this.render();
+		return this._applyUpdate();
 	}
 	
 	get title() {
@@ -701,6 +708,8 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 	
 	_applyUpdate(fromRemote = false) {
+		utils.expandRollData(this._data);
+		
 		this.render(true);
 		
 		if (!fromRemote) this._updateRemote();
@@ -774,9 +783,12 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 		const roll = new o13Roll(this.actor, this.aspect, this._data);
 
 		await roll.evaluate();
+		
+		this._resolveWait(roll);
+		
 		await roll.toMessage();
 		
-		this.close();
+		await this.close();
 		
 		return roll;
 	}
