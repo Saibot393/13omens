@@ -578,11 +578,7 @@ export function o13pcActorMixin(base) {
 				if (this._activerollconfig != rollConfig) this.closeActiveRollConfig();
 				
 				this._activerollconfig = rollConfig;
-				
-				return true;
 			}
-			
-			return false;
 		}
 		
 		getRollConfigData(aspectName, options = {}) {
