@@ -1,3 +1,8 @@
+## v1.6.4
+- Update actor roll work flow to allow for easier use in macros
+- Only one active roll config can now be open per actor (to prevent ui spam)
+- Open roll configs can now be updated from the rolling actor
+
 ## v1.6.3
 - Should a story now have more players than archetypes, archetypes can be chosen more than once
 - Some minor internal clean up in the roll config

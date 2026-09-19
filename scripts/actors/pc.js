@@ -17,6 +17,13 @@ function newRating() {
 export function o13pcActorMixin(base) {
 	return class o13pcActor extends inventoryActorMixin(base) {
 		//Updates & Create
+		constructor(...args) {
+			super(...args);
+			
+			this._activerollconfig = null;
+			this._lastrolloptions = null;
+		}
+		
 		async _preCreate(data, options, user) {
 			await super._preCreate(data, options, user);
 
@@ -562,19 +569,67 @@ export function o13pcActorMixin(base) {
 			return !isNaN(this.getAspectData(aspect,true)?.targetNumber);
 		}
 		
+		get activeRollConfig() {
+			return this._activerollconfig;
+		}
+		
+		set activeRollConfig(rollConfig) {
+			if (rollConfig instanceof o13rollConfig) {
+				if (this._activerollconfig != rollConfig) this.closeActiveRollConfig();
+				
+				this._activerollconfig = rollConfig;
+				
+				return true;
+			}
+			
+			return false;
+		}
+		
+		getRollConfigData(aspectName, options = {}) {
+			const aspectData = this.getAspectData(aspectName, true);
+			const aspectModifiers = this.getAspectRollModifiers(aspectName);
+			
+			if (aspectData) {
+				const config = utils.combineRollOptions([aspectData, utils.rollOptionsFromModifiers(aspectModifiers), utils.expandRollData(options)]);
+
+				return config;
+			}
+		}
+		
+		async closeActiveRollConfig() {
+			if (this._activerollconfig) {
+				this._lastrolloptions = null;
+				return this._activerollconfig.close();
+			}
+			return false;
+		}
+		
 		async rollAspect(aspectName, options = {}, quickRoll = false) {
 			if (this.canRollAspect(aspectName)) {
-				const aspectData = this.getAspectData(aspectName, true);
-				const aspectModifiers = this.getAspectRollModifiers(aspectName);
+				const config = this.getRollConfigData(aspectName, options);
 
-				if (aspectData) {
-					const config = utils.combineRollOptions([aspectData, utils.rollOptionsFromModifiers(aspectModifiers), utils.expandRollData(options)]);
+				if (config) {
+					await this.closeActiveRollConfig();
 
-					new o13rollConfig(this, {...config, aspect : aspectName}, quickRoll);
+					this._lastrolloptions = options;
+					this._activerollconfig = new o13rollConfig(this, {...config, aspect : aspectName}, quickRoll);
+					
+					return this._activerollconfig.wait();
 				}
 			}
 			else {
 				ui.notifications.warn(game.i18n.localize("13omens.warnings.selectRating"), {console : false});
+			}
+		}
+		
+		async updateActiveRollConfig(options = {}) {
+			if (this._activerollconfig) {
+				this._lastrolloptions = {...this._lastrolloptions, ...options};
+				
+				const config = this.getRollConfigData(this._activerollconfig.aspect, this._lastrolloptions);
+				config.aspect = this._activerollconfig.aspect;
+
+				return this._activerollconfig.updateData(config);
 			}
 		}
 		

@@ -2,6 +2,8 @@ const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 import { utils } from "./utils.js";
 
+import { o13WaitMixIn } from "./components/wait.js";
+
 export class o13Roll extends Roll {
 	constructor(actor, aspect, options = CONFIG["13OMENS"].DEFAULTROLLOPTIONS) {
 		super("0");
@@ -49,6 +51,10 @@ export class o13Roll extends Roll {
 		if (this.total < this.totalDifficulty) {
 			return -1;
 		}
+	}
+	
+	get resultDiff() {
+		return this.total - this.totalDifficulty;
 	}
 	
 	get actor() {
@@ -490,11 +496,12 @@ export class o13Roll extends Roll {
 	}
 }
 
-export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
+export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(ApplicationV2)) {
 	constructor(actor, data, quickRoll = false, isSecondary = false) {
 		super();
 		
 		this._actor = actor;
+		this.actor.activeRollConfig = this;
 		
 		this._data = {
 			...CONFIG["13OMENS"].DEFAULTROLLOPTIONS,
@@ -559,8 +566,9 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 			...this._data,
 			...data
 		}
+		utils.expandRollData(this._data);
 		
-		this.render();
+		return this._applyUpdate();
 	}
 	
 	get title() {
@@ -774,9 +782,12 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 		const roll = new o13Roll(this.actor, this.aspect, this._data);
 
 		await roll.evaluate();
+		
+		this._resolveWait(roll);
+		
 		await roll.toMessage();
 		
-		this.close();
+		await this.close();
 		
 		return roll;
 	}
