@@ -79,7 +79,7 @@ export function virtualItemMixin(base) {
 		async createEmbeddedDocuments(embeddedName, data = [], operation = {}) {
 			if (this.isVirtualItem) {
 				if (embeddedName == "ActiveEffect") {
-					const currentCollection = [...this.effects];
+					const currentCollection = this.effects;
 					
 					if (currentCollection) {
 						for (const d of data) if (d._id == undefined) d._id = foundry.utils.randomID();
@@ -118,7 +118,7 @@ export function virtualItemMixin(base) {
 		async deleteEmbeddedDocuments(embeddedName, data = [], operation = {}) {
 			if (this.isVirtualItem) {
 				if (embeddedName == "ActiveEffect") {
-					const currentCollection = [...this.effects];
+					const currentCollection = this.effects;
 					
 					if (currentCollection) {
 						const newCollection = currentCollection.filter(effect => !data.includes(effect.id))

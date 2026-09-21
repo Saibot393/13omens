@@ -248,7 +248,7 @@ export class utils {
 		
 		//owned actors
 		if (!Actor && !game.user.isGM) {
-			[...game.actors].find(a => a.isOwner && (!type || a.type == type));
+			game.actors.find(a => a.isOwner && (!type || a.type == type));
 		}
 		
 		return Actor;

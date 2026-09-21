@@ -8,6 +8,8 @@ import {o13checkQuery} from "../dialogues/checkQuery.js";
 
 const USESPEROPTIONS = ["passive", "act", "story", "character", "custom"];
 
+const 
+
 export function o13perkItemMixin(base) {
 	return class o13perkItem extends virtualItemMixin(base) {
 		//Choose
@@ -129,7 +131,7 @@ export function o13perkItemMixin(base) {
 		}
 
 		get activeEffects() {
-			let effects = [...this.effects].sort((a,b) => a.sort - b.sort);
+			let effects = this.effects.sort((a,b) => a.sort - b.sort);
 			
 			return Object.fromEntries(effects.map(effect => [effect.id, effect]));
 		}
@@ -203,6 +205,10 @@ export class perkDataModel extends virtualItemDataModel {
 				max : new NumberField({ required: true, integer: true, nullable: true, min: 1, initial: 1 }),
 				value : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: null }),
 				usedcharacters : new ArrayField(new DocumentIdField({required: true, blank: true, nullable: true, readonly: false}), { initial: [] })
+			}),
+			
+			aeconditions: new ObjectField({
+				
 			})
 		};
 	}

@@ -173,12 +173,12 @@ export function o13pcActorMixin(base) {
 		}
 		
 		get characterPrepState() {
-			return [...game.users].some(user => user.character == this) ? "ready" : "pending";
+			return game.users.some(user => user.character == this) ? "ready" : "pending";
 		}
 		
 		//Story
 		get storyActor() {
-			return [...game.actors].find(actor => actor.isStory && actor.hasPC(this))
+			return game.actors.find(actor => actor.isStory && actor.hasPC(this))
 		}
 		
 		get siblingCharacters() {
@@ -279,7 +279,7 @@ export function o13pcActorMixin(base) {
 		}
 		
 		async removeOwnArchetype() {
-			const oldArchetypes = [...this.items].filter(item => item.isArchetype);
+			const oldArchetypes = this.items.filter(item => item.isArchetype);
 				
 			const shouldSyncImage = this.shouldSynchArchetypePortrait;
 				
@@ -290,11 +290,11 @@ export function o13pcActorMixin(base) {
 		}
 		
 		get ownArchetype() {
-			return [...this.items].find(item => item.isArchetype);
+			return this.items.find(item => item.isArchetype);
 		}
 		
 		get hasOwnArchetype() {
-			return [...this.items].some(item => item.isArchetype);
+			return this.items.some(item => item.isArchetype);
 		}
 		
 		async removeArchetypeItems() {
