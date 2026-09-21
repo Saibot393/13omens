@@ -521,3 +521,7 @@ span.o13-input-span input {
 		grid-template-columns: repeat(2, 1fr);
 	}
 }
+
+.o13-toggle.active-blue {
+	color: var(--o13-cheat-blue);
+}

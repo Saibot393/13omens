@@ -57,6 +57,11 @@ export class o13Actor extends Actor {
 		}
 	}
 	
+	refresh() {
+		this.prepareData();
+		this.render();
+	}
+	
 	async openTokenCreator() {
 		if (o13tokenCreator.usercanUse(true)) {
 			const tokenPath = await new o13tokenCreator(this.img, {tokenName : this.name}).wait(true);
@@ -324,6 +329,14 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 			if (gearID) {
 				this.actor.geartoChatMessage(gearID);
 			}
+		}
+	}
+	
+	async toggleUsePerkOnNextRoll(event, target) {
+		if (this.actor.isPC) {
+			const perkID = target.getAttribute("perk-id");
+
+			this.actor.toggleUsePerkOnNextRoll(perkID);
 		}
 	}
 	

@@ -26,12 +26,12 @@ export function o13WaitMixIn(baseClass) {
 			}
 		}
 		
-		async close(...args) {
+		async _onClose(...args) {
 			if (!this._waitResolved) {
 				this._resolveWait(this._closeResolve);
 			}
 			
-			return super.close(...args);
+			return super._onClose(...args);
 		}
 	}
 }

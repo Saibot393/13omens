@@ -1,4 +1,4 @@
-const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDocumentField, DocumentIdField, BooleanField, FilePathField, ObjectField, DocumentUUIDField } = foundry.data.fields;
+const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDocumentField, DocumentIdField, BooleanField, FilePathField, ObjectField, DocumentUUIDField, TypedObjectField } = foundry.data.fields;
 
 import {virtualItemMixin, virtualItemDataModel} from "./virtualItem.js";
 
@@ -8,10 +8,16 @@ import {o13checkQuery} from "../dialogues/checkQuery.js";
 
 const USESPEROPTIONS = ["passive", "act", "story", "character", "custom"];
 
-const 
+const AECONDITIONOPTIONS = ["usesleft", "usedup", "nextroll"];
 
 export function o13perkItemMixin(base) {
 	return class o13perkItem extends virtualItemMixin(base) {
+		constructor(...args) {
+			super(...args);
+			
+			this._usedonnextroll = false;
+		}
+		
 		//Choose
 		get isChosen() {
 			const owner = this.parent;
@@ -88,8 +94,6 @@ export function o13perkItemMixin(base) {
 				}]
 			}));
 			
-			console.log(usedCharacterState);
-			
 			const updatedState = await new o13checkQuery(usedCharacterState, {query : game.i18n.localize("13omens.titles.used")}).wait(true);
 			
 			const usedCharacters = Object.keys(updatedState).filter(key => updatedState[key].checked)
@@ -129,26 +133,70 @@ export function o13perkItemMixin(base) {
 			
 			return useActive && chosenActive;
 		}
+		
+		effectActive(id) {
+			const useActive = (!this.canBeUsed && this.getAECondition(id) != "nextroll") || (this.usesLeft > 0 && this.getAECondition(id) == "usesleft") || (this.usesLeft == 0 && this.getAECondition(id) == "usedup");
+			const rollToggleActive = this.getAECondition(id) == "nextroll" && this.usedonNextRoll;
+			const chosenActive = this.isChosen;
+
+			return (useActive || rollToggleActive) && chosenActive;
+		}
 
 		get activeEffects() {
-			let effects = this.effects.sort((a,b) => a.sort - b.sort);
+			let effects = [...this.effects].sort((a,b) => a.sort - b.sort);
 			
 			return Object.fromEntries(effects.map(effect => [effect.id, effect]));
 		}
 		
 		checkEffectActivation() {
 			//cheat with local only to disable effect during data preperation without triggering an actor update
-			const effectsActive = this.effectsActive;
-			
 			let change = false;
 			
 			for (const effect of this.effects) {
+				const effectsActive = this.effectActive(effect.id);
+				
 				change = change || (effect.disabled != !effectsActive);
 				
 				effect.disabled = !effectsActive;
 			}
 			
 			return change;
+		}
+		
+		//AE Conditions
+		
+		get AEConditionOptions() {
+			return AECONDITIONOPTIONS;
+		}
+		
+		get AEConditions() {
+			return Object.fromEntries(Object.keys(this.activeEffects).map(key => [key, this.getAECondition(key)]))
+		}
+		
+		getAECondition(aeID) {
+			return this.system.aeconditions[aeID]?.condition ?? AECONDITIONOPTIONS[0];
+		}
+		
+		toggleUseOnNextRoll(refresh = true) {
+			this._usedonnextroll = !this._usedonnextroll;
+			
+			if (refresh) this.parent?.refresh();
+		}
+		
+		onRollRolled(refresh = true) {
+			if (this._usedonnextroll) {
+				this._usedonnextroll = false;
+				
+				if (refresh) this.parent?.refresh();
+			}
+		}
+		
+		get usedonNextRoll() {
+			return this._usedonnextroll;
+		}
+		
+		get hasNextRollUse() {
+			return Object.values(this.AEConditions).find(condition => condition == "nextroll");
 		}
 		
 		//chat
@@ -207,9 +255,11 @@ export class perkDataModel extends virtualItemDataModel {
 				usedcharacters : new ArrayField(new DocumentIdField({required: true, blank: true, nullable: true, readonly: false}), { initial: [] })
 			}),
 			
-			aeconditions: new ObjectField({
-				
-			})
+			aeconditions: new TypedObjectField(
+				new SchemaField({
+					condition : new StringField({ required: true, nullable: true, initial: AECONDITIONOPTIONS[0], choices: AECONDITIONOPTIONS})
+				})
+			)
 		};
 	}
 	
