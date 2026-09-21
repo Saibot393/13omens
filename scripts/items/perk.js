@@ -164,7 +164,6 @@ export function o13perkItemMixin(base) {
 		}
 		
 		//AE Conditions
-		
 		get AEConditionOptions() {
 			return AECONDITIONOPTIONS;
 		}
