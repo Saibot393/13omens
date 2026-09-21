@@ -324,16 +324,21 @@ export function o13storyActorMixin(base) {
 			return [...this.items].filter(item => item.type == "archetype").sort((a,b) => a.sort - b.sort);
 		}
 		
+		get archetypesUnique() {
+			return this.archetypes.length >= this.pcActors.length;
+		}
+		
 		get availableArchetype() {
-			return this.archetypes.filter(archetype => !this.pcActors.find(pc => pc.archetype == archetype));
+			return this.archetypesUnique ? this.archetypes.filter(archetype => !this.pcActors.find(pc => pc.archetype == archetype)) : this.archetypes;
 		}
 		
 		async createNewArchetype() {
-			const archetype = await this.createEmbeddedDocuments("Item", [{
+			await this.createEmbeddedDocuments("Item", [{
 				name: game.i18n.localize("13omens.titles.archetype"),
 				type: "archetype"
 			}]);
-			await this.registerArchetype(archetype[0]);
+			
+			//await this.registerArchetype(archetype[0]);
 			
 			this.updateArchetypeRelations();
 		}
@@ -463,8 +468,9 @@ export function o13storyActorMixin(base) {
 			
 			if (!prepared.selfOrigin) {
 				if (object.isArchetype) {
-					const archetype = await this.createEmbeddedDocuments("Item", [object.toObject()]);
-					await this.registerArchetype(archetype);
+					await this.createEmbeddedDocuments("Item", [object.toObject()]);
+					//await this.registerArchetype(archetype);
+					this.updateArchetypeRelations()
 					handled = true;
 				}
 			}

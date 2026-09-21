@@ -33,21 +33,26 @@ const MINTD = -2;
 
 const TASKRISKS = ["risky", "normal", "harmless"];
 
-const DEFAULTROLLOPTIONS = {dicePermut : [], flaws : [], edges : [], strain : null, ignoreStrain : false, targetNumber : null, taskDifficulty : 0, taskRisk : "normal", woundThreshold : null, strainThreshold : null, rollbehaviour : {}};
+const DEFAULTROLLOPTIONS = {dicePermut : [], flaws : [], edges : [], ignoredFlaws : 0, ignoredEdges : 0, strain : null, ignoreStrain : false, targetNumber : null, taskDifficulty : 0, taskRisk : "normal", woundThreshold : null, strainThreshold : null, rollbehaviour : {}};
 
 const DEFAULTROLLMODIFIERS = {
 	addflaws : [],
 	addedges : [],
+	ignoredflaws : 0,
+	ignorededges : 0,
 	nostrain : false,
 	woundthreshold : null,
 	strainthreshold : null,
 	rollbehaviour : {
 		redrawomendice : 0,
 		rerolls : 0,
-		flawhnl : false //use highest and lowest dice when rolling with flaw
+		flawhnl : false, //use highest and lowest dice when rolling with flaw
+		edgehnl : false //use highest and lowest dice when rolling with edge
 	}
 }
 
-export const CONSTANTS = { CAPTYPES, COREASPECTSIDS, ASPECTRATINGS, ASPECTTN, ARCHETYPEASPECTRATING, DEFAULTMAXWOUNDS, DEFAULTMAXHOSTOMENDICE, DEFAULTDICEBAGCOUNT, DEFAULTACTOMENDCIETHRESHOLD, MAXFE, MAXTD, MINTD, TASKRISKS, DEFAULTROLLOPTIONS, DEFAULTROLLMODIFIERS };
+const DEFAULTTOKENDIRECTORY = "o13Tokens";
 
-export const templatePaths = ["actors/pc", "actors/components/pc_character", "actors/components/pc_background", "actors/story", "actors/components/story_game", "actors/components/story_story", "actors/components/aspects", "actors/components/inventory", "items/perk", "items/components/archetype_perksngear", "items/components/archetype_background", "dice/dice", "dice/dicebar", "dice/minidicebar", "dice/dicebag", "rolls/rollConfig", "rolls/chatRoll", "dialogues/general", "dialogues/confirmOmenDiceRoll", "dialogues/prepState", "chat/gear", "chat/perk", "banner/banner"].map((path) => `systems/13omens/templates/${path}.hbs`);
+export const CONSTANTS = { CAPTYPES, COREASPECTSIDS, ASPECTRATINGS, ASPECTTN, ARCHETYPEASPECTRATING, DEFAULTMAXWOUNDS, DEFAULTMAXHOSTOMENDICE, DEFAULTDICEBAGCOUNT, DEFAULTACTOMENDCIETHRESHOLD, MAXFE, MAXTD, MINTD, TASKRISKS, DEFAULTROLLOPTIONS, DEFAULTROLLMODIFIERS, DEFAULTTOKENDIRECTORY };
+
+export const templatePaths = ["actors/pc", "actors/components/pc_character", "actors/components/pc_background", "actors/story", "actors/components/story_game", "actors/components/story_story", "actors/components/aspects", "actors/components/portrait", "actors/components/inventory", "items/perk", "items/components/archetype_perksngear", "items/components/archetype_background", "dice/dice", "dice/dicebar", "dice/minidicebar", "dice/dicebag", "rolls/rollConfig", "rolls/chatRoll", "dialogues/general", "dialogues/confirmOmenDiceRoll", "dialogues/prepState", "dialogues/tokenCreator", "chat/gear", "chat/perk", "banner/banner"].map((path) => `systems/13omens/templates/${path}.hbs`);

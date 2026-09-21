@@ -1,3 +1,38 @@
+## v1.6.4
+- Updated actor roll work flow to allow for easier use in macros
+- Only one active roll config can now be open per actor (to prevent ui spam)
+- Open roll configs can now be updated from the rolling actor
+- Added new flags for inline checks and active effects (`ignoredflaws`, `ignorededges`)
+
+## v1.6.3
+- Should a story now have more players than archetypes, archetypes can be chosen more than once
+- Some minor internal clean up in the roll config
+
+## v1.6.2
+- Changed the way omen flaws are applied to abbide by the the systems rules
+
+## v1.6.1
+- Removed padding from portrait boxes
+- Added padding to pc background tab and story story tab
+
+## v1.6.0
+- Added token creator to create tokens from actor portraits
+  - Added setting "Token target directory" to define where created tokens are stored
+  - Added setting "Auto token creator" to automatically open the token creator when changing the actors portrait
+  - Added setting "Show token creator button" to show a token creator button on the bottom left of the portrait when hovering the portrait of an owned actor
+- PCs now sync their portrait to their archetypes portrait unless they have a custom portrait
+- Added perk use "per character" for perks that can be used for each character in the current story
+- Added a few [active effects](https://github.com/Saibot393/13omens/wiki/Active-effects) flags (`postselectgearcount.perstory`, `postselectgearcount.peract`, `rollbehaviour.edgehnl`)
+
+## v1.5.2
+- GMs/Hosts can now restore uses for perks with limited uses per Act/story
+
+## v1.5.1
+- GMs can now edit the suggested character traits in the pc sheet
+- Fixed bug that could cause the background field in the pc sheet to show the wrong relations/stay empty
+- Fixed bug with archetype creation in story actor
+- Fixed typo in settings translation
+
 ## v1.5.0
 - NPC Actor now have an inventory tab
   - NPC Actors now have a "Reveal Description" setting

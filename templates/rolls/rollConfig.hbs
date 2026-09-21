@@ -29,7 +29,8 @@
 				{{#each config.flaws as |flaw|}}
 					<div class="flexrow o13-padding">
 						<input class="o13-input o13-underline" type="text" index="{{@key}}" name="{{concat "flaws." @key ".name"}}" value="{{flaw.name}}" />
-						<i class="fa-solid fa-dice-six o13-label o13-lowflex o13-clickable" index="{{@key}}" data-action="toggleFlawOmen" {{#if flaw.isomen}}style="color:var(--o13-omen-red);"{{/if}}></i>
+						{{#if flaw.ignored}}<i class="fa-solid fa-ban o13-lowflex" data-tooltip="{{localize '13omens.tooltips.ignored'}}" style="color:var(--o13-dark-smoke-grey)"></i>{{/if}}
+						<i class="fa-solid fa-dice-six o13-label o13-lowflex o13-clickable" index="{{@key}}" data-action="toggleOmenFlaw" {{#if flaw.isomen}}style="color:var(--o13-omen-red);"{{/if}}></i>
 						<i class="fa-solid fa-x o13-label o13-lowflex o13-clickable" index="{{@key}}" data-action="removeFlaw"></i>
 					</div>
 				{{/each}}
@@ -39,6 +40,7 @@
 				{{#each config.edges as |edge|}}
 					<div class="flexrow o13-padding">
 						<input class="o13-input o13-underline" type="text" index="{{@key}}" name="{{concat "edges." @key ".name"}}" value="{{edge.name}}" />
+						{{#if edge.ignored}}<i class="fa-solid fa-ban o13-lowflex" data-tooltip="{{localize '13omens.tooltips.ignored'}}" style="color:var(--o13-dark-smoke-grey)"></i>{{/if}}
 						<i class="fa-solid fa-x o13-label o13-lowflex o13-clickable" index="{{@key}}" data-action="removeEdge"></i>
 					</div>
 				{{/each}}

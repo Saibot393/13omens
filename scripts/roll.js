@@ -2,6 +2,8 @@ const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 
 import { utils } from "./utils.js";
 
+import { o13WaitMixIn } from "./components/wait.js";
+
 export class o13Roll extends Roll {
 	constructor(actor, aspect, options = CONFIG["13OMENS"].DEFAULTROLLOPTIONS) {
 		super("0");
@@ -49,6 +51,10 @@ export class o13Roll extends Roll {
 		if (this.total < this.totalDifficulty) {
 			return -1;
 		}
+	}
+	
+	get resultDiff() {
+		return this.total - this.totalDifficulty;
 	}
 	
 	get actor() {
@@ -107,14 +113,13 @@ export class o13Roll extends Roll {
 		const dicePermut =  [...this.dicePermut];
 		
 		const flaws = this.flaws;
+		const omenflawcount = flaws.filter(flaw => flaw.isomen).length;
 		
-		if (this.FEDifference < 0) {
-			for (let i = 0; i < flaws.length; i++) {
-				if (flaws[i].isomen) {
-					const removedDice = dicePermut[i+2]; //leave first two dice alone
-					dicePermut[i+2] = "omen";
-					dicePermut.push(removedDice); //make sure no dice ist lost, probably irrelevant, better save than sorry
-				}
+		for (let i = this.totalDice-1; i >= this.totalDice-omenflawcount; i--) { //change dice from right to left
+			if (i >= 0) {
+				const removedDice = dicePermut[i];
+				dicePermut[i] = "omen";
+				dicePermut.push(removedDice); //make sure no dice ist lost, probably irrelevant, better save than sorry
 			}
 		}
 		
@@ -126,7 +131,7 @@ export class o13Roll extends Roll {
 	}
 	
 	get flawsCount() {
-		return this._rollData.flaws.length + (this.useStrain ? 1 : 0);
+		return this._rollData.flaws.filter(flaw => !flaw?.ignored).length + (this.useStrain ? 1 : 0);
 	}
 	
 	get omenflaws() {
@@ -138,7 +143,7 @@ export class o13Roll extends Roll {
 	}
 	
 	get edgesCount() {
-		return this._rollData.edges.length;
+		return this._rollData.edges.filter(edge => !edge?.ignored).length;
 	}
 	
 	get FEDifference() {
@@ -170,7 +175,7 @@ export class o13Roll extends Roll {
 	}
 	
 	get FERollMod() {
-		return this.FEDifference == 0 ? "" : this.FEDifference > 0 ? "kh2" : (this.rollBehaviour.flawhnl ? "klh" : "kl2");
+		return this.FEDifference == 0 ? "" : this.FEDifference > 0 ? (this.rollBehaviour.flawhnl ? "klh" : "kh2") : (this.rollBehaviour.flawhnl ? "klh" : "kl2");
 	}	
 	
 	get FEDescription() {
@@ -491,11 +496,12 @@ export class o13Roll extends Roll {
 	}
 }
 
-export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
+export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(ApplicationV2)) {
 	constructor(actor, data, quickRoll = false, isSecondary = false) {
 		super();
 		
 		this._actor = actor;
+		this.actor.activeRollConfig = this;
 		
 		this._data = {
 			...CONFIG["13OMENS"].DEFAULTROLLOPTIONS,
@@ -561,7 +567,7 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 			...data
 		}
 		
-		this.render();
+		return this._applyUpdate();
 	}
 	
 	get title() {
@@ -649,7 +655,7 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 	
 	toggleOmenFlaw(index) {
-		if (this._data.flaw[index]) this._data.flaw[index].isomen = !this._data.flaw[index].isomen;
+		if (this._data.flaws[index]) this._data.flaws[index].isomen = !this._data.flaws[index].isomen;
 	}
 	
 	static DEFAULT_OPTIONS = {
@@ -672,7 +678,6 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 			addEmptyFlaw : o13rollConfig.DAaddEmptyFlaw,
 			addEmptyEdge : o13rollConfig.DAaddEmptyEdge,
 			removeFlaw : o13rollConfig.DAremoveFlaw,
-			toggleFlawOmen : o13rollConfig.DAtoggleFlawOmen,
 			toggleOmenFlaw : o13rollConfig.DAtoggleOmenFlaw,
 			removeEdge : o13rollConfig.DAremoveEdge,
 			removeStrain : o13rollConfig.DAremoveStrain,
@@ -703,6 +708,8 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 	}
 	
 	_applyUpdate(fromRemote = false) {
+		utils.expandRollData(this._data);
+		
 		this.render(true);
 		
 		if (!fromRemote) this._updateRemote();
@@ -746,22 +753,14 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 		this._applyUpdate();
 	}
 	
-	static async DAtoggleFlawOmen(event, target) {
-		const index = target.getAttribute("index");
-		
-		if (isNaN(index)) return;
-		
-		this._data.flaws[index].isomen = !this._data.flaws[index].isomen;
-		
-		this._applyUpdate();
-	}
-	
 	static async DAtoggleOmenFlaw(event, target) {
 		const index = target.getAttribute("index");
 		
 		if (isNaN(index)) return;
 		
 		this.toggleOmenFlaw(index);
+		
+		this._applyUpdate();
 	}
 	
 	static async DAremoveStrain(event, target) {
@@ -784,9 +783,12 @@ export class o13rollConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 		const roll = new o13Roll(this.actor, this.aspect, this._data);
 
 		await roll.evaluate();
+		
+		this._resolveWait(roll);
+		
 		await roll.toMessage();
 		
-		this.close();
+		await this.close();
 		
 		return roll;
 	}

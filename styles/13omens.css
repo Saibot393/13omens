@@ -185,12 +185,10 @@ select:disabled {
 	display:inline-block;
 	flex: 0 0 auto;
 	position: relative;
-	padding: 5px;
 	width: fit-content;
     height: fit-content;
 	max-height: var(--o13-portrait-height);
 	margin : 5px;
-	padding : 2px;
 	border: 2px solid var(--o13-ink-black);
 	line-height: 0;
 }
@@ -257,7 +255,7 @@ select:disabled {
 }
 
 .o13-checkbox:disabled{
-	--checkbox-checkmark-color: var(--o13-ink-grey);
+	background-color: var(--o13-dark-smoke-grey);
 }
 
 .checkmark {
@@ -401,6 +399,13 @@ select:disabled {
 	color: var(--o13-ink-black)
 }
 
+.o13-bottom-left{
+	position: absolute;
+	bottom: 12px;
+	left: 12px;
+	color: var(--o13-ink-black)
+}
+
 span .o13-hover-icon {
 	display: none;
 }
@@ -409,11 +414,13 @@ span:hover > .o13-hover-icon {
 	display: inline-block;
 }
 
-div .o13-hover-icon.o13-bottom-right {
+div .o13-hover-icon.o13-bottom-right,
+div .o13-hover-icon.o13-bottom-left {
 	display: none;
 }
 
-div:hover > .o13-hover-icon.o13-bottom-right {
+div:hover > .o13-hover-icon.o13-bottom-right,
+div:hover > .o13-hover-icon.o13-bottom-left {
 	display: inline-block;
 }
 

@@ -74,9 +74,13 @@ export class utils {
 		if (data.tD && !data.taskDifficulty) data.taskDifficulty = data.tD;
 		if (data.of && !data.omenflaw) data.omenflaw = data.of;
 		
+		if (data.ignoredflaws) data.ignoredFlaws = data.ignoredflaws;
+		if (data.ignorededges) data.ignoredEdges = data.ignorededges;
+		
 		if (data.flaws) data.flaws = data.flaws.map(flaw => typeof flaw == "string" ? {name : flaw} : flaw);
 		if (data.omenflaw) data.omenflaws = [{name : game.i18n.localize("13omens.titles.omenflaw") ,isomen : true}];
-		if (data.omenflaws) data.flaws = [...(data.flaws || []), ...data.omenflaws.map(flaw => typeof flaw == "string" ? {name : flaw, isomen : true} : flaw)]
+		if (data.omenflaws) data.flaws = [...(data.flaws || []), ...data.omenflaws.map(flaw => typeof flaw == "string" ? {name : flaw, isomen : true} : flaw)];
+		if (data.edges) data.edges = data.edges.map(edge => typeof edge == "string" ? {name : edge} : edge);
 		if (typeof data.taskDifficulty == "string") {
 			switch (data.taskDifficulty.toLowerCase().replaceAll(" ", "")) {
 				case "veryeasy": data.taskDifficulty = -2; break;
@@ -87,7 +91,19 @@ export class utils {
 				default: data.taskDifficulty = 0;
 			}
 		}
-		if (data.edges) data.edges = data.edges.map(edge => typeof edge == "string" ? {name : edge} : edge);
+		
+		if (data.ignoredFlaws > 0) {
+			for (let i = 0; i < Math.min(data.ignoredFlaws, data.flaws?.length); i++) {
+				data.flaws[i].ignored = true;
+			}
+		}
+		
+		if (data.ignoredEdges > 0) {
+			for (let i = 0; i < Math.min(data.ignoredEdges, data.edges?.length); i++) {
+				data.edges[i].ignored = true;
+			}
+		}
+		
 		return data; //no return necessary as data is mutated directly
 	}
 	
@@ -132,13 +148,16 @@ export class utils {
 		for (const modifier of modifiers) {
 			combine.addflaws = [...combine.addflaws, ...(modifier.addflaws ?? [])];
 			combine.addedges = [...combine.addedges, ...(modifier.addedges ?? [])];
+			combine.ignoredflaws = combine.ignoredflaws + modifier.ignoredflaws;
+			combine.ignorededges = combine.ignorededges + modifier.ignorededges;
 			combine.nostrain = Boolean(combine.nostrain || modifier.nostrain);
 			combine.woundthreshold = modifier.woundthreshold ?? combine.woundthreshold;
 			combine.strainthreshold = modifier.strainthreshold ?? combine.strainthreshold;
 			combine.rollbehaviour = {
 				redrawomendice : combine.rollbehaviour.redrawomendice + modifier.rollbehaviour.redrawomendice,
 				rerolls : combine.rollbehaviour.rerolls + modifier.rollbehaviour.rerolls,
-				flawhnl : combine.rollbehaviour.flawhnl || modifier.rollbehaviour.flawhnl//use highest and lowest dice when rolling with flaw
+				flawhnl : combine.rollbehaviour.flawhnl || modifier.rollbehaviour.flawhnl,//use highest and lowest dice when rolling with flaw
+				edgehnl : combine.rollbehaviour.edgehnl || modifier.rollbehaviour.edgehnl//use highest and lowest dice when rolling with edge
 			}
 		}
 		
@@ -150,6 +169,8 @@ export class utils {
 		
 		base.flaws = modifiers.addflaws ?? base.flaws;
 		base.edges = modifiers.addedges ?? base.edges;
+		base.ignoredFlaws = modifiers.ignoredflaws ?? base.ignoredFlaws;
+		base.ignoredEdges = modifiers.ignorededges ?? base.ignoredEdges;
 		base.ignoreStrain = modifiers.nostrain ?? base.ignoreStrain;
 		base.woundThreshold = modifiers.woundthreshold ?? base.woundThreshold;
 		base.strainThreshold = modifiers.strainthreshold ?? base.strainThreshold;
@@ -163,8 +184,10 @@ export class utils {
 
 		for (const config of configs) {
 			combine.dicePermut = config.dicePermut ?? combine.dicePermut;
-			if (config.flaws) combine.flaws = [...combine.flaws, ...(config.flaws ?? [])]
-			if (config.edges) combine.edges = [...combine.edges, ...(config.edges ?? [])]
+			if (config.flaws) combine.flaws = [...combine.flaws, ...(config.flaws ?? [])];
+			if (config.edges) combine.edges = [...combine.edges, ...(config.edges ?? [])];
+			if (!isNaN(config.ignoredFlaws)) combine.ignoredFlaws = combine.ignoredFlaws + config.ignoredFlaws;
+			if (!isNaN(config.ignoredEdges)) combine.ignoredEdges = combine.ignoredEdges + config.ignoredEdges;
 			combine.strain = config.strain ?? combine.strain;
 			combine.ignoreStrain = Boolean(combine.ignoreStrain || config.ignoreStrain);
 			combine.targetNumber = config.targetNumber ?? combine.targetNumber;
