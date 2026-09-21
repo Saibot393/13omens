@@ -518,7 +518,7 @@ export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(Appli
 		if (CONFIG.debug.o13?.rolls) console.log(this);
 		
 		if (quickRoll) o13rollConfig.roll.call(this)
-		else if (!this._secondaryView) this._applyUpdate();
+		else if (!this._secondaryView) this._applyUpdate(false, true);
 	}
 	
 	static newRemote(socketData) {
@@ -707,10 +707,10 @@ export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(Appli
 		this._applyUpdate();
 	}
 	
-	_applyUpdate(fromRemote = false) {
+	_applyUpdate(fromRemote = false, forceRender = false) {
 		utils.expandRollData(this._data);
 		
-		this.render(true);
+		if ((this.rendered || forceRender) && !this._closed) this.render(true);
 		
 		if (!fromRemote) this._updateRemote();
 	}
@@ -794,9 +794,9 @@ export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(Appli
 	}
 	
 	async _onClose(options) {
-		await super._onClose(options);
-		
 		this._closed = true;
+		
+		await super._onClose(options);
 		
 		if (!this.isSecondaryView) this._updateRemote();
 	}

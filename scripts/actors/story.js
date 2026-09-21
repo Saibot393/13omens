@@ -233,9 +233,9 @@ export function o13storyActorMixin(base) {
 			
 			const currentActors = this.pcActors;
 			
-			const currentUsers = [...game.users].filter(user => currentActors.some(actor => actor.testUserPermission(user, "OWNER")));
+			const currentUsers = game.users.filter(user => currentActors.some(actor => actor.testUserPermission(user, "OWNER")));
 			
-			const targetUsers = [...game.users].filter(user => !currentUsers.includes(user)).filter(user => !user.isGM);
+			const targetUsers = game.users.filter(user => !currentUsers.includes(user)).filter(user => !user.isGM);
 			
 			const actors = [];
 			
@@ -321,7 +321,7 @@ export function o13storyActorMixin(base) {
 		
 		//Archetypes
 		get archetypes() {
-			return [...this.items].filter(item => item.type == "archetype").sort((a,b) => a.sort - b.sort);
+			return this.items.filter(item => item.type == "archetype").sort((a,b) => a.sort - b.sort);
 		}
 		
 		get archetypesUnique() {
