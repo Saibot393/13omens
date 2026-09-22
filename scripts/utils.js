@@ -269,10 +269,11 @@ export class utils {
 		
 		const values = Object.values(utils.romanBase);
 		
+		const backstep = (index) => 2 - (index % 2); //the numbers of steps to go back to get the reduction letter
+		
 		const reducedValues = values.map((value, index) => {
 			if (index > 0) {
-				const backstep = 2 - (index % 2);
-				return value - values[index - backstep];
+				return value - values[index - backstep(index)];
 			}
 			return value;
 		});
@@ -283,7 +284,7 @@ export class utils {
 		let currentValue = utils.romanBase[targetLetters];
 		
 		if (num < values[targetIndex]) {
-			const reductionIndex = targetIndex - (2 - (targetIndex % 2));
+			const reductionIndex = targetIndex - backstep(targetIndex);
 			const reductionLetter = Object.keys(utils.romanBase)[reductionIndex];
 			targetLetters = reductionLetter + targetLetters;
 			currentValue = currentValue - utils.romanBase[reductionLetter];
