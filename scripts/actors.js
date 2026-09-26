@@ -383,4 +383,16 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 		
 		return rerender;
 	}
+	
+	async _onUpdateItem(item, changes, options, userId) {
+		let rerender = false;
+		
+		if (this.actor.isPC) {
+			if (item == this.actor.archetype) {
+				rerender = true;
+			}
+		}
+		
+		return rerender;
+	}
 }
