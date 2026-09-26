@@ -1,3 +1,12 @@
+## v1.7.0
+- Added Active Effects Condition system:
+  - active "when uses left" (default), this active effect is applied while the perk has uses left (or alway active if passive)
+  - active "when used up", this active effect is applied while the perk has no uses left
+  - active "on next roll", this active effect is applied if the player explicitly activates in for the next roll via the dice symbol in the perk card
+- Improved player character update to sync with archetype updates
+- Added some utils for future features
+- small internal refactor to improve performance
+
 ## v1.6.4
 - Updated actor roll work flow to allow for easier use in macros
 - Only one active roll config can now be open per actor (to prevent ui spam)

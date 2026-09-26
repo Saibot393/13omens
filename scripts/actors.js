@@ -26,7 +26,7 @@ export class o13Actor extends Actor {
 			if (embeddedName == "Item") {
 				const types = [...new Set(localData.map(entry => entry.type))];
 				for (const type of types) {
-					const typeItems = [...this.items].filter(item => item.type == type);
+					const typeItems = this.items.filter(item => item.type == type);
 					let sortValue = Math.max(...typeItems.map(item => item.sort));
 					if (!isNaN(sortValue) && sortValue > -Infinity) {
 						for (const entry of localData) {
@@ -55,6 +55,11 @@ export class o13Actor extends Actor {
 				}
 			}
 		}
+	}
+	
+	refresh() {
+		this.prepareData();
+		this.render();
 	}
 	
 	async openTokenCreator() {
@@ -327,6 +332,14 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 		}
 	}
 	
+	async toggleUsePerkOnNextRoll(event, target) {
+		if (this.actor.isPC) {
+			const perkID = target.getAttribute("perk-id");
+
+			this.actor.toggleUsePerkOnNextRoll(perkID);
+		}
+	}
+	
 	async _onUpdateActor(actor, changes, options, userId) {
 		let rerender = false;
 		
@@ -365,6 +378,18 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 						}
 					}
 				}
+			}
+		}
+		
+		return rerender;
+	}
+	
+	async _onUpdateItem(item, changes, options, userId) {
+		let rerender = false;
+		
+		if (this.actor.isPC) {
+			if (item == this.actor.archetype) {
+				rerender = true;
 			}
 		}
 		

@@ -37,11 +37,16 @@
 							<b {{#if ../actor.isHostView}}class="o13-clickable" data-action="openPerk"{{/if}} perk-id="{{this._id}}">{{this.name}} </b> 
 							<i class="fa-solid fa-message o13-icon o13-clickable o13-hover-icon" gear-id="{{this._id}}" data-action="posttoChat" perk-id="{{this._id}}"></i>
 							{{{lookup (lookup ../enriched.perks this._id) "description"}}}
-							{{#if (and this.canBeUsed this.isChosen)}}
-								<span class="o13-button o13-clickable" data-action="usePerk" perk-id="{{this._id}}">
-									{{localize "13omens.actions.usePerk"}} [{{this.usesLeft}}/{{this.usesMax}}] {{#if actor.isHostView}}<i class="fa-solid fa-plus  o13-icon o13-hover-icon o13-clickable" perk-id="{{this._id}}" data-action="restoreUse" data-tooltip="{{localize "13omens.tooltips.restoreUse"}}"></i>{{/if}}
-								</span>
-							{{/if }}
+							{{#if this.isChosen}}
+								{{#if this.hasNextRollUse}}
+									<i class="fa-solid fa-dice-six o13-clickable o13-toggle {{#if this.usedonNextRoll}}active-blue{{/if}}" data-action="toggleUsePerkOnNextRoll" data-tooltip="{{localize "13omens.tooltips.useonNextCheck"}}" perk-id="{{this._id}}"></i>
+								{{/if}}
+								{{#if this.canBeUsed}}
+									<span class="o13-button o13-clickable" data-action="usePerk" perk-id="{{this._id}}">
+										{{localize "13omens.actions.usePerk"}} [{{this.usesLeft}}/{{this.usesMax}}] {{#if actor.isHostView}}<i class="fa-solid fa-plus  o13-icon o13-hover-icon o13-clickable" perk-id="{{this._id}}" data-action="restoreUse" data-tooltip="{{localize "13omens.tooltips.restoreUse"}}"></i>{{/if}}
+									</span>
+								{{/if }}
+							{{/if}}
 						</span>
 					</div>
 				{{/if}}

@@ -20,6 +20,18 @@ export function o13archetypeItemMixin(base) {
 			await super._preUpdate(changed, options, user);
 		}
 		
+		async _onUpdate(changed, options, userId) {
+			await super._onUpdate(changed, options, userId);
+			
+			if (this.parent?.isStory) {
+				const pcs = this.parent.pcActors?.filter(pc => pc.archetype == this);
+				
+				for (const pc of pcs) {
+					await pc.updateArchetypeItems();
+				}
+			}
+		}
+		
 		//Story
 		get storyActor() {
 			if (this.parent?.type == "story") {

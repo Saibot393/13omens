@@ -173,12 +173,12 @@ export function o13pcActorMixin(base) {
 		}
 		
 		get characterPrepState() {
-			return [...game.users].some(user => user.character == this) ? "ready" : "pending";
+			return game.users.some(user => user.character == this) ? "ready" : "pending";
 		}
 		
 		//Story
 		get storyActor() {
-			return [...game.actors].find(actor => actor.isStory && actor.hasPC(this))
+			return game.actors.find(actor => actor.isStory && actor.hasPC(this))
 		}
 		
 		get siblingCharacters() {
@@ -279,7 +279,7 @@ export function o13pcActorMixin(base) {
 		}
 		
 		async removeOwnArchetype() {
-			const oldArchetypes = [...this.items].filter(item => item.isArchetype);
+			const oldArchetypes = this.items.filter(item => item.isArchetype);
 				
 			const shouldSyncImage = this.shouldSynchArchetypePortrait;
 				
@@ -290,11 +290,11 @@ export function o13pcActorMixin(base) {
 		}
 		
 		get ownArchetype() {
-			return [...this.items].find(item => item.isArchetype);
+			return this.items.find(item => item.isArchetype);
 		}
 		
 		get hasOwnArchetype() {
-			return [...this.items].some(item => item.isArchetype);
+			return this.items.some(item => item.isArchetype);
 		}
 		
 		async removeArchetypeItems() {
@@ -412,6 +412,10 @@ export function o13pcActorMixin(base) {
 			if (perk?.isPerk) {
 				perk.toChatMessage(messageData);
 			}
+		}
+		
+		toggleUsePerkOnNextRoll(id) {
+			this.pickedPerks[id]?.toggleUseOnNextRoll();
 		}
 		
 		//Gear
@@ -610,12 +614,27 @@ export function o13pcActorMixin(base) {
 					this._lastrolloptions = options;
 					this._activerollconfig = new o13rollConfig(this, {...config, aspect : aspectName}, quickRoll);
 					
-					return this._activerollconfig.wait();
+					return new Promise(async (resolver) => {
+						const roll = await this._activerollconfig.wait();
+						
+						await this.onRollRolled(roll);
+						
+						resolver(roll);
+					})
+					
 				}
 			}
 			else {
 				ui.notifications.warn(game.i18n.localize("13omens.warnings.selectRating"), {console : false});
 			}
+		}
+		
+		async onRollRolled(roll) {
+			for (const perk of Object.values(this.pickedPerks)) {
+				perk.onRollRolled(false);
+			}
+			
+			this.refresh();
 		}
 		
 		async updateActiveRollConfig(options = {}) {
@@ -954,6 +973,12 @@ export function o13pcActorMixin(base) {
 		prepareEmbeddedDocuments() {
 			this.checkPerkEffectActivation();
 			super.prepareEmbeddedDocuments();
+		}
+		
+		prepareData() {
+			super.prepareData();
+			
+			this.updateActiveRollConfig();
 		}
 	}
 }

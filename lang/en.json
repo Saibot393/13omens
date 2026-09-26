@@ -147,7 +147,15 @@
 			"lootable" : "Can be looted",
 			"revealDescription" : "Reveal Description",
 			
-			"tokenCreator" : "Token creator"
+			"tokenCreator" : "Token creator",
+			
+			"AEConditions" : {
+				"usesleft" : "when uses left",
+				"usedup" : "when used up",
+				"nextroll" : "on next roll"
+			},
+			
+			"active" : "active"
 		},
 		
 		"actions" : {
@@ -180,7 +188,8 @@
 			"problem" : "Problem",
 			"openTokenCreator" : "Open token creator",
 			"restoreUse" : "Restore use",
-			"ignored" : "Ignored"
+			"ignored" : "Ignored",
+			"useonNextCheck" : "Use on next check"
 		},
 		
 		"chats" : {

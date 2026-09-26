@@ -248,9 +248,48 @@ export class utils {
 		
 		//owned actors
 		if (!Actor && !game.user.isGM) {
-			[...game.actors].find(a => a.isOwner && (!type || a.type == type));
+			game.actors.find(a => a.isOwner && (!type || a.type == type));
 		}
 		
 		return Actor;
+	}
+	
+	static romanBase = {
+		I : 1,
+		V : 5,
+		X : 10,
+		L : 50,
+		C : 100,
+		D : 500,
+		M : 1000
+	}
+	
+	static numtoRoman(num) {
+		if (num < 0) throw new RangeError("Only values larger than 0 can be converted to roman numerals");
+		
+		const values = Object.values(utils.romanBase);
+		
+		const backstep = (index) => 2 - (index % 2); //the numbers of steps to go back to get the reduction letter
+		
+		const reducedValues = values.map((value, index) => {
+			if (index > 0) {
+				return value - values[index - backstep(index)];
+			}
+			return value;
+		});
+		
+		const targetValue = Math.max(...reducedValues.filter(value => value <= num));
+		const targetIndex = reducedValues.indexOf(targetValue);
+		let targetLetters = Object.keys(utils.romanBase)[targetIndex];
+		let currentValue = utils.romanBase[targetLetters];
+		
+		if (num < values[targetIndex]) {
+			const reductionIndex = targetIndex - backstep(targetIndex);
+			const reductionLetter = Object.keys(utils.romanBase)[reductionIndex];
+			targetLetters = reductionLetter + targetLetters;
+			currentValue = currentValue - utils.romanBase[reductionLetter];
+		}
+		
+		return targetLetters + (currentValue < num ? utils.numtoRoman(num - currentValue) : "");
 	}
 }
