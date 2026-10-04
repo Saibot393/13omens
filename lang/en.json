@@ -264,6 +264,11 @@
 				"name" : "Show token creator button",
 				"descrp" : "Show a token creator button at the bottom left of an actor portrait when hovering over it"
 			}
+		},
+		
+		"DSN" : {
+			"safeDice" : "Safe dice",
+			"omenDice" : "Omen dice"
 		}
 	}
 }
