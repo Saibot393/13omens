@@ -38,4 +38,28 @@ export function onO13Hooks() {
 			}
 		}
 	});
+	
+	Hooks.once("diceSoNiceReady", (dice3d) => {
+		dice3d.addColorset({
+			name: "o13-safe",
+			description : "DESCRIPTION",
+			category : "13 OMENS",
+			foreground: "#FFFFFF",
+			background: "#7e7e7e",
+			outline: "#000000",
+			edge: "#000000",
+			material: "obsidian"
+		}),
+		
+		dice3d.addColorset({
+			name: "o13-omen",
+			description : "DESCRIPTION",
+			category : "13 OMENS",
+			foreground: "#FFFFFF",
+			background: "#880808",
+			outline: "#000000",
+			edge: "#000000",
+			material: "obsidian"
+		})		
+	});
 }

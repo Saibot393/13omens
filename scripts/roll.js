@@ -227,6 +227,10 @@ export class o13Roll extends Roll {
 	}
 	
 	get formula() {
+		const dicePermut = this.dicePermut;
+		
+		return Array.from({length : this.totalDice}).map((entry, index) => `1d6[o13-${dicePermut[index]}]`).join("+");
+		
 		return `${this.totalDice}d6`
 	}
 	
@@ -236,8 +240,10 @@ export class o13Roll extends Roll {
 		}
 		
 		const dicePermut = this.dicePermut;
-		
-		return this.terms[0].results.map((result, index) => ({face : result.result, type : dicePermut[index], crossed : result.discarded, mystery : this.canValiantSacrifice}))
+
+		const results = this.dice.map(die => die.results).flat();
+
+		return results.map((result, index) => ({face : result.result, type : dicePermut[index], crossed : result.discarded, mystery : this.canValiantSacrifice}))
 	}
 	
 	get rollsOmenDice() {
