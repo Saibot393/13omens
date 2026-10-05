@@ -1,3 +1,7 @@
+## v1.7.1
+- Added compatiblity for [Dice So Nice!](https://foundryvtt.com/packages/dice-so-nice/)
+- Stopped advance act dialogue spam, only one of these can now be open at a given time
+
 ## v1.7.0
 - Added Active Effects Condition system:
   - active "when uses left" (default), this active effect is applied while the perk has uses left (or alway active if passive)

@@ -5,6 +5,7 @@ import {utils} from "../utils.js";
 import {showBanner} from "../components/banner.js";
 
 import {o13prepState} from "../dialogues/prepState.js";
+import {o13confirmQuery} from "../dialogues/confirmQuery.js";
 
 export function o13storyActorMixin(base) {
 	return class o13storyActor extends base {
@@ -104,15 +105,17 @@ export function o13storyActorMixin(base) {
 						if (!advance) return;
 					}
 					else {
-						const advance = await foundry.applications.api.DialogV2.confirm({
-							window: { title: game.i18n.localize("13omens.titles.confirmAdvanceAct") },
-							content: await foundry.applications.handlebars.renderTemplate("systems/13omens/templates/dialogues/general.hbs", {
-								content : {
-									text : game.i18n.format("13omens.dialogues.confirmAdvanceAct", {act : game.i18n.localize("13omens.titles.actNames." + targetAct)})
-								}
-							}),
-							rejectClose: false
+						if (this._actChangeConfirmDialogue) await this._actChangeConfirmDialogue.close();
+
+						this._actChangeConfirmDialogue = new o13confirmQuery({
+							window : {
+								title : game.i18n.localize("13omens.titles.confirmAdvanceAct")
+							},
+							query : game.i18n.format("13omens.dialogues.confirmAdvanceAct", {act : game.i18n.localize("13omens.titles.actNames." + targetAct)})
 						});
+						const advance = await this._actChangeConfirmDialogue.wait(true);
+
+						this._actChangeConfirmDialogue = null;
 						
 						if (!advance) return;
 					}

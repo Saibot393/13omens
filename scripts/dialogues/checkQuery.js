@@ -4,12 +4,12 @@ import {o13WaitMixIn} from "../components/wait.js";
 const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
 
 export class o13checkQuery extends o13WaitMixIn(o13SheetMixin(HandlebarsApplicationMixin(ApplicationV2))) {
-	constructor (checks = {}, options = {query : null}) {
-		super();
+	constructor (options = {query : null, checks : {}}) {
+		super(options);
 		
-		this._closeResolve = checks;
+		this._closeResolve = options.checks;
 		
-		this._checks = foundry.utils.deepClone(checks);
+		this._checks = foundry.utils.deepClone(options.checks);
 		this._query = options.query;
 	}
 	

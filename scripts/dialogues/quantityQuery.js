@@ -5,7 +5,7 @@ const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
 
 export class o13quantityQuery extends o13WaitMixIn(o13SheetMixin(HandlebarsApplicationMixin(ApplicationV2))) {
 	constructor (options = {max : null, min : 0, query : null, default : null}) {
-		super();
+		super(options);
 		
 		this._closeResolve = undefined;
 		

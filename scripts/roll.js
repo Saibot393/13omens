@@ -227,7 +227,15 @@ export class o13Roll extends Roll {
 	}
 	
 	get formula() {
+		const dicePermut = this.dicePermut;
+		
+		return Array.from({length : this.totalDice}).map((entry, index) => `1d6[o13-${dicePermut[index]}]`).join("+");
+		
 		return `${this.totalDice}d6`
+	}
+	
+	get termResults() {
+		return this.dice.map(die => die.results).flat();
 	}
 	
 	get diceResults() {
@@ -236,27 +244,33 @@ export class o13Roll extends Roll {
 		}
 		
 		const dicePermut = this.dicePermut;
-		
-		return this.terms[0].results.map((result, index) => ({face : result.result, type : dicePermut[index], crossed : result.discarded, mystery : this.canValiantSacrifice}))
+
+		const termResults = this.termResults;//this.dice.map(die => die.results).flat();
+
+		return termResults.map((result, index) => ({face : result.result, type : dicePermut[index], crossed : result.discarded, mystery : this.canValiantSacrifice}))
 	}
 	
 	get rollsOmenDice() {
 		const dicePermut = this.dicePermut;
-		return this.terms[0]?.results?.some((result, index) => dicePermut[index] == "omen");
+		return this.termResults?.some((result, index) => dicePermut[index] == "omen");
+		
 	}
 	
 	get rollsSafeDice() {
 		const dicePermut = this.dicePermut;
-		return this.terms[0]?.results?.some((result, index) => dicePermut[index] == "safe");
+		return this.termResults?.some((result, index) => dicePermut[index] == "safe");
 	}
 	
-	rerollDiceSelection(indices) {
-		if (this.terms[0]?.results) {
-			for (const index of indices) {
-				if (this.terms[0].results[index]?.result) {
-					this.terms[0].results[index].result = Math.floor(Math.random() * 6) + 1
-				}
-			}
+	async rerollDiceSelection(indices) {
+		const dicePermut = this.dicePermut;
+		
+		const rerollFormula = indices.map(index => `1d6[o13-${dicePermut[index]}]`).join("+");
+		const reroll = new Roll(rerollFormula);
+		await reroll.evaluate();
+		
+		await game.dice3d?.showForRoll(reroll);//DSN
+		for (const index in indices) {
+			this.termResults[indices[index]].result = reroll.dice[index].total;
 		}
 	}
 	
@@ -293,7 +307,7 @@ export class o13Roll extends Roll {
 	}
 	
 	applyDiceSelection() {
-		const termResults = this.terms[0].results;
+		const termResults = this.termResults;
 		
 		const numbers = termResults.map(r => r.result);
 
@@ -472,9 +486,9 @@ export class o13Roll extends Roll {
 				}
 			}
 			
-			this.rerollDiceSelection(redrawn);
-			
 			this._rollData.dicePermut = [...usedDice, ...unusedDice];
+			
+			await this.rerollDiceSelection(redrawn);
 			
 			this._evaluateTotal();
 		}
@@ -491,8 +505,21 @@ export class o13Roll extends Roll {
 	
 	async refuseValiantSacrifice() {
 		if (this.canValiantSacrifice  && this.isOwner) {
+			await game.dice3d?.showForRoll(this); //DSN
 			this._canvaliantsacrifice = false;
 		}
+	}
+	
+	get show3d() {//DSN
+		return !this.canValiantSacrifice;
+	}
+	
+	toMessage(messageData = {}, options = {}) { //DSN
+		messageData.flags ??= {};
+		messageData.flags["dice-so-nice"] ??= {};
+		messageData.flags["dice-so-nice"].skip = messageData.flags.skip || !this.show3d;
+		
+		return super.toMessage(messageData, options);
 	}
 }
 
