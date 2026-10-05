@@ -41,6 +41,12 @@ I have multiple additions to the system planned, the following is an incomplete 
 
 As of v1.5.0 all items of the original release roadmap have been implemented. Further plans can be found in the issue section of the github page.
 
+## Compatibility
+
+As far as i know there are no modules that are explicitly incompatible with the system.
+
+[Dice So Nice!](https://foundryvtt.com/packages/dice-so-nice/) is fully compatible with the modules rolls.
+
 ## Bugs and Feature requests
 
 If you encounter any bugs or issues while playing, [please let me know](https://github.com/Saibot393/13omens/issues).
