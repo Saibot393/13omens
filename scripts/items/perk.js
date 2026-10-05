@@ -94,7 +94,7 @@ export function o13perkItemMixin(base) {
 				}]
 			}));
 			
-			const updatedState = await new o13checkQuery(usedCharacterState, {query : game.i18n.localize("13omens.titles.used")}).wait(true);
+			const updatedState = await new o13checkQuery({query : game.i18n.localize("13omens.titles.used"), checks : usedCharacterState}).wait(true);
 			
 			const usedCharacters = Object.keys(updatedState).filter(key => updatedState[key].checked)
 			
