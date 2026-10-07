@@ -190,7 +190,8 @@
 			"openTokenCreator" : "Open token creator",
 			"restoreUse" : "Restore use",
 			"ignored" : "Ignored",
-			"useonNextCheck" : "Use on next check"
+			"useonNextCheck" : "Use on next check",
+			"sortAlphabetically" : "Sort alphabetically"
 		},
 		
 		"chats" : {
@@ -219,6 +220,10 @@
 			"welcome_prerelease" : {
 				"title" : "Welcome to the <b>13&nbsp;Omens</b> system",
 				"text" : "It is recommended to use this system in combination with the 13&nbsp;Omens preview pdf, which you can get from the <b><a href=\"https://store.paizo.com/13-omens/\">Paizo store</a></b>"
+			},
+			"kickstarter_start" : {
+				"title" : "Kickstarter launch",
+				"text" : "The <b><a href=\"https://www.kickstarter.com/projects/officialpaizo/13-omens-a-horror-rpg\">13 Omens Kickstarter</a></b> campaign has officially launched."
 			}
 		},
 		

@@ -6,6 +6,13 @@ const NEWS = {
 		endDate : null, //optional
 		additionals : {}, //optional
 		customContent : null
+	},
+	kickstarter_start : {
+		contentKey : "kickstarter_start",
+		startDate : "Oct 13 2026 12:00:00 PDT",
+		additionals : {
+			after : `<a href="https://www.kickstarter.com/projects/officialpaizo/13-omens-a-horror-rpg"><img src="https://i.kickstarter.com/assets/055/086/469/f11d4c8c588d222a736753f0340d4725_original.png?fit=scale-down&origin=ugc&q=100&v=1789137750&width=700&sig=%2Bjb89bNbhzGHFBEZMCVfG0xWFux4Bq5tb45S6dKrFho%3D"></a>`
+		}
 	}
 }
 
@@ -17,7 +24,7 @@ export class o13News {
 
 	static wrapedNews(contentKey, add = {}) {
 		const contentTitle = game.i18n.localize("13omens.news." + contentKey + ".title");
-		const contentText = game.i18n.localize("13omens.news." + contentKey + ".text");
+		const contentText = game.i18n.format("13omens.news." + contentKey + ".text");
 		
 		const additionals = typeof add == "object" ? add : {};
 		
