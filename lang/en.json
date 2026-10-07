@@ -190,7 +190,8 @@
 			"openTokenCreator" : "Open token creator",
 			"restoreUse" : "Restore use",
 			"ignored" : "Ignored",
-			"useonNextCheck" : "Use on next check"
+			"useonNextCheck" : "Use on next check",
+			"sortAlphabetically" : "Sort alphabetically"
 		},
 		
 		"chats" : {

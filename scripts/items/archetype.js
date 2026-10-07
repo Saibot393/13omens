@@ -105,14 +105,6 @@ export function o13archetypeItemMixin(base) {
 			}
 		}
 		
-		//perks
-		async createNewPerk(data = {}) {
-			const maxSort = Math.max(...Object.values(this.system.perks).map(entry => entry.sort || 0), 0);
-			const perk = new this.constructor({name : game.i18n.localize("13omens.titles.perk"), ...data, type : "perk", sort : maxSort + 10000});
-
-			return this.addSubItem(perk);
-		}
-		
 		//Gear
 		async createNewGear(data = {}) {
 			const maxSort = Math.max(...Object.values(this.system.gear).map(entry => entry.sort || 0), 0);
@@ -183,7 +175,28 @@ export function o13archetypeItemMixin(base) {
 			return this.system.selectablegearcount
 		}
 		
-		//Perks
+		async sortGearAlphabetically() {
+			const gearSorted = Object.values(this.system.gear);
+			
+			gearSorted.sort((a,b) => a.name.localeCompare(b.name));
+			
+			const dataUpdate = {system : {gear : {}}} 
+			
+			for (const gearID in gearSorted) {
+				if (gearSorted[gearID]._id) dataUpdate.system.gear[gearSorted[gearID]._id] = {sort : gearID * 10000};
+			}
+			
+			return this.update(dataUpdate);
+		}
+		
+		//perks
+		async createNewPerk(data = {}) {
+			const maxSort = Math.max(...Object.values(this.system.perks).map(entry => entry.sort || 0), 0);
+			const perk = new this.constructor({name : game.i18n.localize("13omens.titles.perk"), ...data, type : "perk", sort : maxSort + 10000});
+
+			return this.addSubItem(perk);
+		}
+		
 		get perksData() {
 			return Object.fromEntries(Object.entries(this.system.perks).sort((entrya, entryb) => entrya[1].sort - entryb[1].sort));
 		}
@@ -206,6 +219,20 @@ export function o13archetypeItemMixin(base) {
 		
 		get choosablePerks() {
 			return this.system.choosableperks;
+		}
+		
+		async sortPerksAlphabetically() {
+			const perksSorted = Object.values(this.system.perks);
+			
+			perksSorted.sort((a,b) => a.name.localeCompare(b.name));
+			
+			const dataUpdate = {system : {perks : {}}} 
+			
+			for (const perkID in perksSorted) {
+				if (perksSorted[perkID]._id) dataUpdate.system.perks[perksSorted[perkID]._id] = {sort : perkID * 10000};
+			}
+			
+			return this.update(dataUpdate);
 		}
 		
 		//data preperation/handling

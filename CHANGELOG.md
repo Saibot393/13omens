@@ -1,3 +1,7 @@
+## v1.7.2
+- Perks and gear can now be sorted alphabetically within archetypes
+- New pending news message for upcomming kickstarter launch
+
 ## v1.7.1
 - Added compatiblity for [Dice So Nice!](https://foundryvtt.com/packages/dice-so-nice/)
 - Stopped advance act dialogue spam, only one of these can now be open at a given time
