@@ -229,7 +229,7 @@ export class o13Roll extends Roll {
 	get formula() {
 		const dicePermut = this.dicePermut;
 		
-		return Array.from({length : this.totalDice}).map((entry, index) => `1d6[o13-${dicePermut[index]}]`).join("+");
+		return Array.from({length : this.totalDice}).map((entry, index) => `1d6[${dicePermut[index]}]`).join("+");
 		
 		return `${this.totalDice}d6`
 	}
@@ -264,7 +264,7 @@ export class o13Roll extends Roll {
 	async rerollDiceSelection(indices) {
 		const dicePermut = this.dicePermut;
 		
-		const rerollFormula = indices.map(index => `1d6[o13-${dicePermut[index]}]`).join("+");
+		const rerollFormula = indices.map(index => `1d6[${dicePermut[index]}]`).join("+");
 		const reroll = new Roll(rerollFormula);
 		await reroll.evaluate();
 		

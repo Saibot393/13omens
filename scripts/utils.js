@@ -292,4 +292,50 @@ export class utils {
 		
 		return targetLetters + (currentValue < num ? utils.numtoRoman(num - currentValue) : "");
 	}
+	
+	static COMPATIBILITY = {
+		DSN : {
+			applyDiceDesign : function (die) {
+				if (["safe", "omen"].includes(die?.options?.flavor)) {
+					die.options.appearance = utils.COMPATIBILITY.DSN.diceDesign(die?.options?.flavor);
+				}
+			},
+			
+			diceDesign : function (type) {
+				const fallback = {
+					save : "colorSets.o13-safe",
+					omen : "colorSets.o13-omen"
+				}
+				
+				if (["safe", "omen"].includes(type)) {
+					return utils.COMPATIBILITY.DSN.getDesign(game.settings.get("13omens", `customDSNdesign_${type}`), fallback[type]);
+				}
+			},
+			
+			getDesign : function (id, fallback = "",  designGroup = undefined) {
+				const designs = designGroup ?? utils.COMPATIBILITY.DSN.availableDesigns();
+				
+				const designType = id.split(".")[0];
+				const localID = id.split(".")[1];
+				
+				const design = designs[designType]?.[localID];
+				
+				return design ?? (fallback ? utils.COMPATIBILITY.DSN.getDesign(fallback, "", designs) : undefined);
+			},
+			
+			availableDesigns : function () {
+				return {
+					diceLibrary : Object.fromEntries(game.settings.get("dice-so-nice", "worldDiceLibrary").filter(die => die.dieType == "d6").map(die => [die.id, {
+						...die.baseAppearance, 
+						background : die.baseAppearance.diceColor,
+						foreground : die.baseAppearance.labelColor,
+						outline : die.baseAppearance.outlineColor,
+						edge : die.baseAppearance.edgeColor,
+						description : die.name
+					}])),
+					colorSets : game.dice3d.exports.COLORSETS
+				}
+			}
+		}
+	}
 }
