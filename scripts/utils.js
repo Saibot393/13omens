@@ -333,7 +333,7 @@ export class utils {
 						edge : die.baseAppearance.edgeColor,
 						description : die.name
 					}])),
-					colorSets : game.dice3d.exports.COLORSETS
+					colorSets : Object.fromEntries(Object.values(game.dice3d.exports.COLORSETS).filter(entry => !["coin_default", "custom"].includes(entry.id)).map(entry => [entry.id, {colorset : entry.name, description : entry.description}]))
 				}
 			}
 		}
