@@ -1,3 +1,9 @@
+## v1.7.3
+- Perk and Gear can now be dragged out of archetypes into other documents and the world item tab
+- Custom themes for dice so nice 3D dice can now be chosen
+	- World setting "[DSN] 3D safe dice design" for safe dice
+	- World setting "[DSN] 3D omen dice design" for omen dice
+
 ## v1.7.2
 - Perks and gear can now be sorted alphabetically within archetypes
 - New pending news message for upcomming kickstarter launch
