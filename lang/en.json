@@ -269,6 +269,14 @@
 			"tokenCreatorButton" : {
 				"name" : "Show token creator button",
 				"descrp" : "Show a token creator button at the bottom left of an actor portrait when hovering over it"
+			},
+			"customDSNdesign_safe" : {
+				"name" : "[DSN] 3D safe dice design",
+				"descrp" : "Design used for safe dice rolls in Dice So Nice!. Only themes and dice from the world dice library are available."
+			},
+			"customDSNdesign_omen" : {
+				"name" : "[DSN] 3D omen dice design",
+				"descrp" : "Design used for omen dice rolls in Dice So Nice!. Only themes and dice from the world dice library are available."
 			}
 		},
 		

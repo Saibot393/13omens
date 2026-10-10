@@ -1,4 +1,5 @@
 import {syncScreenBordertoSettings} from "./components/screenBorder.js";
+import {utils} from "./utils.js";
 
 export function registerSettings() {
 	game.settings.register("13omens", "showActBanner", {
@@ -106,6 +107,30 @@ export function registerSettings() {
 		type: Boolean,
 		default: true
 	})
+	
+	if (game.modules.get("dice-so-nice").active) {
+		game.settings.register("13omens", "customDSNdesign_safe", {
+			name: "13omens.settings.customDSNdesign_safe.name",
+			hint: "13omens.settings.customDSNdesign_safe.descrp",
+			scope: "world",       
+			config: true,        
+			requiresReload: false,
+			type: String,
+			choices : {},
+			default: "colorSets.o13-safe"
+		})
+		
+		game.settings.register("13omens", "customDSNdesign_omen", {
+			name: "13omens.settings.customDSNdesign_omen.name",
+			hint: "13omens.settings.customDSNdesign_omen.descrp",
+			scope: "world",       
+			config: true,        
+			requiresReload: false,
+			type: String,
+			choices : {},
+			default: "colorSets.o13-omen"
+		})
+	}
 	
 	Hooks.once("ready", () => {
 		if (game.user.isGM) {

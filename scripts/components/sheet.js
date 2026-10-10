@@ -324,7 +324,7 @@ export function o13SheetMixin(baseSheet) {
 			
 			const sortElement = targetElement.closest(".o13-sortable");
 			
-			const object = await fromUuid(dragData.uuid);
+			const object = await fromUuid(dragData.uuid) ?? (dragData.type && dragData.data && CONFIG[dragData.type]?.documentClass ? (new CONFIG[dragData.type].documentClass(dragData.data)) : undefined);
 			const selfOrigin = object?.parent == this.document;
 			const dropZone = targetElement.closest("[drop-zone]")?.getAttribute("drop-zone");
 			const sourceIDData = Object.fromEntries(["story", "pc", "npc", "archetype", "perk", "gear", "effect"].map(type => ([`${type}ID`, dragData[`${type}ID`]])));

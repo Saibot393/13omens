@@ -327,6 +327,16 @@ export function o13archetypeItemMixin(base) {
 		}
 		
 		prepareDragData(data, event) {
+			if (data.perkID || data.gearID) {
+				const item = this.getPerkItem(data.perkID) ?? this.getGearItem(data.gearID);
+				
+				if (item) {
+					data.type = "Item";
+					data.data = item.toObject();
+					delete data.data._id;
+				}
+			}
+			
 			data.parentArchetype = this.uuid;
 		}
 	}

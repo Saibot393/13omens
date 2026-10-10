@@ -1,4 +1,5 @@
 import {o13Roll} from "./roll.js";
+import {utils} from "./utils.js";
 
 export function onO13Hooks() {
 	Hooks.once("ready", async () => {
@@ -61,5 +62,28 @@ export function onO13Hooks() {
 			edge: "#000000i",
 			material: "wood"
 		});
+		
+		const updateDSNDesignChoices = () => {
+			const designs = utils.COMPATIBILITY.DSN.availableDesigns();
+			const designIDs = Object.keys(designs).map(typeKey => Object.keys(designs[typeKey]).map(designKey => `${typeKey}.${designKey}`)).flat();
+			const designChoices = Object.fromEntries(designIDs.map(key => [key, designs[key.split(".")[0]]?.[key.split(".")[1]]?.description]));
+			
+			game.settings.settings.get("13omens.customDSNdesign_safe").choices = designChoices;
+			game.settings.settings.get("13omens.customDSNdesign_omen").choices = designChoices;
+		}
+		
+		updateDSNDesignChoices();
+		
+		Hooks.on("updateSetting", (setting) => {
+			if (setting.key == "dice-so-nice.worldDiceLibrary") {
+				updateDSNDesignChoices();
+			}
+		})
 	});
+	
+	Hooks.on("diceSoNiceRollStart", (id, data) => {
+		for (const die of data.roll.dice) {
+			utils.COMPATIBILITY.DSN.applyDiceDesign(die);
+		}
+	})
 }
