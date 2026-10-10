@@ -324,8 +324,10 @@ export class utils {
 			},
 			
 			availableDesigns : function () {
+				const worldDiceLibrary = game.settings.settings.get("dice-so-nice.worldDiceLibrary") ? game.settings.get("dice-so-nice", "worldDiceLibrary") : [];
+				
 				return {
-					diceLibrary : Object.fromEntries(game.settings.get("dice-so-nice", "worldDiceLibrary").filter(die => die.dieType == "d6").map(die => [die.id, {
+					diceLibrary : Object.fromEntries(worldDiceLibrary.filter(die => die.dieType == "d6").map(die => [die.id, {
 						...die.baseAppearance, 
 						background : die.baseAppearance.diceColor,
 						foreground : die.baseAppearance.labelColor,

@@ -1,3 +1,6 @@
+## v1.7.4
+- small bug fix for edge case in v1.7.3
+
 ## v1.7.3
 - Perk and Gear can now be dragged out of archetypes into other documents and the world item tab
 - Custom themes for dice so nice 3D dice can now be chosen
