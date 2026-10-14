@@ -92,6 +92,8 @@ export function o13storyActorMixin(base) {
 		
 		async advanceAct(target = null, force = false) {
 			const targetAct = target ?? this.activeAct + 1;
+			const currentAct = this.activeAct;
+			const currentOmenDice = this.omenDiceinPlay;
 			
 			if (targetAct > this.activeAct && targetAct <= 3 && targetAct >= 0) {
 				if (!force) {
@@ -121,14 +123,14 @@ export function o13storyActorMixin(base) {
 					}
 				}
 				
-				const omenDicetoAdd = Math.max(targetAct - Math.max(this.activeAct, 1), 0); //prologue->act1 does not add dice
+				const omenDicetoAdd = Math.max(targetAct - this.activeAct, 0);
 
 				if (targetAct > 0) {
 					if (game.settings.get("13omens", "showActBanner")) showBanner({content : {title : game.i18n.localize("13omens.titles.actNames." + targetAct)}, duration : 3.5});
 				}
 				await this.update({system : {activeact : targetAct}});
 
-				if (omenDicetoAdd != 0 && this.addOmenDiceonActStart) {
+				if (omenDicetoAdd != 0 && this.addOmenDiceonActStart && (currentAct != 0 || currentOmenDice == 0)) {
 					await this.addOmenDice(omenDicetoAdd);
 				}
 				
@@ -500,7 +502,7 @@ export class storyDataModel extends foundry.abstract.TypeDataModel {
 			activeact: new NumberField({ required: true, integer: true, nullable: false, min: 0, max : 3, initial: 0 }),
 			
 			acts: new ArrayField(new SchemaField({
-				omenDiceThreshold : new NumberField({ required: true, integer: true, nullable: false, min: 0, max : 14, initial: null })
+				omenDiceThreshold : new NumberField({ required: true, integer: true, nullable: false, min: 0, max : 13, initial: null })
 			}), { initial : () => Array.from({length : 4}, (_, index) => ({omenDiceThreshold : CONFIG["13OMENS"].DEFAULTACTOMENDCIETHRESHOLD[index]}))}),
 			
 			story: new SchemaField({
