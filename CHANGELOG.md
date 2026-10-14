@@ -1,3 +1,6 @@
+## v1.7.5
+- Fix for omen dice number calculation
+
 ## v1.7.4
 - small bug fix for edge case in v1.7.3
 

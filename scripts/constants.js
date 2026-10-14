@@ -17,7 +17,7 @@ const DEFAULTMAXWOUNDS = 4;
 
 const DEFAULTMAXHOSTOMENDICE = 13;
 
-const DEFAULTDICEBAGCOUNT = {safe : 8, omen : 1 }
+const DEFAULTDICEBAGCOUNT = {safe : 8, omen : 0 }
 
 const DEFAULTACTOMENDCIETHRESHOLD = {
 		0 : 0,
