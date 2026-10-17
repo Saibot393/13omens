@@ -17,7 +17,8 @@ export class o13Roll extends Roll {
 		
 		this._rollData.targetNumber = this.targetNumber;
 		this._rollData.strain = this.strain;
-		
+
+		this._aspectName = this.aspectName;
 		this._actorName = this.actorName;
 		this._act = this.act;
 		this._storyID = this.storyID;
@@ -35,6 +36,18 @@ export class o13Roll extends Roll {
 		this.terms = this.constructor.parse(this.formula, this.data);
 		
 		if (CONFIG.debug.o13?.rolls) console.log(this);
+	}
+
+	get rollData() {
+		return this._rollData;
+	}
+
+	get rollDataComplete() {
+		return {
+			...this.rollData,
+			name : this._aspectName,
+			actorName : this._actorName
+		}
 	}
 	
 	get outcome() {
@@ -524,27 +537,29 @@ export class o13Roll extends Roll {
 }
 
 export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(ApplicationV2)) {
-	constructor(actor, data, quickRoll = false, isSecondary = false) {
+	constructor(actor, data, options = {}) {
 		super();
 		
 		this._actor = actor;
-		this.actor.activeRollConfig = this;
+		if (!this.isInspection) this.actor.activeRollConfig = this;
 		
 		this._data = {
 			...CONFIG["13OMENS"].DEFAULTROLLOPTIONS,
 			...data
 		}
+
+		this._auxiliaryData = options.auxiliaryData || {};
 		
 		utils.expandRollData(this._data);
 		
 		this._id = foundry.utils.randomID();
 		
-		this._secondaryView = isSecondary;
+		this._secondaryView = options.isSecondary;
 		this._closed = false;
 		
 		if (CONFIG.debug.o13?.rolls) console.log(this);
 		
-		if (quickRoll) o13rollConfig.roll.call(this)
+		if (options.quickRoll) o13rollConfig.roll.call(this)
 		else if (!this._secondaryView) this._applyUpdate(false, true);
 	}
 	
@@ -554,7 +569,7 @@ export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(Appli
 			
 			const actor = fromUuidSync(socketData.actorUuid);
 			if (actor && !socketData.closed) {
-				const rollConfig = new o13rollConfig(actor, socketData.rollData, false, true);
+				const rollConfig = new o13rollConfig(actor, socketData.rollData, {isSecondary : true});
 				rollConfig._id = socketData.configID;
 				
 				rollConfig.render(true);
@@ -612,21 +627,29 @@ export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(Appli
 	get isSecondaryView() {
 		return this._secondaryView;
 	}
+
+	get isInspection() {
+		return !this._actor;
+	}
 	
 	get aspectData() {
-		return this.actor.getAspectData(this.aspect, true);		
+		return this.actor?.getAspectData(this.aspect, true);
+	}
+
+	get auxiliaryData() {
+		return this._auxiliaryData;
 	}
 	
 	get actorName() {
-		return this.actor.name;
+		return this.actor?.name || this.auxiliaryData.actorName;
 	}
 	
 	get aspectName() {
-		return this.aspectData.name;
+		return this.aspectData?.name || this.auxiliaryData?.aspectName;
 	}
 	
 	get aspectRating() {
-		return this.aspectData.rating;
+		return this.aspectData?.rating || this.auxiliaryData?.rating;
 	}
 	
 	get strain() {
@@ -743,7 +766,7 @@ export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(Appli
 	}
 	
 	_updateRemote() {
-		game.system.callSocket("updateRemoteRollConfig", {configID : this._id, rollData : this._data, actorUuid : this.actor.uuid, closed : this._closed});
+		if (!this.isInspection) game.system.callSocket("updateRemoteRollConfig", {configID : this._id, rollData : this._data, actorUuid : this.actor.uuid, closed : this._closed});
 	}
 	
 	static async DAreduceTaskDifficulty(event, target) {
@@ -846,4 +869,32 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
 			}
 		});
 	}
+})
+
+Hooks.on("getChatMessageContextOptions", (app, menuItems) => {
+	console.log(app, menuItems);
+	menuItems.push({
+		icon: "fa-solid fa-magnifying-glass",
+		label: game.i18n.localize("13omens.actions.inspectRoll"),
+		onClick: (event, element) => {
+			const elementData = element.dataset;
+			const message = game.messages.get(elementData?.messageId);
+
+			const rolls = message?.rolls;
+			const relevantRoll =  rolls?.find(roll => roll instanceof o13Roll);
+
+			if (relevantRoll) {
+				console.log(relevantRoll);
+				new o13rollConfig(undefined, relevantRoll.rollData)
+			}
+		},
+		visible: (element) => {
+			const elementData = element.dataset;
+			const message = game.messages.get(elementData?.messageId);
+
+			const rolls = message?.rolls;
+
+			return rolls?.find(roll => roll instanceof o13Roll);
+		}
+	})
 })
