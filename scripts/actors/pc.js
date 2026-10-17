@@ -612,7 +612,7 @@ export function o13pcActorMixin(base) {
 					await this.closeActiveRollConfig();
 
 					this._lastrolloptions = options;
-					this._activerollconfig = new o13rollConfig(this, {...config, aspect : aspectName}, {quickRoll : true});
+					this._activerollconfig = new o13rollConfig(this, {...config, aspect : aspectName}, {quickRoll : quickRoll});
 					
 					return new Promise(async (resolver) => {
 						const roll = await this._activerollconfig.wait();
