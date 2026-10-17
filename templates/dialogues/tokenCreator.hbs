@@ -1,16 +1,16 @@
 <div>
 	<div class="flexcol o13-sheet" style="position:absolute;z-index:13000;height:auto;padding:5px">
 		<div class="form-group flexrow" style="margin-bottom:15px">
-			<label class="o13-label">NAME HERE:</label>
-			<input class="o13-input" type="color" name="backgroundColor" value="{{creator.backgroundColor}}" style="flex: 0 0 32px"/>
+			<label class="o13-label" style="font-size:16">{{localize "13omens.titles.backgroundColor"}}</label>
+			<input class="o13-input" type="color" name="backgroundColor" value="#000000" style="flex: 0 0 32px"/>
 		</div>
 		<div class="form-group flexcol">
-			<label class="o13-label">TRANSPARENCY:</label>
-			<range-picker min="0" max="1" step="0.05" name="backgroundTransparency" value="{{creator.backgroundTransparency}}"></range-picker>
+			<label class="o13-label" style="font-size:16">{{localize "13omens.titles.backgroundTransparency"}}</label>
+			<range-picker min="0" max="1" step="0.05" name="backgroundTransparency" value="1"></range-picker>
 		</div>
 	</div>
 	
-	<div style="position:relative;min-width:650px;min-height:650px;overflow:hidden;">
+	<div style="position:relative;min-width:650px;min-height:650px;overflow:hidden;" name="background">
 		<img class="o13-placement-image" name="img" src="{{creator.imageSource}}"/>
 		
 		<div class="o13-token-ring o13-outer" style="width: 300px; height: 300px;border-width:13px"></div>

@@ -155,7 +155,10 @@
 				"nextroll" : "on next roll"
 			},
 			
-			"active" : "active"
+			"active" : "active",
+			
+			"backgroundColor" : "Color",
+			"backgroundTransparency" : "Transparency"
 		},
 		
 		"actions" : {
