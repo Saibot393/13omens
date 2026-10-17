@@ -29,6 +29,14 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 		
 		return directory;
 	}
+
+	get backgroundColor() {
+		return "#000000"
+	}
+
+	get backgroundTransparency() {
+		return 1;
+	}
 	
 	_configureRenderParts(options) {
 		return {
