@@ -132,6 +132,14 @@ export function registerSettings() {
 		})
 	}
 	
+	//Hidden settings
+	game.settings.register("13omens", "activeStory", {
+		scope: "world",
+		config: false,
+		type: String,
+		default: ""
+	})
+	
 	Hooks.once("ready", () => {
 		if (game.user.isGM) {
 			//this setting needs world id information

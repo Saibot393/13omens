@@ -5,6 +5,14 @@
 			enriched=enriched
 		}}
 		
+		{{#unless actor.isActiveStory}}
+			{{#if actor.isOwner}}
+				<i class="fa-solid fa-book-bookmark o13-icon o13-clickable" style="color:var(--o13-cheat-blue);position:absolute;top:25px;right:25px;" data-action="makeActiveStory" data-tooltip="{{localize "13omens.tooltips.makeActiveStory"}}"></i>
+			{{/if}}
+		{{else}}
+			<i class="fa-solid fa-book-bookmark o13-icon" style="color:var(--o13-antique-gold);position:absolute;top:25px;right:25px;" data-tooltip="{{localize "13omens.tooltips.isActiveStory"}}"></i>
+		{{/unless}}
+		
 		<div class="flexcol">
 			<div class="form-group flexrow" style="margin-bottom:15px">
 				<label for="actor-name" class="o13-label" style="flex:0.25"><b>{{localize "13omens.titles.name"}}:</b></label>

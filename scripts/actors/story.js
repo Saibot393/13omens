@@ -73,6 +73,40 @@ export function o13storyActorMixin(base) {
 				}
 			}
 		}
+
+		//Active story
+		get isActiveStory() {
+			return game.settings.get("13omens", "activeStory") == this.id;
+		}
+
+		async makeActiveStory() {
+			if (this.isOwner) {
+				const previousActiveStory = game.settings.get("13omens", "activeStory");
+
+				await game.settings.set("13omens", "activeStory", this.id);
+
+				game.actors.get(previousActiveStory)?.sheet?.render();
+
+				await this.syncStoryActive();
+
+				this.sheet?.render();
+			}
+		}
+
+		async syncStoryActive() {
+			if (this.isActiveStory) {
+				for (const pc of this.pcActors) {
+					const ownerID = Object.keys(pc.ownership).find(key => pc.ownership[key] == 3 && !game.users.get(key)?.isGM);
+
+					const user = game.users.get(ownerID);
+
+					if (user) {
+						await user.update({character : pc.id});
+						await this.update({ownership : {[ownerID] : 2}});
+					}
+				}
+			}
+		}
 		
 		//Acts
 		async checkAct() {
@@ -219,14 +253,16 @@ export function o13storyActorMixin(base) {
 				const actors = actor.filter(a => a.isPC);
 				
 				if (actors.length) {
-					this.update({system : {pcs : [...this.system.pcs, ...actors.map(a => ({id : a.id}))]}});
+					await this.update({system : {pcs : [...this.system.pcs, ...actors.map(a => ({id : a.id}))]}});
 				}
 			}
 			else {
 				if (actor.isPC && !actor.storyActor) {
-					this.update({system : {pcs : [...this.system.pcs, {id : actor.id}]}});
+					await this.update({system : {pcs : [...this.system.pcs, {id : actor.id}]}});
 				}
 			}
+
+			await this.syncStoryActive();
 		}
 		
 		async removePC(id) {

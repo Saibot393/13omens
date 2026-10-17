@@ -29,6 +29,27 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 		
 		return directory;
 	}
+
+	get backgroundColor() {
+		const backgroundColor = this.element.querySelector("[name=backgroundColor]");
+		return backgroundColor.value;
+	}
+
+	get backgroundTransparency() {
+		const backgroundTransparency = this.element.querySelector("[name=backgroundTransparency]");
+		return 1 - backgroundTransparency.value;
+	}
+
+	get backgroundrgbaColor() {
+		const hexColor = this.backgroundColor;
+		const transparency = this.backgroundTransparency;
+
+		const r = parseInt(hexColor.substring(1, 3), 16);
+		const g = parseInt(hexColor.substring(3, 5), 16);
+		const b = parseInt(hexColor.substring(5, 7), 16);
+
+		return `rgba(${r}, ${g}, ${b}, ${transparency})`;
+	}
 	
 	_configureRenderParts(options) {
 		return {
@@ -42,6 +63,7 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 		super._onRender(context, options);
 		
 		this._initToken();
+		this._initBackgroundPicker();
 	}
 	
 	_initToken() {
@@ -115,6 +137,21 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 			});
 		}
 	}
+
+	async _initBackgroundPicker() {
+		const backgroundColor = this.element.querySelector("[name=backgroundColor]");
+		const backgroundTransparency = this.element.querySelector("[name=backgroundTransparency]");
+
+		backgroundColor.addEventListener("input", (event) => {this.updateBackground()});
+		backgroundTransparency.addEventListener("input", (event) => {this.updateBackground()});
+	}
+
+	async updateBackground() {
+		const rgbaColor = this.backgroundrgbaColor;
+
+		const background = this.element.querySelector("[name=background]");
+		background.style.backgroundColor = rgbaColor;
+	}
 	
 	async saveToken(saveName = "", savePath = "") {
 		//Drawing
@@ -129,6 +166,12 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 		canvas.width = tokenSize;
 		canvas.height = tokenSize;
 		const context = canvas.getContext("2d");
+
+		//draw background
+		context.fillStyle = this.backgroundrgbaColor;
+		context.beginPath();
+		context.arc(tokenSize/2, tokenSize/2, tokenSize/2, 0, Math.PI * 2);
+		context.fill();
 		
 		const containmentwidth = containment.clientWidth;
 		const containmentheight = containment.clientHeight;

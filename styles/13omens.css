@@ -136,7 +136,8 @@ select:disabled {
 	text-transform: uppercase;
 }
 
-.o13-input {
+.o13-input,
+range-picker.o13-input input {
 	background: transparent;
 	
 	font-family: "Segoe Print";
