@@ -897,7 +897,6 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
 })
 
 Hooks.on("getChatMessageContextOptions", (app, menuItems) => {
-	console.log(app, menuItems);
 	menuItems.push({
 		icon: "fa-solid fa-magnifying-glass",
 		label: game.i18n.localize("13omens.actions.inspectRoll"),
