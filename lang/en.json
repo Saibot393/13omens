@@ -195,7 +195,9 @@
 			"restoreUse" : "Restore use",
 			"ignored" : "Ignored",
 			"useonNextCheck" : "Use on next check",
-			"sortAlphabetically" : "Sort alphabetically"
+			"sortAlphabetically" : "Sort alphabetically",
+			"makeActiveStory" : "Make active story: <br> •Sets PCs as user characters <br> •Shows story to players",
+			"isActiveStory" : "This is the currently active story"
 		},
 		
 		"chats" : {
