@@ -1,12 +1,23 @@
 <div>
-	<div style="position:relative;min-width:650px;min-height:650px;overflow:hidden;">
+	<div class="flexcol o13-sheet o13-bordered" style="position:absolute;z-index:13000;height:auto;padding:5px">
+		<div class="form-group flexrow" style="margin-bottom:5px">
+			<label class="o13-label" style="font-size:16">{{localize "13omens.titles.backgroundColor"}}</label>
+			<input class="o13-input" type="color" name="backgroundColor" value="#000000" style="flex: 0 0 32px"/>
+		</div>
+		<div class="form-group flexcol">
+			<label class="o13-label" style="font-size:16">{{localize "13omens.titles.backgroundTransparency"}}</label>
+			<range-picker class="o13-input" min="0" max="1" step="0.05" name="backgroundTransparency" value="1"></range-picker>
+		</div>
+	</div>
+	
+	<div style="position:relative;min-width:650px;min-height:650px;overflow:hidden;" name="background">
 		<img class="o13-placement-image" name="img" src="{{creator.imageSource}}"/>
 		
 		<div class="o13-token-ring o13-outer" style="width: 300px; height: 300px;border-width:13px"></div>
 		<div class="o13-token-ring o13-inner" style="width: 278px; height: 278px;border-width:2px"></div>
 	</div>
 	
-	<div class = "flexrow">
+	<div class="flexrow">
 		<button class="o13-button o13-clickable" type="button" data-action="setToken">{{localize "13omens.actions.setToken"}} <i class="fa-regular fa-circle"></i> </button>
 		<button class="o13-button o13-clickable" type="button" data-action="cancel">{{localize "13omens.actions.cancel"}} <i class="fa-solid fa-arrow-rotate-left"></i> </button>
 	</div>
