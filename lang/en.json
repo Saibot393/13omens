@@ -168,7 +168,8 @@
 			"accept" : "Accept",
 			"cancel" : "Cancel",
 			"confirm" : "Confirm",
-			"setToken" : "Set token"
+			"setToken" : "Set token",
+			"inspectRoll" : "Inspect roll"
 		},
 		
 		"tooltips" : {

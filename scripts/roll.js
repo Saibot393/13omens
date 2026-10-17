@@ -17,8 +17,10 @@ export class o13Roll extends Roll {
 		
 		this._rollData.targetNumber = this.targetNumber;
 		this._rollData.strain = this.strain;
-		
+
+		this._aspectName = this.aspectName;
 		this._actorName = this.actorName;
+		this._aspectRating = this.aspectRating;;
 		this._act = this.act;
 		this._storyID = this.storyID;
 		
@@ -35,6 +37,18 @@ export class o13Roll extends Roll {
 		this.terms = this.constructor.parse(this.formula, this.data);
 		
 		if (CONFIG.debug.o13?.rolls) console.log(this);
+	}
+
+	get rollData() {
+		return this._rollData;
+	}
+
+	get auxiliaryData() {
+		return {
+			rating : this.aspectRating,
+			aspectName : this.aspectName,
+			actorName : this.actorName,
+		}
 	}
 	
 	get outcome() {
@@ -75,6 +89,10 @@ export class o13Roll extends Roll {
 	
 	get hasValiantlySacrificed() {
 		return this._hasvaliantlysacrificed;
+	}
+
+	get aspectRating() {
+		return this._aspectRating || this.aspectData?.rating;
 	}
 	
 	get act() {
@@ -373,6 +391,7 @@ export class o13Roll extends Roll {
 			
 			aspectName: this._aspectName,
 			actorName: this._actorName,
+			aspectRating: this._aspectRating,
 			act: this._act,
 			storyID : this._storyID,
 			consequenceTaken: this._consequenceTaken,
@@ -391,6 +410,7 @@ export class o13Roll extends Roll {
         
 		roll._aspectName = o13Data.aspectName;
 		roll._actorName = o13Data.actorName;
+		roll._aspectRating = o13Data.aspectRating;
 		roll._act = o13Data.act;
 		roll._storyID = o13Data.storyID;
 		roll._consequenceTaken = o13Data.consequenceTaken;
@@ -524,27 +544,29 @@ export class o13Roll extends Roll {
 }
 
 export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(ApplicationV2)) {
-	constructor(actor, data, quickRoll = false, isSecondary = false) {
+	constructor(actor, data, options = {}) {
 		super();
 		
 		this._actor = actor;
-		this.actor.activeRollConfig = this;
+		if (!this.isInspection) this.actor.activeRollConfig = this;
 		
 		this._data = {
 			...CONFIG["13OMENS"].DEFAULTROLLOPTIONS,
 			...data
 		}
+
+		this._auxiliaryData = options.auxiliaryData || {};
 		
 		utils.expandRollData(this._data);
 		
 		this._id = foundry.utils.randomID();
 		
-		this._secondaryView = isSecondary;
+		this._secondaryView = options.isSecondary;
 		this._closed = false;
 		
 		if (CONFIG.debug.o13?.rolls) console.log(this);
 		
-		if (quickRoll) o13rollConfig.roll.call(this)
+		if (options.quickRoll) o13rollConfig.roll.call(this)
 		else if (!this._secondaryView) this._applyUpdate(false, true);
 	}
 	
@@ -554,7 +576,7 @@ export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(Appli
 			
 			const actor = fromUuidSync(socketData.actorUuid);
 			if (actor && !socketData.closed) {
-				const rollConfig = new o13rollConfig(actor, socketData.rollData, false, true);
+				const rollConfig = new o13rollConfig(actor, socketData.rollData, {isSecondary : true});
 				rollConfig._id = socketData.configID;
 				
 				rollConfig.render(true);
@@ -598,7 +620,7 @@ export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(Appli
 	}
 	
 	get title() {
-		return game.i18n.format("13omens.titles.rollConfig", {pcName : this.actor?.name});
+		return game.i18n.format("13omens.titles.rollConfig", {pcName : this.actorName});
 	}
 	
 	get actor() {
@@ -612,21 +634,29 @@ export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(Appli
 	get isSecondaryView() {
 		return this._secondaryView;
 	}
+
+	get isInspection() {
+		return !this._actor;
+	}
 	
 	get aspectData() {
-		return this.actor.getAspectData(this.aspect, true);		
+		return this.actor?.getAspectData(this.aspect, true);
+	}
+
+	get auxiliaryData() {
+		return this._auxiliaryData;
 	}
 	
 	get actorName() {
-		return this.actor.name;
+		return this.actor?.name || this.auxiliaryData?.actorName;
 	}
 	
 	get aspectName() {
-		return this.aspectData.name;
+		return this.aspectData?.name || this.auxiliaryData?.aspectName;
 	}
 	
 	get aspectRating() {
-		return this.aspectData.rating;
+		return this.aspectData?.rating || this.auxiliaryData?.rating;
 	}
 	
 	get strain() {
@@ -743,34 +773,44 @@ export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(Appli
 	}
 	
 	_updateRemote() {
-		game.system.callSocket("updateRemoteRollConfig", {configID : this._id, rollData : this._data, actorUuid : this.actor.uuid, closed : this._closed});
+		if (!this.isInspection) game.system.callSocket("updateRemoteRollConfig", {configID : this._id, rollData : this._data, actorUuid : this.actor.uuid, closed : this._closed});
 	}
 	
 	static async DAreduceTaskDifficulty(event, target) {
+		if (this.isInspection) return;
+
 		if (this._data.taskDifficulty > CONFIG["13OMENS"].MINTD) this._data.taskDifficulty -= 1;
 		
 		this._applyUpdate();
 	}
 	
 	static async DAincreaseTaskDifficulty(event, target) {
+		if (this.isInspection) return;
+
 		if (this._data.taskDifficulty < CONFIG["13OMENS"].MAXTD) this._data.taskDifficulty += 1;
 		
 		this._applyUpdate();
 	}
 	
 	static async DAaddEmptyFlaw(event, target) {
+		if (this.isInspection) return;
+
 		if (this.canAddFlaws) {
 			this.addFlaw();
 		}
 	}
 	
 	static async DAaddEmptyEdge(event, target) {
+		if (this.isInspection) return;
+
 		if (this.canAddEdges) {
 			this.addEdge();
 		}
 	}
 	
 	static async DAremoveFlaw(event, target) {
+		if (this.isInspection) return;
+
 		const index = target.getAttribute("index");
 		
 		if (isNaN(index)) return;
@@ -781,6 +821,8 @@ export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(Appli
 	}
 	
 	static async DAtoggleOmenFlaw(event, target) {
+		if (this.isInspection) return;
+
 		const index = target.getAttribute("index");
 		
 		if (isNaN(index)) return;
@@ -791,12 +833,16 @@ export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(Appli
 	}
 	
 	static async DAremoveStrain(event, target) {
+		if (this.isInspection) return;
+
 		this._data.ignoreStrain = true;
 		
 		this._applyUpdate();
 	}
 	
 	static async DAremoveEdge(event, target) {
+		if (this.isInspection) return;
+
 		const index = target.getAttribute("index");
 		
 		if (isNaN(index)) return;
@@ -807,6 +853,8 @@ export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(Appli
 	}
 	
 	static async roll() {
+		if (this.isInspection) return;
+
 		const roll = new o13Roll(this.actor, this.aspect, this._data);
 
 		await roll.evaluate();
@@ -846,4 +894,30 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
 			}
 		});
 	}
+})
+
+Hooks.on("getChatMessageContextOptions", (app, menuItems) => {
+	menuItems.push({
+		icon: "fa-solid fa-magnifying-glass",
+		label: game.i18n.localize("13omens.actions.inspectRoll"),
+		onClick: (event, element) => {
+			const elementData = element.dataset;
+			const message = game.messages.get(elementData?.messageId);
+
+			const rolls = message?.rolls;
+			const relevantRoll =  rolls?.find(roll => roll instanceof o13Roll);
+
+			if (relevantRoll) {
+				new o13rollConfig(undefined, relevantRoll.rollData, {auxiliaryData : relevantRoll.auxiliaryData});
+			}
+		},
+		visible: (element) => {
+			const elementData = element.dataset;
+			const message = game.messages.get(elementData?.messageId);
+
+			const rolls = message?.rolls;
+
+			return rolls?.find(roll => roll instanceof o13Roll);
+		}
+	})
 })
