@@ -215,11 +215,20 @@
 			"transferGearQuery" : "Transfer {gear} from {sourceActor} to {targetActor}:"
 		},
 		
+		"infos" : {
+			"tokenSaved" : "Token saved successfully to {path}"
+		},
+		
 		"warnings" : {
 			"selectRating" : "Please select an aspect rating before rolling",
 			"selectActor" : "Please select an actor or open a character sheet before rolling",
 			"actionRequiresGM" : "Please wait for a host to be online and try again",
 			"usercantCreateFiles" : "You lack the permissions to create files, please ask your Host"
+		},
+		
+		"errors" : {
+			"tokenNotCreated" : "Token could not be created",
+			"tokenNotSaved" : "Could not save token file"
 		},
 		
 		"news" : {
