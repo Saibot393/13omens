@@ -1,7 +1,7 @@
 ## v1.8.0
 - Added "Make active story" button to story actor Sheet
 	- The PCs that are part of the active story will be set as the user characters
-	- The story will be made visible to all participating players to view the host omen dice and the dice bag (everything else is hidden)
+	- The story will be made visible to all participating players to view the host omen dice and the dice bag (everything ~else~ *below the dice* is hidden)
 - Rolls can now be inspected from the chat via the right-click context menu
 	- Rolls that were made before this update by PCs that have since been deleted may show a faulty aspect rating
 - The background (color and transparency) can now be set in the token maker dialogue
