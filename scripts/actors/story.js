@@ -171,6 +171,8 @@ export function o13storyActorMixin(base) {
 				for (const pc of this.pcActors) {
 					await pc.prepareNewAct();
 				}
+
+				Hooks.callAll("13omensAdvanceStoryAct", this, {newAct : targetAct, previousAct : currentAct, forced : force, addedOmenDice : omenDicetoAdd});
 			}
 		}
 		

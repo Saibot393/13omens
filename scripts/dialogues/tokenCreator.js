@@ -229,7 +229,8 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 		})
 		
 		if (!blob) {
-			ui.notifications.error("Token could not be created");
+			console.error("Failed to create token blob");
+			ui.notifications.error(game.i18n.localize("13omens.errors.tokenNotCreated"));
 		}
 		else {
 			const tokenName = `${this.tokenName}.webp`;
@@ -240,12 +241,12 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 				await o13tokenCreator.ensureDirectory(directory);
 				
 				const response = await foundry.applications.apps.FilePicker.implementation.upload("data", directory, file);
-				ui.notifications.info(`Token saved successfully to ${response.path}`);
-				console.log("Saved token file to:", response.path);
-				path = response.path;
+				path = response?.path;
+				console.log("Saved token file to:", path);
+				ui.notifications.info(game.i18n.format("13omens.infos.tokenSaved", {path : path}));
 			} catch (err) {
 				console.error("Failed to upload token file:", err);
-				ui.notifications.error("Could not save token file.");
+				ui.notifications.error(game.i18n.localize("13omens.errors.tokenNotSaved"));
 			}
 		}
 		

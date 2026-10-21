@@ -26,7 +26,9 @@
 					{{#unless config.ignoreStrain}}
 						<div class="flexrow o13-padding">
 							<input class="o13-input o13-underline" type="text" index="{{@key}}" value="{{localize "13omens.titles.strain"}}" style="width:80%" disabled/>
-							<i class="fa-solid fa-x o13-label o13-lowflex o13-clickable" data-action="removeStrain"></i>
+							{{#unless config.isInspection}}
+								<i class="fa-solid fa-x o13-label o13-lowflex o13-clickable" data-action="removeStrain"></i>
+							{{/unless}}
 						</div>
 					{{/unless}}
 				{{/if}}

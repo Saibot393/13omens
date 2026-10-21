@@ -1,6 +1,6 @@
 export class disPatcher {
 	/*	The disPatcher patches dis
-		dis being document classes, as FoundryVTT only allows once class per actor/item/et.c. document and i do not like using the data models for functions/getters/setter etc.,
+		dis being document classes, as FoundryVTT only allows one class per actor/item/etc. document and i do not like using the data models for functions/getters/setter etc.,
 		this class will allow for seperate type dependent document types to be written and then be patched into the base class
 		The following is either smart js usage or abuse of it, your choice
 	*/

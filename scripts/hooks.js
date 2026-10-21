@@ -62,6 +62,30 @@ export function onO13Hooks() {
 			edge: "#000000i",
 			material: "wood"
 		});
+
+		game.dice3d.addSystem({
+			id : "o13-safe-fancy",
+			name : game.i18n.localize("13omens.DSN.safeDiceFancy"),
+			group : game.i18n.localize("13omens.13omens")
+		});
+
+		game.dice3d.addDicePreset({
+			type: "d6",
+			modelFile: "systems/13omens/assets/3d/safe_dice.glb",
+			system: "o13-safe-fancy"
+		}, "d6");
+
+		game.dice3d.addSystem({
+			id : "o13-omen-fancy",
+			name : game.i18n.localize("13omens.DSN.omenDiceFancy"),
+			group : game.i18n.localize("13omens.13omens")
+		});
+
+		game.dice3d.addDicePreset({
+			type: "d6",
+			modelFile: "systems/13omens/assets/3d/omen_dice.glb",
+			system: "o13-omen-fancy"
+		}, "d6");
 		
 		const updateDSNDesignChoices = () => {
 			const designs = utils.COMPATIBILITY.DSN.availableDesigns();
