@@ -297,7 +297,9 @@
 		
 		"DSN" : {
 			"safeDice" : "Safe dice",
-			"omenDice" : "Omen dice"
+			"omenDice" : "Omen dice",
+			"safeDiceFancy" : "Valiant - Safe dice",
+			"omenDiceFancy" : "Despair - Omen dice"
 		}
 	}
 }

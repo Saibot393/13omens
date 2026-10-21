@@ -335,7 +335,17 @@ export class utils {
 						edge : die.baseAppearance.edgeColor,
 						description : die.name
 					}])),
-					colorSets : Object.fromEntries(Object.values(game.dice3d.exports.COLORSETS).filter(entry => !["coin_default", "custom"].includes(entry.id)).map(entry => [entry.id, {colorset : entry.name, description : entry.description}]))
+					colorSets : Object.fromEntries(Object.values(game.dice3d.exports.COLORSETS).filter(entry => !["coin_default", "custom"].includes(entry.id)).map(entry => [entry.id, {colorset : entry.name, description : entry.description}])),
+					custom : [
+						{
+							description : game.i18n.localize("13omens.DSN.safeDiceFancy"),
+							system : "o13-safe-fancy"
+						},
+						{
+							description : game.i18n.localize("13omens.DSN.omenDiceFancy"),
+							system : "o13-omen-fancy"
+						}
+					]
 				}
 			}
 		}
