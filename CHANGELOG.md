@@ -1,5 +1,5 @@
 ## v1.8.1
-- Added new custom 3D dice for omen and safe dice
+- Added new custom 3D dice for omen and safe dice named "Valiant - Safe dice" and "Despair - Omen dice"
 	- These 3D models were kindly made by [Mykhailo Zhylkin](https://mykhailozhylkin.artstation.com/)
 - Replaced static warnings in token creator with localised text
 - Added hook for act change
