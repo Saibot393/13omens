@@ -1,3 +1,10 @@
+## v1.8.1
+- Added new custom 3D dice for omen and safe dice
+	- These 3D models were kindly made by [Mykhailo Zhylkin](https://mykhailozhylkin.artstation.com/)
+- Replaced static warnings in token creator with localised text
+- Added hook for act change
+- Fixed small ui issue in roll inspection
+
 ## v1.8.0
 - Added "Make active story" button to story actor Sheet
 	- The PCs that are part of the active story will be set as the user characters
