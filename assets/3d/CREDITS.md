@@ -1,1 +1,1 @@
-The two 3D models contained in this directory (omen_dice.glb and safe_dice.glb) were kindly made by [Mykhailo Zhylkin](https://mykhailozhylkin.artstation.com/)
+The two 3D models contained in this directory (omen_dice.glb and safe_dice.glb) were kindly created by [Mykhailo Zhylkin](https://mykhailozhylkin.artstation.com/)
