@@ -2,7 +2,7 @@
 
 > This system uses trademarks and/or copyrights owned by Paizo Inc., used under Paizo’s [Community Use Policy](https://paizo.com/licenses/communityuse). This system is not published, endorsed, or specifically approved by Paizo. For more information about Paizo Inc. and Paizo products, visit [paizo.com](https://paizo.com).
 
-This system is intended for Paizo's new horror pen & paper system [13 Omens](https://store.paizo.com/13-omens/). It is best used with the preview PDF, which you can get for free on the [Kickstarter](https://www.kickstarter.com/projects/officialpaizo/13-omens-a-horror-rpg) (search for "demo").
+This system is intended for Paizo's new horror pen & paper system [13 Omens](https://store.paizo.com/13-omens/). It is best used with the preview PDF, which you can get for free on the currently running [Kickstarter](https://www.kickstarter.com/projects/officialpaizo/13-omens-a-horror-rpg) (search for "demo").
 
 ---
 ## Overview
