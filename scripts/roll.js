@@ -726,13 +726,16 @@ export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(Appli
 	}
 
 	setGearEdge(gear) {
-		if (!gear?.isGear) return false;
+		if (!gear?.isGear || (gear.parent != this.actor)) return false;
 
 		const edges = this._data.edges;
 
 		const currentGearEdge = edges.find(edge => edge.isGearEdge)
-		if (!currentGearEdge) edges.push({name : gear.name, isGearEdge : true})
-		else currentGearEdge.name = gear.name;
+		if (!currentGearEdge) edges.push({name : gear.name, id : gear.id, isGearEdge : true})
+		else {
+			currentGearEdge.name = gear.name;
+			currentGearEdge.id = gear.id;
+		}
 
 		return this._applyUpdate();
 	}

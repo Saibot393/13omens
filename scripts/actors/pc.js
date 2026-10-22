@@ -936,7 +936,7 @@ export function o13pcActorMixin(base) {
 					data.uuid = item.uuid;
 				}
 			}
-
+			
 			if (data.isGear) this.activeRollConfig?.bringToFront();
 		}
 		
