@@ -70,6 +70,7 @@ export function inventoryActorMixin(base) {
 				if (item.isGear) {
 					data.type = "Item",
 					data.uuid = item.uuid;
+					data.isGear = true;
 				}
 			}
 		}
