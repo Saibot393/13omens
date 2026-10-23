@@ -1,5 +1,6 @@
+import {o13BasicDragDropMixin} from "./components/basicDragDrop.js";
+
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
-const { DragDrop } = foundry.applications.ux;
 
 import { utils } from "./utils.js";
 
@@ -544,7 +545,7 @@ export class o13Roll extends Roll {
 	}
 }
 
-export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(ApplicationV2)) {
+export class o13rollConfig extends o13BasicDragDropMixin(o13WaitMixIn(HandlebarsApplicationMixin(ApplicationV2))) {
 	constructor(actor, data, options = {}) {
 		super();
 		
@@ -618,19 +619,6 @@ export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(Appli
 		}
 
 		return this._applyUpdate();
-	}
-
-	#dragDropHandler = new DragDrop({
-		dragSelector : null,
-		dropSelector : ".dropArea",
-		callbacks : {
-			drop: this._onDrop.bind(this),
-		}
-	})
-
-	_onRender(context, options) {
-		super._onRender(context, options);
-		this.#dragDropHandler.bind(this.element);
 	}
 
 	get title() {
