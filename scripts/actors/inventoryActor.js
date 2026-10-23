@@ -2,6 +2,8 @@ import {utils} from "../utils.js";
 
 import {o13quantityQuery} from "../dialogues/quantityQuery.js";
 
+import {o13GearTrade} from "../dialogues/gearTrade.js";
+
 export function inventoryActorMixin(base) {
 	return class inventoryActor extends base {
 		get isInventoryActor() {
@@ -117,6 +119,16 @@ export function inventoryActorMixin(base) {
 				return true;
 			}
 			return false;
+		}
+
+		//trade
+		get tradePartnerOptions() {
+			return [];
+		}
+
+		startGearTrade() {
+			this._gearTrade = new o13GearTrade(this, {targetOptions : this.tradePartnerOptions});
+			this._gearTrade.render(true);
 		}
 	}
 }

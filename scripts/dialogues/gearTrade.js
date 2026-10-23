@@ -12,6 +12,10 @@ export class o13GearTrade extends o13SheetMixin(o13BasicDragDropMixin(Handlebars
 
         this._sourceActor = sourceActor;
         this._options = options;
+
+        this._gear = {};
+
+        this._tradeID = foundry.utils.randomID();
     }
 
     static createTradeConfirm() {
@@ -30,6 +34,18 @@ export class o13GearTrade extends o13SheetMixin(o13BasicDragDropMixin(Handlebars
         }
     }
 
+    async _prepareContext(options) {
+        const context = await super._prepareContext(options);
+
+        context.trade = this;
+
+        return context;
+    }
+
+    async _applyUpdate() {
+        if (this.rendered) this.render(true);
+    }
+
     get sourceActor() {
         return this._sourceActor;
     }
@@ -44,5 +60,71 @@ export class o13GearTrade extends o13SheetMixin(o13BasicDragDropMixin(Handlebars
 
     get isReceiveMode() {
         return this._options.isReceiveMode;
+    }
+
+    get isOwner() {
+        return true;
+    }
+
+    get gear() {
+        return this._gear;
+    }
+
+    async handleDrop(data, event, prepared) {
+        let handled = false;
+
+        const object = prepared.object;
+        if (!object || !(object.parent == this.sourceActor)) return handled;
+
+        if (object.isGear) {
+            await this.addGear(object);
+            handled = true;
+        }
+
+        return handled;
+    }
+
+    sendTradeRequest() {
+
+    }
+
+    addGear(gear) {
+        if (gear.isGear) {
+            this._gear[gear.id] = {
+                name : gear.name,
+                id: gear.id,
+                hasQuantityMax : true,
+                quantityMax : gear.quantityValue, //we can at maximum transfer gear equal to the currently available maximum
+                quantityValue : gear.quantityValue
+            }
+
+            this._applyUpdate();
+        }
+    }
+
+    changeGearQuantity(id, change) {
+        if (this._gear[id]) {
+            this._gear[id].quantityValue = Math.min(this._gear[id].quantityMax, Math.max(0, this._gear[id].quantityValue + change));
+
+            this._applyUpdate();
+        }
+    }
+
+    async removeGear(id) {
+        delete this._gear[id];
+
+        this._applyUpdate();
+    }
+
+    async breakGear(event, target) {
+        const gearid = target.getAttribute("gear-id");
+
+        this.changeGearQuantity(gearid, -1);
+    }
+
+    async repairGear(id) {
+        const gearid = target.getAttribute("gear-id");
+
+        this.changeGearQuantity(gearid, 1);
     }
 }

@@ -316,7 +316,7 @@ export function o13SheetMixin(baseSheet) {
 		
 		async _onDrop(event) {
 			event.preventDefault();
-			if (!this.document.handleDrop) return;
+			if (!(this.document?.handleDrop || this.handleDrop)) return;
 			const targetElement = event.target;
 			
 			const dragData = foundry.applications.ux.TextEditor.implementation.getDragEventData(event);
@@ -351,7 +351,7 @@ export function o13SheetMixin(baseSheet) {
 			
 			if (CONFIG.debug.o13.dragndrop) console.warn(`Handling 13 omens drop:`, dragData, prepared);
 			
-			const handled = await this.document.handleDrop(dragData, event, prepared);
+			const handled = await (this.document?.handleDrop || this.handleDrop)?.(dragData, event, prepared);
 			
 			if (!handled && sortBehaviour == "AUTO" && this.document?.isOwner) {
 				this._autoSort(dragData, event, prepared);
