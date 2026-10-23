@@ -25,6 +25,8 @@ export function o13archetypeItemMixin(base) {
 		async _onUpdate(changed, options, userId) {
 			await super._onUpdate(changed, options, userId);
 
+			if (game.user.id != userId) return;
+			
 			if (changed?.system?.gear || changed?.system?.perks) {
 				if (this.parent?.isStory) {
 					const pcs = this.parent.pcActors?.filter(pc => pc.archetype == this);
