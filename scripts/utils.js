@@ -292,6 +292,10 @@ export class utils {
 		
 		return targetLetters + (currentValue < num ? utils.numtoRoman(num - currentValue) : "");
 	}
+
+	static sanitiseFileName(FileName) {
+		return FileName.replace(/[<>:"/\\|?*\x00-\x1F]/g, "").replace(/[. ]+$/g, "").trim();
+	}
 	
 	static COMPATIBILITY = {
 		DSN : {
