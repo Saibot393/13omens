@@ -1,27 +1,27 @@
 <div class="o13-adaptive-grid-12" sort-direction="t_b" sort-behaviour="AUTO">
 	{{#each source.gear}}
-		<div class="flexrow o13-side-padding o13-sortable draggable" draggable="true" gear-id="{{this._id}}" style="padding-top:1rem">
+		<div class="flexrow o13-side-padding o13-sortable draggable" draggable="true" gear-id="{{this.id}}" style="padding-top:1rem">
 			<span class="o13-underline o13-flex-span">
-				<span class="o13-label o13-clickable o13-flex-grow" gear-id="{{this._id}}" {{#if source.isOwner}}data-action="openGear"{{/if}}>
+				<span class="o13-label o13-clickable o13-flex-grow" gear-id="{{this.id}}" {{#if ../source.isOwner}}data-action="openGear"{{/if}}>
 					{{this.name}}
-					{{#if source.isOwner}}
-						<i class="fa-solid fa-message o13-icon o13-clickable o13-hover-icon" gear-id="{{this._id}}" data-action="posttoChat"></i>
+					{{#if ../source.isOwner}}
+						<i class="fa-solid fa-message o13-icon o13-clickable o13-hover-icon" gear-id="{{this.id}}" data-action="posttoChat"></i>
 					{{/if}}
 				</span>
-				<span class="o13-label o13-flex-center" gear-id="{{this._id}}" style="flex:0.4">
-					{{#if source.isOwner}}
-						<i class="fa-solid fa-burst o13-icon o13-clickable" gear-id="{{this._id}}" data-action="breakGear"></i>
+				<span class="o13-label o13-flex-center" gear-id="{{this.id}}" style="flex:0.4">
+					{{#if ../source.isOwner}}
+						<i class="fa-solid fa-burst o13-icon o13-clickable" gear-id="{{this.id}}" data-action="breakGear"></i>
 					{{/if}}
-					<span class="o13-label" gear-id="{{this._id}}">{{this.quantityValue}}</span>
+					<span class="o13-label" gear-id="{{this.id}}">{{this.quantityValue}}</span>
 					{{#if this.hasQuantityMax}}
-						/ <span class="o13-label" gear-id="{{this._id}}">{{this.quantityMax}}</span>
+						/ <span class="o13-label" gear-id="{{this.id}}">{{this.quantityMax}}</span>
 					{{/if}}
-					{{#if source.isOwner}}
-						<i class="fa-solid fa-hammer o13-icon o13-clickable" gear-id="{{this._id}}" data-action="repairGear"></i>
+					{{#if ../source.isOwner}}
+						<i class="fa-solid fa-hammer o13-icon o13-clickable" gear-id="{{this.id}}" data-action="repairGear"></i>
 					{{/if}}
 				</span>
-				{{#if source.isOwner}}
-					<i class="fa-solid fa-x o13-label o13-icon o13-clickable o13-flex-right" gear-id="{{this._id}}" data-action="removeGear"></i>
+				{{#if ../source.isOwner}}
+					<i class="fa-solid fa-x o13-label o13-icon o13-clickable o13-flex-right" gear-id="{{this.id}}" data-action="removeGear"></i>
 				{{/if}}
 			</span>
 		</div>

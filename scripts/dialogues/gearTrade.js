@@ -110,10 +110,16 @@ export class o13GearTrade extends o13SheetMixin(o13BasicDragDropMixin(Handlebars
         }
     }
 
-    async removeGear(id) {
-        delete this._gear[id];
+    async removeGearbyID(gearID) {
+        delete this._gear[gearID];
 
         this._applyUpdate();
+    }
+
+    async removeGear(event, target) {
+        const gearid = target.getAttribute("gear-id");
+
+        this.removeGearbyID(gearid);
     }
 
     async breakGear(event, target) {
@@ -122,7 +128,7 @@ export class o13GearTrade extends o13SheetMixin(o13BasicDragDropMixin(Handlebars
         this.changeGearQuantity(gearid, -1);
     }
 
-    async repairGear(id) {
+    async repairGear(event, target) {
         const gearid = target.getAttribute("gear-id");
 
         this.changeGearQuantity(gearid, 1);

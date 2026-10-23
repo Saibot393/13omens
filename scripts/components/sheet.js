@@ -351,7 +351,7 @@ export function o13SheetMixin(baseSheet) {
 			
 			if (CONFIG.debug.o13.dragndrop) console.warn(`Handling 13 omens drop:`, dragData, prepared);
 			
-			const handled = await (this.document?.handleDrop || this.handleDrop)?.(dragData, event, prepared);
+			const handled = await (this.document?.handleDrop ? this.document?.handleDrop(dragData, event, prepared) : this.handleDrop(dragData, event, prepared));
 			
 			if (!handled && sortBehaviour == "AUTO" && this.document?.isOwner) {
 				this._autoSort(dragData, event, prepared);
@@ -412,7 +412,7 @@ export function o13SheetMixin(baseSheet) {
 			
 			const dragData = Object.fromEntries(IDdata);
 			
-			if (this.document.prepareDragData) this.document.prepareDragData(dragData, event);
+			if (this.document?.prepareDragData) this.document.prepareDragData(dragData, event);
 
 			if (CONFIG.debug.o13.dragndrop) console.warn(`Handling 13 omens drag:`, dragData);
 			
