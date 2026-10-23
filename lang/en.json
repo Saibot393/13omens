@@ -156,6 +156,7 @@
 			},
 			
 			"active" : "active",
+			"addCharacter" : "Add character",
 			
 			"backgroundColor" : "Background color",
 			"backgroundTransparency" : "Transparency"
