@@ -937,7 +937,7 @@ export function o13pcActorMixin(base) {
 				}
 			}
 			
-			if (data.isGear) this.activeRollConfig?.bringToFront();
+			if (data.isGear && this.activeRollConfig?.rendered) this.activeRollConfig?.bringToFront();
 		}
 		
 		prepareBaseData() { //pre AE

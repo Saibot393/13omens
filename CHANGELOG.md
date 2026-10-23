@@ -1,3 +1,6 @@
+## v1.8.3
+- Fix for gear drag and drop bug
+
 ## v1.8.2
 - Gear can now be dropped into the roll config dialogue to add an edge matching the gear name
 - Improved token creator window resize behaviour
