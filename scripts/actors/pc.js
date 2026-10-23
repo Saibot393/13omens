@@ -301,36 +301,35 @@ export function o13pcActorMixin(base) {
 			return this.deleteEmbeddedDocuments("Item", Array.from(this.items).filter(item => item.isArchetypeOrigin).map(item => item.id))
 		}
 		
-		async updateArchetypeItems(removeold = true) {
-			if (removeold) await this.removeArchetypeItems();
+		async updateArchetypeItems(options = {removeold : true, restorechoices : false}) {
+			const choices = {
+				perks : Object.values(this.pickedPerks).map(perk => perk.originID),
+				gear : Object.values(this.selectableGearInfo).filter(gearInfo => gearInfo.selected).map(gearInfo => gearInfo.id)
+			}
+
+			if (options.removeold) await this.removeArchetypeItems();
 
 			const archetype = this.archetype;
 
 			if (archetype) {
-				return this.createEmbeddedDocuments("Item", [...Object.values(archetype.perksData), ...Object.values(archetype.guaranteedGear)]);
+				await this.createEmbeddedDocuments("Item", [...Object.values(archetype.perksData), ...Object.values(archetype.guaranteedGear)]);
 			}
-		}
 
-		async synchArchetypePerks() {
-			if (this.archetype) {
-				const archetypePerks = Object.values(this.archetype.perksData);
-				const currentPerks = Object.values(this.perks);
-
-				const toCreate = [];
-
-				for (const perkData of archetypePerks) {
-					const matchingPerk = currentPerks.find(perk => perk.isFromOriginData(perkData));
-
-					if (matchingPerk) await matchingPerk.update(perkData)
-					else toCreate.push(perkData);
+			if (options.restorechoices) {
+				const perkUpdate = {
+					system : {
+						pickedperks : Object.fromEntries(choices.perks.map(originID => {
+							const matchingPerk = Object.values(this.perks).find(perk => perk.isFromOrigin(originID))
+							return matchingPerk?.id;
+						}).filter(perkID => perkID).map(perkID => [perkID, true]))
+					}
 				}
+				await this.update(perkUpdate);
 
-				await this.createEmbeddedDocuments("Item", toCreate);
+				for (const gearID of choices.gear) {
+					await this.toggleSelectGear(gearID)
+				}
 			}
-		}
-
-		async synchArchetypeGear() {
-
 		}
 		
 		async synchArchetypePortrait() {
@@ -466,12 +465,12 @@ export function o13pcActorMixin(base) {
 			return {};
 		}
 		
-		toggleSelectGear(originid) {
+		async toggleSelectGear(originid) {
 			if (this.hasGearSelected(originid)) {
 				const matchingGear = this.inventory.find(gear => gear.isFromOrigin(originid));
 
 				if (matchingGear) {
-					this.deleteEmbeddedDocuments("Item", [matchingGear.id])
+					await this.deleteEmbeddedDocuments("Item", [matchingGear.id])
 				}
 			}
 			else {
@@ -483,7 +482,7 @@ export function o13pcActorMixin(base) {
 					data.system = data.system ?? {};
 					data.system.selectedinact = this.activeAct;
 					
-					this.createEmbeddedDocuments("Item", [data]);
+					await this.createEmbeddedDocuments("Item", [data]);
 				}
 			}
 		}
