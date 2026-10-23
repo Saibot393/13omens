@@ -1,3 +1,8 @@
+## v1.8.2
+- Gear can now be dropped into the roll config dialogue to add an edge matching the gear name
+- Improved token creator window resize behaviour
+- Added file name sanitation for token creator
+
 ## v1.8.1
 - Added new custom 3D dice for omen and safe dice named "Valiant - Safe dice" and "Despair - Omen dice"
 	- These 3D models were kindly made by [Mykhailo Zhylkin](https://mykhailozhylkin.artstation.com/)

@@ -1,3 +1,5 @@
+import {utils} from '../utils.js';
+
 import {o13SheetMixin} from "../components/sheet.js";
 import {o13WaitMixIn} from "../components/wait.js";
 
@@ -12,6 +14,13 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 		this._options = options || {};
 		
 		this._randomID = foundry.utils.randomID();
+	}
+
+	static DEFAULT_OPTIONS = {
+		position : {
+			width : 650,
+			height : 650
+		}
 	}
 	
 	get title() {
@@ -73,18 +82,20 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 		placementImage.style.scale = "1";
 		
 		const centerImage = () => {
-			const containmentwidth = containment.clientWidth;
-			const containmentheight = containment.clientHeight;
-			const imagewidth = placementImage.naturalWidth;
-			const imageheight = placementImage.naturalHeight;
-			
-			const left = (containmentwidth - imagewidth)/2;
-			const top = (containmentheight - imageheight)/2;
-			
-			placementImage.style.left = `${left}px`;
-			placementImage.style.top = `${top}px`;
+			requestAnimationFrame(() => {
+				const containmentwidth = containment.clientWidth;
+				const containmentheight = containment.clientHeight;
+				const imagewidth = placementImage.naturalWidth;
+				const imageheight = placementImage.naturalHeight;
+
+				const left = (containmentwidth - imagewidth)/2;
+				const top = (containmentheight - imageheight)/2;
+
+				placementImage.style.left = `${left}px`;
+				placementImage.style.top = `${top}px`;
+			});
 		}
-		
+
 		if (placementImage.complete) {
 			centerImage();
 		}
@@ -233,7 +244,7 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 			ui.notifications.error(game.i18n.localize("13omens.errors.tokenNotCreated"));
 		}
 		else {
-			const tokenName = `${this.tokenName}.webp`;
+			const tokenName = `${utils.sanitiseFileName(this.tokenName)}.webp`;
 			const directory = this.directory;
 			const file = new File([blob], tokenName, { type: "image/webp" });
 
@@ -293,22 +304,17 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 	}
 	
 	static async ensureDirectory(directory) {
-		if (true || directory.startsWith(`worlds/${game.world.id}/`)) {
-			if (await this.directoryExists(directory)) {
-				return true;
-			}
-			else {
-				try {
-					await foundry.applications.apps.FilePicker.implementation.createDirectory("data", directory);
-					console.warn(`Target directory "${directory}" created`);
-					return true;
-				} catch (error) {
-					console.error(`Target directory "${directory}" could not be created:`, error);
-				}
-			}
+		if (await this.directoryExists(directory)) {
+			return true;
 		}
 		else {
-			console.error(`Target directory could not be created as it is not within this worlds directory: "${directory}"`);
+			try {
+				await foundry.applications.apps.FilePicker.implementation.createDirectory("data", directory);
+				console.warn(`Target directory "${directory}" created`);
+				return true;
+			} catch (error) {
+				console.error(`Target directory "${directory}" could not be created:`, error);
+			}
 		}
 		
 		return false;

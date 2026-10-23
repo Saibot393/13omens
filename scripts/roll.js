@@ -1,4 +1,5 @@
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
+const { DragDrop } = foundry.applications.ux;
 
 import { utils } from "./utils.js";
 
@@ -609,16 +610,29 @@ export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(Appli
 			o13rollConfig.newRemote(socketData);
 		}
 	}
-	
+
 	updateData(data) {
 		this._data = {
 			...this._data,
 			...data
 		}
-		
+
 		return this._applyUpdate();
 	}
-	
+
+	#dragDropHandler = new DragDrop({
+		dragSelector : null,
+		dropSelector : ".dropArea",
+		callbacks : {
+			drop: this._onDrop.bind(this),
+		}
+	})
+
+	_onRender(context, options) {
+		super._onRender(context, options);
+		this.#dragDropHandler.bind(this.element);
+	}
+
 	get title() {
 		return game.i18n.format("13omens.titles.rollConfig", {pcName : this.actorName});
 	}
@@ -710,6 +724,21 @@ export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(Appli
 		
 		this._applyUpdate();
 	}
+
+	setGearEdge(gear) {
+		if (!gear?.isGear || (gear.parent != this.actor)) return false;
+
+		const edges = this._data.edges;
+
+		const currentGearEdge = edges.find(edge => edge.isGearEdge)
+		if (!currentGearEdge) edges.push({name : gear.name, id : gear.id, isGearEdge : true})
+		else {
+			currentGearEdge.name = gear.name;
+			currentGearEdge.id = gear.id;
+		}
+
+		return this._applyUpdate();
+	}
 	
 	toggleOmenFlaw(index) {
 		if (this._data.flaws[index]) this._data.flaws[index].isomen = !this._data.flaws[index].isomen;
@@ -774,6 +803,22 @@ export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(Appli
 	
 	_updateRemote() {
 		if (!this.isInspection) game.system.callSocket("updateRemoteRollConfig", {configID : this._id, rollData : this._data, actorUuid : this.actor.uuid, closed : this._closed});
+	}
+
+	async _onDrop(event) {
+		event.preventDefault();
+		if (this.isInspection) return;
+
+		//const targetElement = event.target;
+
+		const dragData = foundry.applications.ux.TextEditor.implementation.getDragEventData(event);
+		if (!dragData) return;
+
+		const droppedObject = await fromUuid(dragData.uuid);
+
+		if (droppedObject?.isGear) {
+			this.setGearEdge(droppedObject)
+		}
 	}
 	
 	static async DAreduceTaskDifficulty(event, target) {
