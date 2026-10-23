@@ -310,6 +310,28 @@ export function o13pcActorMixin(base) {
 				return this.createEmbeddedDocuments("Item", [...Object.values(archetype.perksData), ...Object.values(archetype.guaranteedGear)]);
 			}
 		}
+
+		async synchArchetypePerks() {
+			if (this.archetype) {
+				const archetypePerks = Object.values(this.archetype.perksData);
+				const currentPerks = Object.values(this.perks);
+
+				const toCreate = [];
+
+				for (const perkData of archetypePerks) {
+					const matchingPerk = currentPerks.find(perk => perk.isFromOriginData(perkData));
+
+					if (matchingPerk) await matchingPerk.update(perkData)
+					else toCreate.push(perkData);
+				}
+
+				await this.createEmbeddedDocuments("Item", toCreate);
+			}
+		}
+
+		async synchArchetypeGear() {
+
+		}
 		
 		async synchArchetypePortrait() {
 			const archetype = this.archetype;
