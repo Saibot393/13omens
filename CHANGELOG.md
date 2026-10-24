@@ -1,4 +1,5 @@
 ## v1.9.0
+- Players can now trade gear with other characters in the same story
 - Improved archetype synching
   - PCs will no longer update automatically when the archetype is updated
   - Added a button to the archetype choice to update sections specifically (portrait, perks & gear, background)
