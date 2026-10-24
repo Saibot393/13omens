@@ -6,6 +6,7 @@ import {showBanner} from "../components/banner.js";
 
 import {o13prepState} from "../dialogues/prepState.js";
 import {o13confirmQuery} from "../dialogues/confirmQuery.js";
+import {o13checkQuery} from "../dialogues/checkQuery.js";
 
 export function o13storyActorMixin(base) {
 	return class o13storyActor extends base {
@@ -289,12 +290,21 @@ export function o13storyActorMixin(base) {
 			const currentActors = this.pcActors;
 			
 			const currentUsers = game.users.filter(user => currentActors.some(actor => actor.testUserPermission(user, "OWNER")));
-			
-			const targetUsers = game.users.filter(user => !currentUsers.includes(user)).filter(user => !user.isGM);
-			
+			const possibleUsers = game.users.filter(user => !user.isGM);
+
+			const checkData = Object.fromEntries(possibleUsers.map(user => {
+				return [user.id, {
+					name : user.name,
+					checked : currentUsers.includes(user) || user.active,
+					locked : currentUsers.includes(user)
+				}]
+			}));
+
+			const chosenData = await new o13checkQuery({query : game.i18n.localize("13omens.titles.addCharacter"), checks : checkData}).wait(true);
+			const chosenUsers = possibleUsers.filter(user => !currentUsers.includes(user) && chosenData[user.id].checked);
+
 			const actors = [];
-			
-			for (const user of targetUsers) {
+			for (const user of chosenUsers) {
 				const newActor = await Actor.create({
 					name : game.i18n.format("13omens.titles.newActor", {user : user.name}),
 					type : "pc",

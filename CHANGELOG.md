@@ -1,3 +1,11 @@
+## v1.9.0
+- Improved archetype synching
+  - PCs will no longer update automatically when the archetype is updated
+  - Added a button to the archetype choice to update sections specifically (portrait, perks & gear, background)
+  - Fixed some bugs in relation to synching
+- Added player selection to automatic story population
+- Newly created gear will now start without a maximum quantity
+
 ## v1.8.4
 - Improved archetype subitem data stability
 
