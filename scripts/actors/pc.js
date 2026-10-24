@@ -257,38 +257,27 @@ export function o13pcActorMixin(base) {
 			if (archetype.isArchetype) {
 				const shouldSyncImage = this.shouldSynchArchetypePortrait;
 				
-				await this.removeOwnArchetype();
-				
+				await this.removeOwnArchetype({updateItems : false, syncPortrait : false});
+
 				await this.createEmbeddedDocuments("Item", [archetype.toObject()]);
-				
-				//for some reason foundry item indexing takes longer than the createEmbeddedDocuments above, so we need to wait some time
-				let attempts = 0;
-				while (!this.ownArchetype && attempts < 10) {
-					await new Promise(resolve => setTimeout(resolve, 20));
-					attempts = attempts + 1;
-				}
-				
-				if (!this.ownArchetype) {
-					console.error(`Actor ${this.name} was not able to update its archetype on time (>200ms). The archetype could not be synced, please try again.`);
-					await this.removeOwnArchetype();
-				}
-				else {
-					await this.updateArchetypeItems();
-					await this.synctoArchetypeBackground();
-					if (shouldSyncImage) await this.synchArchetypePortrait();
-				}
+
+				await this.updateArchetypeItems();
+				await this.synctoArchetypeBackground();
+				if (shouldSyncImage) await this.synchArchetypePortrait();
 			}
 		}
 		
-		async removeOwnArchetype() {
+		async removeOwnArchetype(options = {updateItems : true, syncPortrait : false}) {
 			const oldArchetypes = this.items.filter(item => item.isArchetype);
-				
-			const shouldSyncImage = this.shouldSynchArchetypePortrait;
-				
-			await this.deleteEmbeddedDocuments("Item", oldArchetypes.map(archetype => archetype.id));
-			
-			await this.updateArchetypeItems();
-			if (shouldSyncImage) await this.synchArchetypePortrait();
+
+			if (oldArchetypes.length) {
+				const shouldSyncImage = this.shouldSynchArchetypePortrait;
+
+				await this.deleteEmbeddedDocuments("Item", oldArchetypes.map(archetype => archetype.id));
+
+				if (options.updateItems) await this.updateArchetypeItems();
+				if (options.syncPortrait && shouldSyncImage) await this.synchArchetypePortrait();
+			}
 		}
 		
 		get ownArchetype() {
@@ -300,7 +289,7 @@ export function o13pcActorMixin(base) {
 		}
 		
 		async removeArchetypeItems() {
-			return this.deleteEmbeddedDocuments("Item", Array.from(this.items).filter(item => item.isArchetypeOrigin).map(item => item.id))
+			await this.deleteEmbeddedDocuments("Item", Array.from(this.items).filter(item => item.isArchetypeOrigin).map(item => item.id));
 		}
 		
 		async updateArchetypeItems(options = {removeold : true, restorechoices : false}) {
