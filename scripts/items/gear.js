@@ -62,8 +62,8 @@ export class gearDataModel extends virtualItemDataModel {
 			description: new HTMLField({ required: true, initial: ""}),
 			
 			quantity: new SchemaField({
-				max : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: 1 }),
-				value : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: null })
+				max : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: null }),
+				value : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: 1 })
 			}),
 			
 			selectedinact : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: null })
