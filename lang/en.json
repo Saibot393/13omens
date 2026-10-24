@@ -202,7 +202,8 @@
 			"sortAlphabetically" : "Sort alphabetically",
 			"makeActiveStory" : "Make active story: <br> •Sets PCs as user characters <br> •Shows story to players",
 			"isActiveStory" : "This is the currently active story",
-			"synchFromArchetype" : "Synch from archetype"
+			"synchFromArchetype" : "Synch from archetype",
+			"tradeGear" : "Trade gear"
 		},
 		
 		"chats" : {
@@ -217,7 +218,8 @@
 			"playerOmenFlawRoll" : "{pcName} rolled a check with {flawCount} omen flaw, do you want to add the omen die to the {storyName} dice bag?",
 			"confirmAdvanceAct" : "Do you want to advance to {act}?",
 			"confirmResettoPrologue" : "Do you want to reset the story to the prologue? This will also reset all players characters to the prologue state",
-			"transferGearQuery" : "Transfer {gear} from {sourceActor} to {targetActor}:"
+			"transferGearQuery" : "Transfer {gear} from {sourceActor} to {targetActor}:",
+			"selectTradePartnerfor" : "Choose recipient FOR {gearName}:"
 		},
 		
 		"infos" : {
