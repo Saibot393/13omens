@@ -1,3 +1,5 @@
+import {o13checkQuery} from "../dialogues/checkQuery.js";
+
 const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDocumentField, DocumentIdField, BooleanField, FilePathField, ObjectField } = foundry.data.fields;
 
 import {inventoryActorMixin} from "./inventoryActor.js";
@@ -316,12 +318,10 @@ export function o13pcActorMixin(base) {
 			}
 
 			if (options.restorechoices) {
+				const perks = Object.values(this.perks);
 				const perkUpdate = {
 					system : {
-						pickedperks : Object.fromEntries(choices.perks.map(originID => {
-							const matchingPerk = Object.values(this.perks).find(perk => perk.isFromOrigin(originID))
-							return matchingPerk?.id;
-						}).filter(perkID => perkID).map(perkID => [perkID, true]))
+						pickedperks : Object.fromEntries(choices.perks.map(originID => perks.find(perk => perk.isFromOrigin(originID))?.id).filter(perkID => perkID).map(perkID => [perkID, true]))
 					}
 				}
 				await this.update(perkUpdate);
@@ -357,6 +357,18 @@ export function o13pcActorMixin(base) {
 			if (this.archetype) return "ready";
 			
 			return "pending";
+		}
+
+		async synchFromArchetype() {
+			const updateChoices = await new o13checkQuery({query : game.i18n.localize("13omens.titles.synch"), checks : {
+				portrait : {name : game.i18n.localize("13omens.titles.portrait")},
+				items : {name : game.i18n.localize("13omens.titles.perksandgear")},
+				background : {name : game.i18n.localize("13omens.titles.background")}
+			}}).wait(true);
+
+			if (updateChoices.portrait?.checked) await this.synchArchetypePortrait();
+			if (updateChoices.items?.checked) await this.updateArchetypeItems({removeold : true, restorechoices : true});
+			if (updateChoices.background?.checked) await this.synctoArchetypeBackground();
 		}
 		
 		//Perks

@@ -42,7 +42,7 @@ export class o13Actor extends Actor {
 			console.error(`Error during 13 Omens pre item sort:`, error);
 		}
 		
-		super.createEmbeddedDocuments(embeddedName, localData, operation);
+		await super.createEmbeddedDocuments(embeddedName, localData, operation);
 	}
 	
 	async _onUpdate(changed, options, userId) {

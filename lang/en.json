@@ -23,6 +23,7 @@
 			"traits" : "Traits",
 			"players" : "Players",
 			"act" : "Act",
+			"portrait" : "Portrait",
 			
 			"pc" : "Player character",
 			"story" : "Story",
@@ -157,6 +158,8 @@
 			
 			"active" : "active",
 			"addCharacter" : "Add character",
+			"update" : "Update",
+			"synch" : "Synch",
 			
 			"backgroundColor" : "Background color",
 			"backgroundTransparency" : "Transparency"
@@ -198,7 +201,8 @@
 			"useonNextCheck" : "Use on next check",
 			"sortAlphabetically" : "Sort alphabetically",
 			"makeActiveStory" : "Make active story: <br> •Sets PCs as user characters <br> •Shows story to players",
-			"isActiveStory" : "This is the currently active story"
+			"isActiveStory" : "This is the currently active story",
+			"synchFromArchetype" : "Synch from archetype"
 		},
 		
 		"chats" : {

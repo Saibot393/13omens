@@ -1,5 +1,3 @@
-import {gearDataModel} from "./gear";
-
 const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDocumentField, DocumentIdField, BooleanField, FilePathField, ObjectField, DocumentUUIDField } = foundry.data.fields;
 
 export function o13archetypeItemMixin(base) {
@@ -26,7 +24,8 @@ export function o13archetypeItemMixin(base) {
 			await super._onUpdate(changed, options, userId);
 
 			if (game.user.id != userId) return;
-			
+
+			/*
 			if (changed?.system?.gear || changed?.system?.perks) {
 				if (this.parent?.isStory) {
 					const pcs = this.parent.pcActors?.filter(pc => pc.archetype == this);
@@ -36,6 +35,7 @@ export function o13archetypeItemMixin(base) {
 					}
 				}
 			}
+			 */
 		}
 		
 		//Story
