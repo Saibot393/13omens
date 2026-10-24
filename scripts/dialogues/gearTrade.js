@@ -54,6 +54,10 @@ export class o13GearTrade extends o13SheetMixin(o13BasicDragDropMixin(Handlebars
         return this._options.targetOptions;
     }
 
+    get preparedTargetOptiosn() {
+        return this.targetOptions
+    }
+
     get targetActor() {
         return this._options.targetActor;
     }
@@ -84,7 +88,7 @@ export class o13GearTrade extends o13SheetMixin(o13BasicDragDropMixin(Handlebars
         return handled;
     }
 
-    sendTradeRequest() {
+    static sendTradeRequest() {
 
     }
 
@@ -132,5 +136,9 @@ export class o13GearTrade extends o13SheetMixin(o13BasicDragDropMixin(Handlebars
         const gearid = target.getAttribute("gear-id");
 
         this.changeGearQuantity(gearid, 1);
+    }
+
+    static executeTranser() {
+
     }
 }

@@ -1,4 +1,14 @@
 <div class="o13-sheet dropArea">
+    <div class="form-group flexrow">
+        <label class="o13-label" style="flex:0.5">{{localize "13omens.titles.tradePartner"}}:</label>
+        <select class="o13-input o13-underline" name="tradePartner">
+            <option value=""></option>
+            {{#each trade.preparedTrgetOptions as |targetOption|}}
+                <option value="{{targetOption.id}}" {{#if (eq archetype.id ../actor.system.archetype)}}selected{{/if}}>{{targetOption.name}}</option>
+            {{/each}}
+        </select>
+    </div>
+
     <span class="o13-label o13-header-label">{{localize "13omens.titles.gears"}} </span>
     {{> "systems/13omens/templates/actors/components/inventory.hbs"
             source=trade
