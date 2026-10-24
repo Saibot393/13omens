@@ -23,6 +23,18 @@ export function o13storyActorMixin(base) {
 				});
 			}
 		}
+
+		_onCreate(data, options, userId) {
+			super._onCreate(data, options, userId);
+
+			this.archetypes.forEach(archetype => archetype.synchSubitemOrigins());
+		}
+
+		async importFromJSON(json) {
+			await super.importFromJSON(json);
+
+			this.archetypes.forEach(archetype => archetype.synchSubitemOrigins());
+		}
 		
 		async _preUpdate(changed, options, user) {
 			if (changed.system) {

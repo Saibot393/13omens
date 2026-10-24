@@ -39,6 +39,18 @@ export function o13pcActorMixin(base) {
 				});
 			}
 		}
+
+		_onCreate(data, options, userId) {
+			super._onCreate(data, options, userId);
+
+			this.ownArchetype?.synchSubitemOrigins();
+		}
+
+		async importFromJSON(json) {
+			await super.importFromJSON(json);
+
+			this.ownArchetype?.synchSubitemOrigins();
+		}
 		
 		async _preUpdate(changed, options, user) {
 			if (changed) {

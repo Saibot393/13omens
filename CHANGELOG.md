@@ -6,6 +6,9 @@
 - Added player selection to automatic story population
 - Newly created gear will now start without a maximum quantity
 
+## v1.8.4
+- Improved archetype subitem data stability
+
 ## v1.8.3
 - Fix for gear drag and drop bug
 
