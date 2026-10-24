@@ -120,6 +120,18 @@ export class o13Actor extends Actor {
 	get isPlayerView() {
 		return !game.user.isGM;
 	}
+
+	get primeActiveOwner() {
+		const owners = Array.from(game.users).filter(user => this.testUserPermission(user, 3)).filter(user => user.active);
+
+		const characterOwner = owners.find(user => user.character == this);
+		if (characterOwner?.active) return characterOwner;
+
+		const playerOwner = owners.find(owner => !owner.isGM);
+		if (playerOwner) return playerOwner;
+
+		return owners[0];
+	}
   
 	get inventory() {
 		return [...this.items].filter(item => item.type == "gear");
@@ -337,6 +349,14 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 			const perkID = target.getAttribute("perk-id");
 
 			this.actor.toggleUsePerkOnNextRoll(perkID);
+		}
+	}
+
+	async tradeGear(event, target) {
+		if (this.actor.isPC) {
+			const gearID = target.getAttribute("gear-id");
+
+			this.actor.tradeGear(gearID);
 		}
 	}
 	
