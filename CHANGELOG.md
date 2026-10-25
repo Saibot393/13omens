@@ -6,6 +6,7 @@
   - Fixed some bugs in relation to synching
 - Added player selection to automatic story population
 - Newly created gear will now start without a maximum quantity
+- Fixed bug that could cause the image in the token creator to become misaligned
 
 ## v1.8.4
 - Improved archetype subitem data stability
