@@ -1,5 +1,8 @@
 const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDocumentField, DocumentIdField, BooleanField, FilePathField, ObjectField } = foundry.data.fields;
 
+import {o13checkQuery} from "../dialogues/checkQuery.js";
+import {o13selectQuery} from "../dialogues/selectQuery.js";
+
 import {inventoryActorMixin} from "./inventoryActor.js";
 
 import {utils} from "../utils.js";
@@ -267,38 +270,27 @@ export function o13pcActorMixin(base) {
 			if (archetype.isArchetype) {
 				const shouldSyncImage = this.shouldSynchArchetypePortrait;
 				
-				await this.removeOwnArchetype();
-				
+				await this.removeOwnArchetype({updateItems : false, syncPortrait : false});
+
 				await this.createEmbeddedDocuments("Item", [archetype.toObject()]);
-				
-				//for some reason foundry item indexing takes longer than the createEmbeddedDocuments above, so we need to wait some time
-				let attempts = 0;
-				while (!this.ownArchetype && attempts < 10) {
-					await new Promise(resolve => setTimeout(resolve, 20));
-					attempts = attempts + 1;
-				}
-				
-				if (!this.ownArchetype) {
-					console.error(`Actor ${this.name} was not able to update its archetype on time (>200ms). The archetype could not be synced, please try again.`);
-					await this.removeOwnArchetype();
-				}
-				else {
-					await this.updateArchetypeItems();
-					await this.synctoArchetypeBackground();
-					if (shouldSyncImage) await this.synchArchetypePortrait();
-				}
+
+				await this.updateArchetypeItems();
+				await this.synctoArchetypeBackground();
+				if (shouldSyncImage) await this.synchArchetypePortrait();
 			}
 		}
 		
-		async removeOwnArchetype() {
+		async removeOwnArchetype(options = {updateItems : true, syncPortrait : false}) {
 			const oldArchetypes = this.items.filter(item => item.isArchetype);
-				
-			const shouldSyncImage = this.shouldSynchArchetypePortrait;
-				
-			await this.deleteEmbeddedDocuments("Item", oldArchetypes.map(archetype => archetype.id));
-			
-			await this.updateArchetypeItems();
-			if (shouldSyncImage) await this.synchArchetypePortrait();
+
+			if (oldArchetypes.length) {
+				const shouldSyncImage = this.shouldSynchArchetypePortrait;
+
+				await this.deleteEmbeddedDocuments("Item", oldArchetypes.map(archetype => archetype.id));
+
+				if (options.updateItems) await this.updateArchetypeItems();
+				if (options.syncPortrait && shouldSyncImage) await this.synchArchetypePortrait();
+			}
 		}
 		
 		get ownArchetype() {
@@ -310,16 +302,35 @@ export function o13pcActorMixin(base) {
 		}
 		
 		async removeArchetypeItems() {
-			return this.deleteEmbeddedDocuments("Item", Array.from(this.items).filter(item => item.isArchetypeOrigin).map(item => item.id))
+			await this.deleteEmbeddedDocuments("Item", Array.from(this.items).filter(item => item.isArchetypeOrigin).map(item => item.id));
 		}
 		
-		async updateArchetypeItems(removeold = true) {
-			if (removeold) await this.removeArchetypeItems();
+		async updateArchetypeItems(options = {removeold : true, restorechoices : false}) {
+			const choices = {
+				perks : Object.values(this.pickedPerks).map(perk => perk.originID),
+				gear : Object.values(this.selectableGearInfo).filter(gearInfo => gearInfo.selected).map(gearInfo => gearInfo.id)
+			}
+
+			if (options.removeold) await this.removeArchetypeItems();
 
 			const archetype = this.archetype;
 
 			if (archetype) {
-				return this.createEmbeddedDocuments("Item", [...Object.values(archetype.perksData), ...Object.values(archetype.guaranteedGear)]);
+				await this.createEmbeddedDocuments("Item", [...Object.values(archetype.perksData), ...Object.values(archetype.guaranteedGear)]);
+			}
+
+			if (options.restorechoices) {
+				const perks = Object.values(this.perks);
+				const perkUpdate = {
+					system : {
+						pickedperks : Object.fromEntries(choices.perks.map(originID => perks.find(perk => perk.isFromOrigin(originID))?.id).filter(perkID => perkID).map(perkID => [perkID, true]))
+					}
+				}
+				await this.update(perkUpdate);
+
+				for (const gearID of choices.gear) {
+					await this.toggleSelectGear(gearID)
+				}
 			}
 		}
 		
@@ -348,6 +359,18 @@ export function o13pcActorMixin(base) {
 			if (this.archetype) return "ready";
 			
 			return "pending";
+		}
+
+		async synchFromArchetype() {
+			const updateChoices = await new o13checkQuery({query : game.i18n.localize("13omens.titles.synch"), checks : {
+				portrait : {name : game.i18n.localize("13omens.titles.portrait")},
+				items : {name : game.i18n.localize("13omens.titles.perksandgear")},
+				background : {name : game.i18n.localize("13omens.titles.background")}
+			}}).wait(true);
+
+			if (updateChoices.portrait?.checked) await this.synchArchetypePortrait();
+			if (updateChoices.items?.checked) await this.updateArchetypeItems({removeold : true, restorechoices : true});
+			if (updateChoices.background?.checked) await this.synctoArchetypeBackground();
 		}
 		
 		//Perks
@@ -436,6 +459,16 @@ export function o13pcActorMixin(base) {
 		get selectableGearCount() {
 			return this.system.selectablegearcount;//this.archetype?.selectableGearCount;
 		}
+
+		get selectedGear() {
+			const selectableGearIDs = Object.keys(this.archetype?.unguaranteedGear);
+
+			return Object.values(this.gear).filter(gear => selectableGearIDs.find(originID => gear?.isFromOrigin(originID)));
+		}
+
+		get selectedGearCount() {
+			return this.selectedGear.length;
+		}
 		
 		hasGearSelected(originid) {
 			return this.inventory.some(gear => gear.isFromOrigin(originid));
@@ -456,12 +489,12 @@ export function o13pcActorMixin(base) {
 			return {};
 		}
 		
-		toggleSelectGear(originid) {
+		async toggleSelectGear(originid) {
 			if (this.hasGearSelected(originid)) {
 				const matchingGear = this.inventory.find(gear => gear.isFromOrigin(originid));
 
 				if (matchingGear) {
-					this.deleteEmbeddedDocuments("Item", [matchingGear.id])
+					await this.deleteEmbeddedDocuments("Item", [matchingGear.id])
 				}
 			}
 			else {
@@ -473,7 +506,7 @@ export function o13pcActorMixin(base) {
 					data.system = data.system ?? {};
 					data.system.selectedinact = this.activeAct;
 					
-					this.createEmbeddedDocuments("Item", [data]);
+					await this.createEmbeddedDocuments("Item", [data]);
 				}
 			}
 		}
@@ -513,6 +546,25 @@ export function o13pcActorMixin(base) {
 			const inAct = this.getPostSelectedGear(this.activeAct);
 			
 			if (inAct.length < perAct) return true;
+		}
+
+		async tradeGear(gearID){
+			const gear = this.gear[gearID];
+
+			if (gear?.parent == this) {
+				const possiblePartners = this.siblingCharacters.filter(actor => actor.primeActiveOwner);
+
+				const chosenID = await new o13selectQuery({
+					query : game.i18n.format("13omens.dialogues.selectTradePartnerfor", {gearName : gear.name}),
+					emptyOption : true,
+					options : Object.fromEntries(possiblePartners.map(actor => [actor.id, {name : `${actor.name}[${actor.primeActiveOwner?.name}]`}]))
+				}).wait(true);
+
+				console.log(chosenID);
+				const chosen = possiblePartners.find(actor => actor.id == chosenID);
+
+				if (chosen) this.startTrade(gear, chosen);
+			}
 		}
 		
 		//Aspects

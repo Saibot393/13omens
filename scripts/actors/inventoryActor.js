@@ -118,6 +118,50 @@ export function inventoryActorMixin(base) {
 			}
 			return false;
 		}
+
+		//trade
+		async startTrade(gear, recipient, options = {}) {
+			if (gear?.isGear && gear?.parent == this && recipient?.isInventoryActor) {
+				if (this.isOwner) {
+					let handled = false;
+
+					if (recipient.isOwner) {
+						await recipient.receiveTrade(gear, this, options);
+						handled = true;
+					}
+					else {
+						const receiverOwner = recipient.primeActiveOwner;
+
+						if (receiverOwner) {
+							game.system.callSocket("handleTrade", [gear, this, recipient, options], {whiteList : [receiverOwner.id]});
+							handled = true;
+						}
+					}
+
+					if (handled) {
+						await gear.setQuantity(0);
+					}
+				}
+			}
+		}
+
+		get canTrade() {
+			return this.isOwner && !game.user.isGM;
+		}
+
+		static handleTrade(gear, sender, recipient, options) {
+			if (gear?.isGear && gear?.parent == sender && recipient?.isInventoryActor) {
+				if (recipient.isOwner) {
+					recipient.receiveTrade(gear, sender, options);
+				}
+			}
+		}
+
+		async receiveTrade(gear, sender, options = {}) {
+			if (gear?.isGear) {
+				this.createNewGear(gear.toObject())
+			}
+		}
 	}
 }
 

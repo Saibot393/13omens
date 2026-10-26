@@ -63,7 +63,7 @@
 				<span class="o13-item-line" drop-zone="selectableGear">
 					{{#if actor.canPrepare}}
 						<span class="o13-label">
-							<b>{{localize "13omens.titles.selectGear" n=actor.selectableGearCount}}:</b>
+							<b>{{localize "13omens.titles.selectGear" current=actor.selectedGearCount max=actor.selectableGearCount}}:</b>
 						</span>
 					{{/if}}
 					{{#each actor.selectableGearInfo}}

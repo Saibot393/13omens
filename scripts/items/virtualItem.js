@@ -30,6 +30,10 @@ export function virtualItemMixin(base) {
 		isFromOrigin(originid) {
 			return this.originID == originid;
 		}
+
+		isFromOriginData(data) {
+			return this.isFromOrigin(data?.system?.origin?.id);
+		}
 		
 		get parentArchetype() {
 			if (this.isPerk || this.isGear) {

@@ -29,7 +29,7 @@
 			<div class="flexcol o13-flexStart">
 				<span class="o13-label o13-header-label o13-content-centered">{{localize "13omens.titles.storyAspects"}}</span>
 				{{#each actor.system.storyaspects as |aspect|}}
-					<input class="o13-input o13-underline" type="text" name="{{concat "system.storyaspects." @key ".name"}}" value="{{aspect.name}}" />
+					<input class="o13-input o13-underline" type="text" style="min-height:34px" name="{{concat "system.storyaspects." @key ".name"}}" value="{{aspect.name}}" />
 				{{/each}}
 			</div>
 			<div class="flexcol o13-flexStart" style="flex:1.5" sort-direction="t_b" sort-behaviour="AUTO">

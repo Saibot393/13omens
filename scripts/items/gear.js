@@ -20,7 +20,11 @@ export function o13gearItemMixin(base) {
 		}
 
 		async changeQuantity(change) {
-			return this.update({system : {quantity : {value : Math.min(Math.max(0, this.quantityValue + change), this.quantityMax)}}});
+			return this.setQuantity(this.quantityValue + change);
+		}
+
+		async setQuantity(value) {
+			return this.update({system : {quantity : {value : Math.min(Math.max(0, value), this.quantityMax)}}});
 		}
 		
 		async breakGear() {
@@ -62,8 +66,8 @@ export class gearDataModel extends virtualItemDataModel {
 			description: new HTMLField({ required: true, initial: ""}),
 			
 			quantity: new SchemaField({
-				max : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: 1 }),
-				value : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: null })
+				max : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: null }),
+				value : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: 1 })
 			}),
 			
 			selectedinact : new NumberField({ required: true, integer: true, nullable: true, min: 0, initial: null })
