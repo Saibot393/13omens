@@ -152,6 +152,7 @@
 			
 			"AEConditions" : {
 				"usesleft" : "when uses left",
+				"always" : "always",
 				"usedup" : "when used up",
 				"nextroll" : "on next roll"
 			},

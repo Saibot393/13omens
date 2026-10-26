@@ -1,3 +1,7 @@
+## v1.9.1
+- Added "always" option to perk AE activation conditions
+- Fixed bug that could occur  when adding specific perk AE flag to pc without archetype
+
 ## v1.9.0
 - Players can now trade gear with other characters in the same story
 - Improved archetype synching

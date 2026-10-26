@@ -461,7 +461,7 @@ export function o13pcActorMixin(base) {
 		}
 
 		get selectedGear() {
-			const selectableGearIDs = Object.keys(this.archetype?.unguaranteedGear);
+			const selectableGearIDs = Object.keys(this.archetype?.unguaranteedGear || {});
 
 			return Object.values(this.gear).filter(gear => selectableGearIDs.find(originID => gear?.isFromOrigin(originID)));
 		}
