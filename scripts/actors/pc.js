@@ -459,6 +459,16 @@ export function o13pcActorMixin(base) {
 		get selectableGearCount() {
 			return this.system.selectablegearcount;//this.archetype?.selectableGearCount;
 		}
+
+		get selectedGear() {
+			const selectableGearIDs = Object.keys(this.archetype?.unguaranteedGear);
+
+			return Object.values(this.gear).filter(gear => selectableGearIDs.find(originID => gear?.isFromOrigin(originID)));
+		}
+
+		get selectedGearCount() {
+			return this.selectedGear.length;
+		}
 		
 		hasGearSelected(originid) {
 			return this.inventory.some(gear => gear.isFromOrigin(originid));

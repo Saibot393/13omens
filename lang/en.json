@@ -119,7 +119,7 @@
 			"withEdges" : "with {n} edges ",
 			"withEdge" : "with 1 edge ",
 			
-			"selectGear" : "Select {n} pieces of gear",
+			"selectGear" : "Select {current}/{max} pieces of gear",
 			
 			"uses" : {
 				"name" : "Uses",

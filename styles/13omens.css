@@ -8,7 +8,7 @@
 	--o13-omen-red: #880808;
 	--o13-cheat-blue: #5B87B9;
 	--o13-strain-yellow: #CDC50A;
-	--o13-parchment: #EAD8C1;
+	--o13-parchment-beige: #DDDBCF;
 	--o13-antique-gold: #B59E5F;
 	
 	--o13-portrait-height: 180px;
@@ -18,6 +18,10 @@
 	font-family: "Cinzel", "Times New Roman", Georgia, serif;
 	background-image: url("/ui/parchment.jpg");
 	height: 100%;
+}
+
+.o13-sheet option {
+	background-color : var(--o13-parchment-beige);
 }
 
 .o13-sheet :is(h1, h2, h3, h4, h5, h6) {
