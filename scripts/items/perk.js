@@ -8,7 +8,7 @@ import {o13checkQuery} from "../dialogues/checkQuery.js";
 
 const USESPEROPTIONS = ["passive", "act", "story", "character", "custom"];
 
-const AECONDITIONOPTIONS = ["usesleft", "usedup", "nextroll"];
+const AECONDITIONOPTIONS = ["usesleft", "always", "usedup", "nextroll"];
 
 export function o13perkItemMixin(base) {
 	return class o13perkItem extends virtualItemMixin(base) {
@@ -135,7 +135,7 @@ export function o13perkItemMixin(base) {
 		}
 		
 		effectActive(id) {
-			const useActive = (!this.canBeUsed && this.getAECondition(id) != "nextroll") || (this.usesLeft > 0 && this.getAECondition(id) == "usesleft") || (this.usesLeft == 0 && this.getAECondition(id) == "usedup");
+			const useActive =  (this.getAECondition(id) == "always") || (!this.canBeUsed && this.getAECondition(id) != "nextroll") || (this.usesLeft > 0 && this.getAECondition(id) == "usesleft") || (this.usesLeft == 0 && this.getAECondition(id) == "usedup");
 			const rollToggleActive = this.getAECondition(id) == "nextroll" && this.usedonNextRoll;
 			const chosenActive = this.isChosen;
 
