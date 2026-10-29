@@ -28,16 +28,7 @@ For more information you can visit the [Wiki](https://github.com/Saibot393/13ome
 ---
 ## Roadmap
 
-I have multiple additions to the system planned, the following is an incomplete list in no specific order
-- ~~Adding active effects for perks, so that they can affect PC properties, e.g. the maximum amount of wounds~~
-- ~~Adding inline checks for aspects, which allow for roll properties to be parsed~~
-- ~~More drag and drop utility for items in sheets, including reordering~~
-- ~~Dedicated tab in the Story and PC actor sheets for notes and descriptions~~
-- ~~Dedicated tab in the archetype item sheet for descriptions~~
-- ~~Posting Gear and Perks to chat~~
-- ~~Implementation of the final sacrifice mechanic~~
-- ~~Allowing for perks to add roll rules (edges, roll behaviour)~~
-- ~~Story independent archetypes on the PC sheet~~
+Miltiple additions to the system are planned. The current roadmap can be tracked in the [github issues](https://github.com/Saibot393/13omens/issues).
 
 As of v1.5.0 all items of the original release roadmap have been implemented. Further plans can be found in the issue section of the github page.
 
