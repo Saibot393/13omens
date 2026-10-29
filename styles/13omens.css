@@ -327,6 +327,11 @@ range-picker.o13-input input {
 	text-align: center;	
 }
 
+.o13-self-centered{
+	margin-left: auto;
+	margin-right: auto;
+}
+
 .o13-bottom-align{
 	vertical-align: bottom;
 }

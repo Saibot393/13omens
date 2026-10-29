@@ -21,7 +21,7 @@
 		</div>
 		<div class="flexrow" style="margin-top:3px">
 			<div class="flexcol o13-flexStart">
-				<span class="o13-header-label o13-content-centered o13-clickable" data-action="addEmptyFlaw">{{localize "13omens.titles.flaws"}} {{#unless config.isInspection}} <i class="fa-solid fa-plus"></i> {{/unless}} </span>
+				<span class="o13-header-label o13-content-centered o13-clickable" data-action="addEmptyFlaw">{{localize "13omens.titles.flaws"}} </span>
 				{{#if config.strain}}
 					{{#unless config.ignoreStrain}}
 						<div class="flexrow o13-padding">
@@ -37,14 +37,17 @@
 						<input class="o13-input o13-underline" type="text" index="{{@key}}" name="{{concat "flaws." @key ".name"}}" value="{{flaw.name}}" {{#if ../config.isInspection}}disabled{{/if}}/>
 						{{#if flaw.ignored}}<i class="fa-solid fa-ban o13-lowflex" data-tooltip="{{localize '13omens.tooltips.ignored'}}" style="color:var(--o13-dark-smoke-grey)"></i>{{/if}}
 						<i class="fa-solid fa-dice-six o13-label o13-lowflex o13-clickable" index="{{@key}}" data-action="toggleOmenFlaw" {{#if flaw.isomen}}style="color:var(--o13-omen-red);"{{/if}}></i>
-						{{#unless ../config.isInspection}} 
+						{{#unless ../config.isInspection}}
 							<i class="fa-solid fa-x o13-label o13-lowflex o13-clickable" index="{{@key}}" data-action="removeFlaw"></i>
 						{{/unless}}
 					</div>
 				{{/each}}
+                {{#unless (or  config.isInspection (not config.canAddFlaws))}}
+                    <i class="fa-solid fa-plus o13-clickable o13-self-centered o13-label" style="margin-top:3px;margin-bottom:3px" data-action="addEmptyFlaw"></i>
+                {{/unless}}
 			</div>
 			<div class="flexcol o13-flexStart">
-				<span class="o13-header-label o13-content-centered o13-clickable" data-action="addEmptyEdge">{{localize "13omens.titles.edges"}} {{#unless config.isInspection}} <i class="fa-solid fa-plus"></i> {{/unless}}</span>
+				<span class="o13-header-label o13-content-centered o13-clickable" data-action="addEmptyEdge">{{localize "13omens.titles.edges"}}</span>
 				{{#each config.edges as |edge|}}
 					<div class="flexrow o13-padding">
 						<input class="o13-input o13-underline" type="text" index="{{@key}}" name="{{concat "edges." @key ".name"}}" value="{{edge.name}}" {{#if ../config.isInspection}}disabled{{/if}}/>
@@ -54,6 +57,9 @@
 						{{/unless}}
 					</div>
 				{{/each}}
+                {{#unless (or  config.isInspection (not config.canAddEdges))}}
+                    <i class="fa-solid fa-plus o13-clickable o13-self-centered o13-label" style="margin-top:3px;margin-bottom:3px" data-action="addEmptyEdge"></i>
+                {{/unless}}
 			</div>
 		</div>
 		{{#unless (or config.isSecondaryView config.isInspection)}}
