@@ -1,3 +1,6 @@
+## v1.9.3
+- Small ui improvements for roll config and story archetype section
+
 ## v1.9.2
 - Fixed v13 specific bug
 
