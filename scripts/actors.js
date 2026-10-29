@@ -164,6 +164,15 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 		actions: {
 		}
 	});
+
+	_prepareSubmitData(event, form, formData, updateData) {
+		if (this.actor?.isStory && formData?.object) {
+			formData.object["system.acts.0.omenDiceThreshold"] = this.actor?.system.acts?.[0]?.omenDiceThreshold || CONFIG["13OMENS"].DEFAULTACTOMENDCIETHRESHOLD[0];
+			formData.object["system.acts.1.omenDiceThreshold"] = this.actor?.system.acts?.[1]?.omenDiceThreshold || CONFIG["13OMENS"].DEFAULTACTOMENDCIETHRESHOLD[1];
+		}
+
+		return super._prepareSubmitData(event, form, formData, updateData);
+	}
 	
 	async viewStory(event, target) {
 		this.actor.storyActor?.sheet.render(true);

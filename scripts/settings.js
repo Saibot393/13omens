@@ -108,7 +108,7 @@ export function registerSettings() {
 		default: true
 	})
 	
-	if (game.modules.get("dice-so-nice").active) {
+	if (game.modules.get("dice-so-nice")?.active) {
 		game.settings.register("13omens", "customDSNdesign_safe", {
 			name: "13omens.settings.customDSNdesign_safe.name",
 			hint: "13omens.settings.customDSNdesign_safe.descrp",

@@ -1,3 +1,6 @@
+## v1.9.2
+- Fixed v13 specific bug
+
 ## v1.9.1
 - Added "always" option to perk AE activation conditions
 - Fixed bug that could occur  when adding specific perk AE flag to pc without archetype
