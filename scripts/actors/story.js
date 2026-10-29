@@ -35,7 +35,7 @@ export function o13storyActorMixin(base) {
 
 			this.archetypes.forEach(archetype => archetype.synchSubitemOrigins());
 		}
-		
+
 		async _preUpdate(changed, options, user) {
 			if (changed.system) {
 				if (changed.system.acts) {
@@ -71,7 +71,7 @@ export function o13storyActorMixin(base) {
 					}
 				}
 			}
-			
+
 			await super._preUpdate(changed, options, user);
 		}
 		
