@@ -1,3 +1,7 @@
+## v1.10.0
+- Added "Active story" tab to give quicker overview over the story state
+- Internal refactor for some ui code
+
 ## v1.9.3
 - Small ui improvements for roll config and story archetype section
 
