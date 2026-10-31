@@ -85,8 +85,8 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 			requestAnimationFrame(() => {
 				const containmentwidth = containment.clientWidth;
 				const containmentheight = containment.clientHeight;
-				const imagewidth = placementImage.naturalWidth;
-				const imageheight = placementImage.naturalHeight;
+				const imagewidth = placementImage.offsetWidth;
+				const imageheight = placementImage.offsetHeight;
 
 				const left = (containmentwidth - imagewidth)/2;
 				const top = (containmentheight - imageheight)/2;
@@ -194,11 +194,11 @@ export class o13tokenCreator extends o13WaitMixIn(o13SheetMixin(HandlebarsApplic
 		const imageTop = parseFloat(placementImage.style.top);
 		const imageScale = parseFloat(placementImage.style.scale);
 		
-		const visualImageLeft = imageLeft - placementImage.naturalWidth * (imageScale-1)/2;
-		const visualImageTop = imageTop - placementImage.naturalHeight * (imageScale-1)/2;
+		const visualImageLeft = imageLeft - placementImage.offsetWidth * (imageScale-1)/2;
+		const visualImageTop = imageTop - placementImage.offsetHeight * (imageScale-1)/2;
 		
-		const drawWidth = placementImage.naturalWidth * imageScale;
-		const drawHeight = placementImage.naturalHeight * imageScale;
+		const drawWidth = placementImage.offsetWidth * imageScale;
+		const drawHeight = placementImage.offsetHeight * imageScale;
 		
 		context.save();
 		context.beginPath();

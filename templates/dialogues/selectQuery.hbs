@@ -1,0 +1,18 @@
+<div class="o13-sheet">
+	<div class="flexcol">
+        <span class="o13-header-label"><b>{{selectQuery.query}}</b></span>
+
+        <select class="o13-input" name="selection">
+            {{#if selectQuery.emptyOption}}
+            <option value=""></option>
+            {{/if}}
+            {{#each selectQuery.selectOptions as |option|}}
+                <option value="{{@key}}" {{#if (eqLoose @key ../selectQuery.selection)}}selected{{/if}}>{{option.name}}</option>
+            {{/each}}
+        </select>
+	</div>
+	<div class="flexrow" style="gap:5px">
+		<button class="o13-button o13-clickable" type="button" data-action="accept">{{localize "13omens.actions.accept"}} <i class="fa-solid fa-check"></i> </button>
+		<button class="o13-button o13-clickable" type="button" data-action="cancel">{{localize "13omens.actions.cancel"}} <i class="fa-solid fa-x"></i> </button>
+	</div>
+</div>

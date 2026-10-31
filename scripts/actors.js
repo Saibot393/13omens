@@ -120,6 +120,18 @@ export class o13Actor extends Actor {
 	get isPlayerView() {
 		return !game.user.isGM;
 	}
+
+	get primeActiveOwner() {
+		const owners = Array.from(game.users).filter(user => this.testUserPermission(user, 3)).filter(user => user.active);
+
+		const characterOwner = owners.find(user => user.character == this);
+		if (characterOwner?.active) return characterOwner;
+
+		const playerOwner = owners.find(owner => !owner.isGM);
+		if (playerOwner) return playerOwner;
+
+		return owners[0];
+	}
   
 	get inventory() {
 		return [...this.items].filter(item => item.type == "gear");
@@ -152,6 +164,15 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 		actions: {
 		}
 	});
+
+	_prepareSubmitData(event, form, formData, updateData) {
+		if (this.actor?.isStory && formData?.object) {
+			formData.object["system.acts.0.omenDiceThreshold"] = this.actor?.system.acts?.[0]?.omenDiceThreshold || CONFIG["13OMENS"].DEFAULTACTOMENDCIETHRESHOLD[0];
+			formData.object["system.acts.1.omenDiceThreshold"] = this.actor?.system.acts?.[1]?.omenDiceThreshold || CONFIG["13OMENS"].DEFAULTACTOMENDCIETHRESHOLD[1];
+		}
+
+		return super._prepareSubmitData(event, form, formData, updateData);
+	}
 	
 	async viewStory(event, target) {
 		this.actor.storyActor?.sheet.render(true);
@@ -337,6 +358,14 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 			const perkID = target.getAttribute("perk-id");
 
 			this.actor.toggleUsePerkOnNextRoll(perkID);
+		}
+	}
+
+	async tradeGear(event, target) {
+		if (this.actor.isPC) {
+			const gearID = target.getAttribute("gear-id");
+
+			this.actor.tradeGear(gearID);
 		}
 	}
 	

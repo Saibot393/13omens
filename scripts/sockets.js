@@ -7,10 +7,11 @@ import {inventoryActor} from "./actors/inventoryActor.js";
 const ACTIONS = {
 	showBanner,
 	updateRemoteRollConfig : o13rollConfig.updateRemote,
-	handleGearTransfer : inventoryActor.handleGearTransfer
+	handleGearTransfer : inventoryActor.handleGearTransfer,
+	handleTrade : inventoryActor.handleTrade
 }
 
-export function callSocket(action, data, recipients = {onlyPrimeGM : false}) {
+export function callSocket(action, data, recipients = {onlyPrimeGM : false, whiteList : undefined}) {
 	if (!Object.keys(ACTIONS).includes(action)) {
 		console.error(`13 Omens Socket action "${action}" is unknown and will be skipped. Called with data:`, data);
 		return false;
@@ -44,8 +45,9 @@ export function onO13Sockets() {
 			
 			const notSender = game.user.id != data.userid;
 			const matchingPrimeGM = !data.recipients?.onlyPrimeGM || utils.primeGM() == game.user;
+			const matchingWhiteList = !data.recipients?.whiteList || data.recipients.whiteList.includes(game.user.id);
 
-			if (notSender && matchingPrimeGM) {
+			if (notSender && matchingPrimeGM && matchingWhiteList) {
 				const action = ACTIONS[data.action];
 
 				if (typeof action == "function") {

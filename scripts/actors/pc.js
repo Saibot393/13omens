@@ -1,6 +1,7 @@
-import {o13checkQuery} from "../dialogues/checkQuery.js";
-
 const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDocumentField, DocumentIdField, BooleanField, FilePathField, ObjectField } = foundry.data.fields;
+
+import {o13checkQuery} from "../dialogues/checkQuery.js";
+import {o13selectQuery} from "../dialogues/selectQuery.js";
 
 import {inventoryActorMixin} from "./inventoryActor.js";
 
@@ -37,6 +38,18 @@ export function o13pcActorMixin(base) {
 					}
 				});
 			}
+		}
+
+		_onCreate(data, options, userId) {
+			super._onCreate(data, options, userId);
+
+			this.ownArchetype?.synchSubitemOrigins();
+		}
+
+		async importFromJSON(json) {
+			await super.importFromJSON(json);
+
+			this.ownArchetype?.synchSubitemOrigins();
 		}
 		
 		async _preUpdate(changed, options, user) {
@@ -446,6 +459,16 @@ export function o13pcActorMixin(base) {
 		get selectableGearCount() {
 			return this.system.selectablegearcount;//this.archetype?.selectableGearCount;
 		}
+
+		get selectedGear() {
+			const selectableGearIDs = Object.keys(this.archetype?.unguaranteedGear || {});
+
+			return Object.values(this.gear).filter(gear => selectableGearIDs.find(originID => gear?.isFromOrigin(originID)));
+		}
+
+		get selectedGearCount() {
+			return this.selectedGear.length;
+		}
 		
 		hasGearSelected(originid) {
 			return this.inventory.some(gear => gear.isFromOrigin(originid));
@@ -523,6 +546,25 @@ export function o13pcActorMixin(base) {
 			const inAct = this.getPostSelectedGear(this.activeAct);
 			
 			if (inAct.length < perAct) return true;
+		}
+
+		async tradeGear(gearID){
+			const gear = this.gear[gearID];
+
+			if (gear?.parent == this) {
+				const possiblePartners = this.siblingCharacters.filter(actor => actor.primeActiveOwner);
+
+				const chosenID = await new o13selectQuery({
+					query : game.i18n.format("13omens.dialogues.selectTradePartnerfor", {gearName : gear.name}),
+					emptyOption : true,
+					options : Object.fromEntries(possiblePartners.map(actor => [actor.id, {name : `${actor.name}[${actor.primeActiveOwner?.name}]`}]))
+				}).wait(true);
+
+				console.log(chosenID);
+				const chosen = possiblePartners.find(actor => actor.id == chosenID);
+
+				if (chosen) this.startTrade(gear, chosen);
+			}
 		}
 		
 		//Aspects

@@ -28,6 +28,7 @@ import {o13tokenCreator} from "./scripts/dialogues/tokenCreator.js";
 import {o13quantityQuery} from "./scripts/dialogues/quantityQuery.js";
 import {o13checkQuery} from "./scripts/dialogues/checkQuery.js";
 import {o13confirmQuery} from "./scripts/dialogues/confirmQuery.js";
+import {o13selectQuery} from "./scripts/dialogues/selectQuery.js";
 
 import {o13StoryTab} from "./scripts/components/storyTab.js"
 
@@ -106,7 +107,8 @@ Hooks.once("init", async () => {
 		queries : {
 			o13quantityQuery,
 			o13checkQuery,
-			o13confirmQuery
+			o13confirmQuery,
+			o13selectQuery
 		}
 	}
 	

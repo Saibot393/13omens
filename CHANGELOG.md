@@ -1,9 +1,27 @@
+## v1.9.3
+- Small ui improvements for roll config and story archetype section
+
+## v1.9.2
+- Fixed v13 specific bug
+
+## v1.9.1
+- Added "always" option to perk AE activation conditions
+- Fixed bug that could occur  when adding specific perk AE flag to pc without archetype
+
 ## v1.9.0
+- Players can now trade gear with other characters in the same story
 - Improved archetype synching
   - PCs will no longer update automatically when the archetype is updated
   - Added a button to the archetype choice to update sections specifically (portrait, perks & gear, background)
   - Fixed some bugs in relation to synching
 - Added player selection to automatic story population
+- Newly created gear will now start without a maximum quantity
+- The pc sheet now shows the number of currently selected gear
+- Fixed bug that could cause the image in the token creator to become misaligned
+- A few minor ui improvements
+
+## v1.8.4
+- Improved archetype subitem data stability
 
 ## v1.8.3
 - Fix for gear drag and drop bug

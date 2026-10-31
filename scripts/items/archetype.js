@@ -3,6 +3,12 @@ const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDo
 export function o13archetypeItemMixin(base) {
 	return class o13archetypeItem extends base {
 		//Updates & Create
+		_onCreate(data, options, userId) {
+			super._onCreate(data, options, userId);
+
+			this.synchSubitemOrigins();
+		}
+
 		async _preUpdate(changed, options, user) {
 			if (changed?.system?.background?.relations) {
 				const currentRelations = this.organisedRelations;
@@ -110,6 +116,19 @@ export function o13archetypeItemMixin(base) {
 				}
 			}
 		}
+
+		async synchSubitemOrigins() {
+			const update = {system : {}}
+
+			update.system.perks = Object.fromEntries(Object.keys(this.system.perks).map(key => [key, {system : {origin : {parentArchetype : this.uuid, id : key}}}]));
+			update.system.gear = Object.fromEntries(Object.keys(this.system.gear).map(key => [key, {system : {origin : {parentArchetype : this.uuid, id : key}}}]));
+
+			await this.update(update);
+		}
+
+		writeSelfOrigin(data){
+			data.system.origin.parentArchetype = this.uuid;
+		}
 		
 		//Gear
 		async createNewGear(data = {}) {
@@ -127,6 +146,7 @@ export function o13archetypeItemMixin(base) {
 			const data = this.system.gear[id];
 			
 			if (data && data.type == "gear") {
+				this.writeSelfOrigin(data);
 				const gear = new this.constructor(data);
 				
 				if (gear.isGear) {
@@ -211,6 +231,7 @@ export function o13archetypeItemMixin(base) {
 			const data = this.system.perks[id];
 			
 			if (data && data.type == "perk") {
+				this.writeSelfOrigin(data);
 				const perk = new this.constructor(data);
 				
 				if (perk.isPerk) {
