@@ -28,7 +28,7 @@ For more information you can visit the [Wiki](https://github.com/Saibot393/13ome
 ---
 ## Roadmap
 
-Miltiple additions to the system are planned. The current roadmap can be tracked in the [github issues](https://github.com/Saibot393/13omens/issues).
+Multiple additions to the system are planned. The current roadmap can be tracked in the [github issues](https://github.com/Saibot393/13omens/issues).
 
 As of v1.5.0 all items of the original release roadmap have been implemented. Further plans can be found in the issue section of the github page.
 

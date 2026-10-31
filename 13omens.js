@@ -30,7 +30,9 @@ import {o13checkQuery} from "./scripts/dialogues/checkQuery.js";
 import {o13confirmQuery} from "./scripts/dialogues/confirmQuery.js";
 import {o13selectQuery} from "./scripts/dialogues/selectQuery.js";
 
-Hooks.once("init", () => {
+import {o13StoryTab} from "./scripts/components/storyTab.js"
+
+Hooks.once("init", async () => {
 	//CONST
 	CONFIG["13OMENS"] = {...CONSTANTS}
 	
@@ -77,7 +79,7 @@ Hooks.once("init", () => {
 	CONFIG.Dice.rolls.push(o13Roll);
 	
 	//Handlebars
-	foundry.applications.handlebars.loadTemplates(templatePaths);
+	await foundry.applications.handlebars.loadTemplates(templatePaths);
 	
 	Handlebars.registerHelper("eqLoose", (a, b) => a == b);
 	Handlebars.registerHelper("or", (a, b) => a || b); //how is this not a standard thing???
@@ -118,6 +120,9 @@ Hooks.once("init", () => {
 		rolls : false,
 		dialogues : false
 	};
+
+	//Tab
+	o13StoryTab.registerTab();
 	
 	//News
 	initNews();

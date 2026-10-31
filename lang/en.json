@@ -163,7 +163,11 @@
 			"synch" : "Synch",
 			
 			"backgroundColor" : "Background color",
-			"backgroundTransparency" : "Transparency"
+			"backgroundTransparency" : "Transparency",
+
+			"activeStoryOverview" : "Active Story Overview",
+			"activeStory" : "Active Story",
+			"noActiveStory" : "No Active Story yet"
 		},
 		
 		"actions" : {
