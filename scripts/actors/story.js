@@ -485,11 +485,23 @@ export function o13storyActorMixin(base) {
 			return this.system.hostomendice >= 1;
 		}
 		
-		async addOmenDice(add = 1) {
+		async addOmenDice(add = 1, skipMessage = false) {
 			const diceAdd = Math.min(Math.max(add, 0), this.system.hostomendice);
 			
 			if (diceAdd > 0) {
 				await this.update({system : {hostomendice : this.system.hostomendice - diceAdd}});
+
+				if (diceAdd == 1 && game.settings.get("13omens", "showOmenDieMessage") && !skipMessage) {
+					await utils.createHBSChatMessage({
+						enrichables : {
+							text : game.i18n.format(game.settings.get("13omens", "omenDieCustomMessage") || "13omens.chats.addedOmenDie", {
+								story : this.name,
+								act : utils.numtoRoman(this.activeAct),
+								user : game.user.name
+							})
+						}
+					}, {speaker : {alias : this.name}}, "chat/omenDieAdded")
+				}
 
 				return await this.checkAct();
 			}
