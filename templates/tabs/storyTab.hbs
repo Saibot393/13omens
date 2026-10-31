@@ -1,19 +1,17 @@
 <div class="flexcol o13-sheet" style="height:auto">
     <span class="o13-label o13-header-label o13-content-centered" style="font-size:23px">{{localize "13omens.titles.activeStoryOverview"}}</span>
     <div class="flexcol o13-sheet-lining">
-        {{#if tab.activeStory}}
+        {{#if tab.canViewActiveStory}}
             <div class="form-group flexrow"  style="min-height:32px;margin-top:5px;margin-bottom:5px;">
                 <label for="story-name" class="o13-label" style="flex:0.5">{{localize "13omens.titles.story"}}:</label>
                 <span class="o13-input o13-underline o13-clickable" type="text" data-action="viewStory" style="align-self:flex-end;padding-bottom:3px;">{{tab.activeStory.name}}</span>
             </div>
 
             <div class="flexrow" style="justify-content:center">
-            <span class="o13-label o13-act-title" style="display:inline-flex;justify-content:center;white-space : nowrap;">
+            <span class="o13-label o13-act-title" style="display:inline-flex;justify-content:center;white-space:nowrap;margin-bottom:5px;">
                 <b>{{localize (concat "13omens.titles.actNames." tab.activeStory.activeAct)}}</b>
             </span>
             </div>
-        {{/if}}
-        {{#if tab.activeStory}}
             <div class="flexcol o13-flexStart" style="width:100%">
                 <span class="o13-label o13-header-label o13-content-centered">{{localize "13omens.titles.hostomendice"}}</span>
                 <div>
@@ -22,13 +20,15 @@
                     }}
                 </div>
             </div>
-            <div class="flexrow o13-minflex" style="align-self:stretch;margin-top:5px;margin-bottom:5px;">
-                <div style="flex:1"></div>
-                {{#if tab.canAddOmenDice}}<i class="fa-solid fa-down-long o13-icon o13-clickable" style="color:var(--o13-omen-red);" data-action="addOmenDice"></i>{{/if}}
-                <div style="flex:1"></div>
-                {{#if tab.canRemoveOmenDice}}<i class="fa-solid fa-up-long o13-icon o13-clickable"  style="color:var(--o13-omen-red);" data-action="removeOmenDice"></i>{{/if}}
-                <div style="flex:1"></div>
-            </div>
+            {{#if tab.isHostView}}
+                <div class="flexrow o13-minflex" style="align-self:stretch;margin-top:5px;margin-bottom:5px;">
+                    <div style="flex:1"></div>
+                    {{#if tab.canAddOmenDice}}<i class="fa-solid fa-down-long o13-icon o13-clickable" style="color:var(--o13-omen-red);" data-action="addOmenDice"></i>{{/if}}
+                    {{#if (and tab.canAddOmenDice tab.canRemoveOmenDice)}}<div style="flex:1"></div>{{/if}}
+                    {{#if tab.canRemoveOmenDice}}<i class="fa-solid fa-up-long o13-icon o13-clickable"  style="color:var(--o13-omen-red);" data-action="removeOmenDice"></i>{{/if}}
+                    <div style="flex:1"></div>
+                </div>
+            {{/if}}
             <div class="flexcol o13-flexStart" style="width:100%">
                 <span class="o13-label o13-header-label o13-content-centered">{{localize "13omens.titles.dicebag"}}</span>
                 <div>
@@ -37,6 +37,10 @@
                     }}
                 </div>
             </div>
+        {{else}}
+            <span class="o13-label o13-header-label o13-content-centered">
+                {{localize "13omens.titles.noActiveStory"}}
+            </span>
         {{/if}}
     </div>
 </div>

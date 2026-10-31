@@ -165,7 +165,9 @@
 			"backgroundColor" : "Background color",
 			"backgroundTransparency" : "Transparency",
 
-			"activeStoryOverview" : "Active Story Overview"
+			"activeStoryOverview" : "Active Story Overview",
+			"activeStory" : "Active Story",
+			"noActiveStory" : "No Active Story yet"
 		},
 		
 		"actions" : {

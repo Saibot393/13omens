@@ -106,6 +106,14 @@ export function o13storyActorMixin(base) {
 			}
 		}
 
+		async unmakeActiveStory() {
+			if (this.isOwner && this.isActiveStory) {
+				await game.settings.set("13omens", "activeStory", "");
+
+				this.sheet?.render();
+			}
+		}
+
 		async syncStoryActive() {
 			if (this.isActiveStory) {
 				for (const pc of this.pcActors) {
@@ -482,13 +490,13 @@ export function o13storyActorMixin(base) {
 			
 			if (diceAdd > 0) {
 				await this.update({system : {hostomendice : this.system.hostomendice - diceAdd}});
-				
+
 				return await this.checkAct();
 			}
 		}
 		
 		get canRemoveOmenDice() {
-			return this.system.hostomendice <= CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE;
+			return this.system.hostomendice < CONFIG["13OMENS"].DEFAULTMAXHOSTOMENDICE;
 		}
 		
 		async removeOmenDice(remove = 1) {

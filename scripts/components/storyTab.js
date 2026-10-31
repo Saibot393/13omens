@@ -5,6 +5,24 @@ const { AbstractSidebarTab } = foundry.applications.sidebar;
 import {o13uiHandlerMixin} from "./uiHandler.js"
 
 export class o13StoryTab extends o13uiHandlerMixin(HandlebarsApplicationMixin(AbstractSidebarTab)) {
+    constructor(options = {}) {
+        super(options);
+
+        this._actorUpdateRender = Hooks.on("updateActor", async (actor, changes, options, userId) => {
+            if (this.rendered) {
+                if (actor == this.activeStory || actor?.storyActor == this.activeStory) {
+                    this.render({force : false, window : {focus : false}});
+                }
+            }
+        });
+
+        this._activeStoryRender = Hooks.on("13omensChangeActiveStory", async (actorID) => {
+            if (this.rendered) {
+                this.render({force : false, window : {focus : false}});
+            }
+        });
+    }
+
     static tabName = "o13story";
 
     static DEFAULT_OPTIONS = {
@@ -32,6 +50,10 @@ export class o13StoryTab extends o13uiHandlerMixin(HandlebarsApplicationMixin(Ab
 
     get activeStory() {
         return game.actors.find(actor => actor.isStory && actor.isActiveStory)
+    }
+
+    get canViewActiveStory() {
+        return this.activeStory?.testUserPermission(game.user, "OBSERVER");
     }
 
     get hostOmenDice() {
@@ -70,5 +92,18 @@ export class o13StoryTab extends o13uiHandlerMixin(HandlebarsApplicationMixin(Ab
             icon : "fa-solid fa-dice",
             gmOnly : false
         }
+    }
+
+    _disableRenderHooks() {
+        Hooks.off("updateActor", this._actorUpdateRender);
+        this._actorUpdateRender = null;
+        Hooks.off("13omensChangeActiveStory", this._activeStoryRender);
+        this._activeStoryRender = null;
+    }
+
+    async _onClose(options) {
+        await super._onClose(options);
+
+        this._disableRenderHooks();
     }
 }

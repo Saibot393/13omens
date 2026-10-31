@@ -291,7 +291,7 @@ export function o13SheetMixin(baseSheet) {
 		
 		async _onClose(options) {
 			await super._onClose(options);
-		
+
 			this._disableExternalRenderHooks();
 		}
 	}

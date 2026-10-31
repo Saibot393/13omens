@@ -138,7 +138,7 @@ export function registerSettings() {
 		config: false,
 		type: String,
 		default: "",
-		onchange: (value) => {
+		onChange: (value) => {
 			Hooks.callAll("13omensChangeActiveStory", value);
 		}
 	})
