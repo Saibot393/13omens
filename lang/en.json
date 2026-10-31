@@ -167,7 +167,9 @@
 
 			"activeStoryOverview" : "Active Story Overview",
 			"activeStory" : "Active Story",
-			"noActiveStory" : "No Active Story yet"
+			"noActiveStory" : "No Active Story yet",
+
+			"showIconOnPCSheet" : "Show on PC sheets"
 		},
 		
 		"actions" : {
@@ -215,7 +217,8 @@
 			"actorRolled" : "{actor} rolled a <b>{aspect}</b> check {with}(TN:{tn})",
 			"rollResult" : "Outcome: {taskrisk} <b>{outcome}</b>",
 			"hasValiantlySacrificed" : "Valiant Sacrifice",
-			"sacrificeValiantly" : "Do you want to valiantly sacrifice yourself?"
+			"sacrificeValiantly" : "Do you want to valiantly sacrifice yourself?",
+			"addedOmenDie" : "A new Omen Die has been added to the dice bag"
 		},
 		
 		"dialogues" : {
@@ -304,6 +307,14 @@
 			"customDSNdesign_omen" : {
 				"name" : "[DSN] 3D omen dice design",
 				"descrp" : "Design used for omen dice rolls in Dice So Nice!. Only themes and dice from the world dice library are available."
+			},
+			"showOmenDieMessage" : {
+				"name" : "Show omen die added message",
+				"descrp" : "Send a chat message when adding a omen die a story"
+			},
+			"omenDieCustomMessage" : {
+				"name" : "Custom omen die added message",
+				"descrp" : "A custom message to show when a omen die is added to a story. You may use the following place holders : {story}, {act}, {user}"
 			}
 		},
 		

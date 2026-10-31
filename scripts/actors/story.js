@@ -266,6 +266,10 @@ export function o13storyActorMixin(base) {
 		get pcliveCount() {
 			return this.pcActors.filter(actor => !actor.isDead).length;
 		}
+
+		get showIcononPCSheet() {
+			return this.system.showicononpcsheet;
+		}
 		
 		hasPC(actor) {
 			return this.pcActors.includes(actor);
@@ -485,11 +489,23 @@ export function o13storyActorMixin(base) {
 			return this.system.hostomendice >= 1;
 		}
 		
-		async addOmenDice(add = 1) {
+		async addOmenDice(add = 1, skipMessage = false) {
 			const diceAdd = Math.min(Math.max(add, 0), this.system.hostomendice);
 			
 			if (diceAdd > 0) {
 				await this.update({system : {hostomendice : this.system.hostomendice - diceAdd}});
+
+				if (diceAdd == 1 && game.settings.get("13omens", "showOmenDieMessage") && !skipMessage) {
+					await utils.createHBSChatMessage({
+						enrichables : {
+							text : game.i18n.format(game.settings.get("13omens", "omenDieCustomMessage") || "13omens.chats.addedOmenDie", {
+								story : this.name,
+								act : utils.numtoRoman(this.activeAct),
+								user : game.user.name
+							})
+						}
+					}, {speaker : {alias : this.name}}, "chat/omenDieAdded")
+				}
 
 				return await this.checkAct();
 			}
@@ -591,7 +607,9 @@ export class storyDataModel extends foundry.abstract.TypeDataModel {
 			}), {initial: () => Array.from({length : 5}, () => ({name : ""}))}),
 			
 			archetypeaspects: new ObjectField({}),
-			
+
+			showicononpcsheet: new BooleanField({ required : true, initial : false}),
+
 			pcs: new ArrayField(new SchemaField({
 				id: new DocumentIdField({required: true, blank: true, nullable: true, readonly: false})
 			}), {initial: []}),
