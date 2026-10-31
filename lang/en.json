@@ -309,7 +309,7 @@
 				"descrp" : "Design used for omen dice rolls in Dice So Nice!. Only themes and dice from the world dice library are available."
 			},
 			"showOmenDieMessage" : {
-				"name" : "Show omen die added message",
+				"name" : "Show message when adding omen die",
 				"descrp" : "Send a chat message when adding a omen die a story"
 			},
 			"omenDieCustomMessage" : {
