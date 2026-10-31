@@ -253,7 +253,7 @@ export function o13pcActorMixin(base) {
 		}
 		
 		get availableArchetype() {
-			return this.storyActor ? (this.archetype ? [this.archetype, ...this.storyActor.availableArchetype] : this.storyActor.availableArchetype) : [];
+			return this.storyActor ? this.storyActor.availableArchetype : [];
 		}
 		
 		get archetype() {

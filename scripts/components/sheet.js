@@ -150,6 +150,7 @@ export function o13SheetMixin(baseSheet) {
 		
 		async _onDrop(event) {
 			event.preventDefault();
+
 			if (!this.document.handleDrop) return;
 			const targetElement = event.target;
 			

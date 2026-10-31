@@ -20,6 +20,8 @@ export function o13uiHandlerMixin(base) {
         }
 
         async _onRender(context, options) {
+            await super._onRender(context, options);
+
             this.element.removeEventListener("click", this._boundonAction)
             this.element.addEventListener("click", this._boundonAction);
 
