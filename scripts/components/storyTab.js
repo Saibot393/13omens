@@ -2,9 +2,13 @@ const { HandlebarsApplicationMixin} = foundry.applications.api;
 
 const { AbstractSidebarTab } = foundry.applications.sidebar;
 
-export class o13StoryTab extends HandlebarsApplicationMixin(AbstractSidebarTab) {
+import {o13uiHandlerMixin} from "./uiHandler.js"
+
+export class o13StoryTab extends o13uiHandlerMixin(HandlebarsApplicationMixin(AbstractSidebarTab)) {
+    static tabName = "o13story";
+
     static DEFAULT_OPTIONS = {
-        id : "o13-story-tab",
+        id : o13StoryTab.tabName,
         classes : ["o13-sheet"]
     }
 
@@ -22,6 +26,10 @@ export class o13StoryTab extends HandlebarsApplicationMixin(AbstractSidebarTab) 
         return context;
     }
 
+    get isHostView() {
+        return game.user.isGM;
+    }
+
     get activeStory() {
         return game.actors.find(actor => actor.isStory && actor.isActiveStory)
     }
@@ -30,18 +38,37 @@ export class o13StoryTab extends HandlebarsApplicationMixin(AbstractSidebarTab) 
         return this.activeStory?.hostOmenDice || [];
     }
 
-    get hostOmenDice() {
+    get diceBagDice() {
         return this.activeStory?.diceBagDice || game.system.api.utils.counttobag(CONFIG["13OMENS"].DEFAULTDICEBAGCOUNT);
     }
 
-    static tabName = "REPLACEME"
+    get canAddOmenDice() {
+        return this.activeStory?.canAddOmenDice;
+    }
+
+    get canRemoveOmenDice() {
+        return this.activeStory?.canRemoveOmenDice;
+    }
+
+    async viewStory() {
+        this.activeStory?.sheet.render(true);
+    }
+
+    async addOmenDice() {
+        await this.activeStory?.addOmenDice()
+    }
+
+    async removeOmenDice() {
+        await this.activeStory?.removeOmenDice()
+    }
 
     static registerTab() {
-        ui.o13StoryTab = new o13StoryTab();
+        CONFIG.ui[o13StoryTab.tabName] = o13StoryTab;
 
-        CONFIG.ui.sidebar.TABS.o13StoryTab = {
-            tooltip: "ReplACEME",
-            icon: "fa-solid fa-dice"
+        foundry.applications.sidebar.Sidebar.TABS[o13StoryTab.tabName] = {
+            tooltip : game.i18n.localize("13omens.titles.activeStory"),
+            icon : "fa-solid fa-dice",
+            gmOnly : false
         }
     }
 }

@@ -298,6 +298,8 @@ range-picker.o13-input input {
 	color: var(--o13-dark-smoke-grey);
 }
 
+
+
 .o13-selected{
 	background-color: var(--o13-ink-grey);
 	color: var(--o13-smoke-grey);
