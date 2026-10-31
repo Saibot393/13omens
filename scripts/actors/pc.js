@@ -367,7 +367,7 @@ export function o13pcActorMixin(base) {
 				items : {name : game.i18n.localize("13omens.titles.perksandgear")},
 				background : {name : game.i18n.localize("13omens.titles.background")}
 			}}).wait(true);
-
+			console.log(updateChoices);
 			if (updateChoices.portrait?.checked) await this.synchArchetypePortrait();
 			if (updateChoices.items?.checked) await this.updateArchetypeItems({removeold : true, restorechoices : true});
 			if (updateChoices.background?.checked) await this.synctoArchetypeBackground();

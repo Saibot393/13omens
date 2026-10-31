@@ -1,9 +1,9 @@
-import {o13SheetMixin} from "../components/sheet.js";
+import {o13uiHandlerMixin} from "../components/uiHandler.js";
 import {o13WaitMixIn} from "../components/wait.js";
 
 const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
 
-export class o13quantityQuery extends o13WaitMixIn(o13SheetMixin(HandlebarsApplicationMixin(ApplicationV2))) {
+export class o13quantityQuery extends o13WaitMixIn(o13uiHandlerMixin(HandlebarsApplicationMixin(ApplicationV2))) {
 	constructor (options = {max : null, min : 0, query : null, default : null}) {
 		super(options);
 		

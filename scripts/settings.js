@@ -137,7 +137,10 @@ export function registerSettings() {
 		scope: "world",
 		config: false,
 		type: String,
-		default: ""
+		default: "",
+		onchange: (value) => {
+			Hooks.callAll("13omensChangeActiveStory", value);
+		}
 	})
 	
 	Hooks.once("ready", () => {
