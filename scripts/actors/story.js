@@ -266,6 +266,10 @@ export function o13storyActorMixin(base) {
 		get pcliveCount() {
 			return this.pcActors.filter(actor => !actor.isDead).length;
 		}
+
+		get showIcononPCSheet() {
+			return this.system.showicononpcsheet;
+		}
 		
 		hasPC(actor) {
 			return this.pcActors.includes(actor);
@@ -603,7 +607,9 @@ export class storyDataModel extends foundry.abstract.TypeDataModel {
 			}), {initial: () => Array.from({length : 5}, () => ({name : ""}))}),
 			
 			archetypeaspects: new ObjectField({}),
-			
+
+			showicononpcsheet: new BooleanField({ required : true, initial : false}),
+
 			pcs: new ArrayField(new SchemaField({
 				id: new DocumentIdField({required: true, blank: true, nullable: true, readonly: false})
 			}), {initial: []}),

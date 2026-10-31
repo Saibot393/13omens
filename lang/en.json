@@ -167,7 +167,9 @@
 
 			"activeStoryOverview" : "Active Story Overview",
 			"activeStory" : "Active Story",
-			"noActiveStory" : "No Active Story yet"
+			"noActiveStory" : "No Active Story yet",
+
+			"showIconOnPCSheet" : "Show on PC sheets"
 		},
 		
 		"actions" : {
