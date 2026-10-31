@@ -9,7 +9,7 @@ export class o13StoryTab extends o13uiHandlerMixin(HandlebarsApplicationMixin(Ab
 
     static DEFAULT_OPTIONS = {
         id : o13StoryTab.tabName,
-        classes : ["o13-sheet"]
+        classes : [""]
     }
 
     static PARTS = {
