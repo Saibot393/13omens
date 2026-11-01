@@ -1,16 +1,24 @@
 <div class="actor-sheet-content o13-sheet o13-sheet-lining flexcol">
 	<header class="sheet-header flexrow">
-		{{> "systems/13omens/templates/actors/components/portrait.hbs" 
-			actor=actor
-			enriched=enriched
-		}}
+        <div class="flexcol" style="flex:0 0 auto;">
+            {{> "systems/13omens/templates/actors/components/portrait.hbs"
+                actor=actor
+                enriched=enriched
+            }}
+            {{#if (and actor.isHostView actor.isPrologue)}}
+            <div class="flexcol o13-bordered o13-hover-div" style="margin:auto;margin-bottom: 5px">
+                <label class="o13-label">{{localize "13omens.titles.showIconOnPCSheet"}}:</label>
+                <input class="o13-checkbox" type="checkbox" name="system.showicononpcsheet" {{checked actor.showIcononPCSheet}}/>
+            </div>
+            {{/if}}
+        </div>
 		
 		{{#unless actor.isActiveStory}}
 			{{#if actor.isOwner}}
 				<i class="fa-solid fa-book-bookmark o13-icon o13-clickable" style="color:var(--o13-cheat-blue);position:absolute;top:25px;right:25px;" data-action="makeActiveStory" data-tooltip="{{localize "13omens.tooltips.makeActiveStory"}}"></i>
 			{{/if}}
 		{{else}}
-			<i class="fa-solid fa-book-bookmark o13-icon" style="color:var(--o13-antique-gold);position:absolute;top:25px;right:25px;" data-tooltip="{{localize "13omens.tooltips.isActiveStory"}}"></i>
+			<i class="fa-solid fa-book-bookmark o13-icon o13-clickable" style="color:var(--o13-antique-gold);position:absolute;top:25px;right:25px;" data-action="unmakeActiveStory" data-tooltip="{{localize "13omens.tooltips.isActiveStory"}}"></i>
 		{{/unless}}
 		
 		<div class="flexcol">

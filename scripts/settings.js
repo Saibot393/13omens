@@ -107,6 +107,25 @@ export function registerSettings() {
 		type: Boolean,
 		default: true
 	})
+
+	game.settings.register("13omens", "showOmenDieMessage", {
+		name: "13omens.settings.showOmenDieMessage.name",
+		hint: "13omens.settings.showOmenDieMessage.descrp",
+		scope: "world",
+		config: true,
+		requiresReload: false,
+		type: Boolean,
+		default: false
+	})
+
+	game.settings.register("13omens", "omenDieCustomMessage", {
+		name: "13omens.settings.omenDieCustomMessage.name",
+		hint: "13omens.settings.omenDieCustomMessage.descrp",
+		scope: "world",
+		config: true,
+		type: String,
+		default: ""
+	})
 	
 	if (game.modules.get("dice-so-nice")?.active) {
 		game.settings.register("13omens", "customDSNdesign_safe", {
@@ -137,7 +156,10 @@ export function registerSettings() {
 		scope: "world",
 		config: false,
 		type: String,
-		default: ""
+		default: "",
+		onChange: (value) => {
+			Hooks.callAll("13omensChangeActiveStory", value);
+		}
 	})
 	
 	Hooks.once("ready", () => {

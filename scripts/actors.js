@@ -167,8 +167,11 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 
 	_prepareSubmitData(event, form, formData, updateData) {
 		if (this.actor?.isStory && formData?.object) {
-			formData.object["system.acts.0.omenDiceThreshold"] = this.actor?.system.acts?.[0]?.omenDiceThreshold || CONFIG["13OMENS"].DEFAULTACTOMENDCIETHRESHOLD[0];
-			formData.object["system.acts.1.omenDiceThreshold"] = this.actor?.system.acts?.[1]?.omenDiceThreshold || CONFIG["13OMENS"].DEFAULTACTOMENDCIETHRESHOLD[1];
+			for (const i of [0,1,2,3]) {
+				if (!formData.object.hasOwnProperty(`system.acts.${i}.omenDiceThreshold`)) {
+					formData.object[`system.acts.${i}.omenDiceThreshold`] = this.actor?.system.acts?.[i]?.omenDiceThreshold || CONFIG["13OMENS"].DEFAULTACTOMENDCIETHRESHOLD[i];
+				}
+			}
 		}
 
 		return super._prepareSubmitData(event, form, formData, updateData);
@@ -403,6 +406,9 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 							rerender = true;
 						}
 						if (changes.system.hasOwnProperty("activeact")) {
+							rerender = true;
+						}
+						if (changes.system.hasOwnProperty("showicononpcsheet")) {
 							rerender = true;
 						}
 					}

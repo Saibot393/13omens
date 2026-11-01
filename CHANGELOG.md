@@ -1,3 +1,14 @@
+## v1.10.1
+- Fix for setting that was mistakenly set as user instead of world
+
+## v1.10.0
+- Added "Active story" tab to give quicker overview over the story state
+- Added "Added omen dice" chat message
+  - Added setting "Show message when adding omen die" to toggle the message
+  - Added setting "Custom omen die added message" to customise the message
+- Added story option "Show Icon on PC sheets" to display a small version of the story icon on the pc sheet
+- Internal refactor for some ui code
+
 ## v1.9.3
 - Small ui improvements for roll config and story archetype section
 
