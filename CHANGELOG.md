@@ -1,3 +1,6 @@
+## v1.10.3
+- Fixed bug that caused terrible rating to show up as an untranslated string in the roll config
+
 ## v1.10.2
 - Improved default icons for actors and items
 - Small adjustment to roll dialogue
