@@ -1,3 +1,6 @@
+## v1.10.1
+- Fix for setting that was mistakenly set as user instead of world
+
 ## v1.10.0
 - Added "Active story" tab to give quicker overview over the story state
 - Added "Added omen dice" chat message

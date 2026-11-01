@@ -111,7 +111,7 @@ export function registerSettings() {
 	game.settings.register("13omens", "showOmenDieMessage", {
 		name: "13omens.settings.showOmenDieMessage.name",
 		hint: "13omens.settings.showOmenDieMessage.descrp",
-		scope: "user",
+		scope: "world",
 		config: true,
 		requiresReload: false,
 		type: Boolean,
