@@ -1,6 +1,7 @@
 ## v1.10.2
 - Improved default icons for actors and items
 - Small adjustment to roll dialogue
+- Fixed ui bug is displaying available archetypes
 
 ## v1.10.1
 - Fix for setting that was mistakenly set as user instead of world
