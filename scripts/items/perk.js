@@ -17,6 +17,12 @@ export function o13perkItemMixin(base) {
 			
 			this._usedonnextroll = false;
 		}
+
+		async _preCreate(data, options, user) {
+			await super._preCreate(data, options, user);
+
+			await this.updateSource({img : "icons/svg/upgrade.svg"});
+		}
 		
 		//Choose
 		get isChosen() {

@@ -670,7 +670,7 @@ export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(Appli
 	}
 	
 	get aspectRating() {
-		return this.aspectData?.rating || this.auxiliaryData?.rating;
+		return this.aspectData?.rating ?? this.auxiliaryData?.rating;
 	}
 	
 	get strain() {

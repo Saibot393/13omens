@@ -3,6 +3,12 @@ const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDo
 export function o13archetypeItemMixin(base) {
 	return class o13archetypeItem extends base {
 		//Updates & Create
+		async _preCreate(data, options, user) {
+			await super._preCreate(data, options, user);
+
+			await this.updateSource({img : "icons/svg/mystery-man.svg"});
+		}
+
 		_onCreate(data, options, userId) {
 			super._onCreate(data, options, userId);
 
