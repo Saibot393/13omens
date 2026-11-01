@@ -15,13 +15,15 @@ export function o13storyActorMixin(base) {
 			await super._preCreate(data, options, user);
 
 			if (!data.prototypeToken) {
-				this.updateSource({
+				await this.updateSource({
 					prototypeToken: {
 						actorLink: true,
 						disposition: CONST.TOKEN_DISPOSITIONS.FRIENDLY
 					}
 				});
 			}
+
+			await this.updateSource({img : "icons/svg/book.svg"});
 		}
 
 		_onCreate(data, options, userId) {
