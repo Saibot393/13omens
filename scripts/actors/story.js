@@ -58,7 +58,7 @@ export function o13storyActorMixin(base) {
 					let newmin = min;
 					let newmax = max;
 					
-					if (changed.system.acts[0] > newmax - changed.system.acts.length + 1) changed.system.acts[0] = newmax - changed.system.acts.length + 1;
+					if (changed.system.acts[0].omenDiceThreshold > newmax - changed.system.acts.length + 1) changed.system.acts[0].omenDiceThreshold = newmax - changed.system.acts.length + 1;
 					for (let i = 0; i < changed.system.acts.length - 1; i++) {
 						newmax = changed.system.acts[i+1].omenDiceThreshold - 1;
 						
