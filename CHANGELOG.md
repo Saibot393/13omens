@@ -1,3 +1,6 @@
+## v1.10.4
+- Several small improvements for render stability
+
 ## v1.10.3
 - Fixed bug that caused terrible rating to show up as an untranslated string in the roll config
 

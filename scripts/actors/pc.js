@@ -218,7 +218,7 @@ export function o13pcActorMixin(base) {
 			
 			await this.update({
 				system : {
-					wounds : Array.from({length : this.system.wounds.length}, () => (EMPTYWOUND)),
+					wounds : Array.from({length : this.system.wounds.length}, () => (foundry.utils.deepClone(EMPTYWOUND))),
 					death : {isdead : false},
 					aspects : strainlessAspects
 				}
@@ -801,7 +801,7 @@ export function o13pcActorMixin(base) {
 						}
 						
 						while (currentWounds.length < maxWounds) {
-							currentWounds.push(EMPTYWOUND);
+							currentWounds.push(foundry.utils.deepClone(EMPTYWOUND));
 						}
 						
 						this.update({system : {wounds : currentWounds}});
@@ -847,7 +847,7 @@ export function o13pcActorMixin(base) {
 			}));
 			
 			if (nextEmpty >= 0 && nextEmpty < wounds.length) {
-				wounds[nextEmpty] = EMPTYWOUND;
+				wounds[nextEmpty] = foundry.utils.deepClone(EMPTYWOUND);
 				
 				return this.update({system : {wounds : wounds, death : {isdead : false}}});
 			}
@@ -911,7 +911,7 @@ export function o13pcActorMixin(base) {
 		
 		//Dice
 		get hostOmenDice() {
-			return this.storyActor?.omendice;
+			return this.storyActor?.hostOmenDice;
 		}
 		
 		get diceBagCount() {
@@ -1085,7 +1085,7 @@ export class pcDataModel extends foundry.abstract.TypeDataModel {
 					face : new NumberField({ required: true, integer: true, nullable: true, min: 1, max : 6, initial: null }),
 					act : new NumberField({ required: true, integer: true, nullable: true, min: 1, max : 3, initial: null })
 				})
-			}), {initial: () => Array.from({length : 4}, () => (EMPTYWOUND))}),
+			}), {initial: () => Array.from({length : 4}, () => (foundry.utils.deepClone(EMPTYWOUND)))}),
 			
 			aspects: new SchemaField({
 				core: new SchemaField(Object.fromEntries(CONFIG["13OMENS"].COREASPECTSIDS.map(str => [str, new SchemaField({
