@@ -13,42 +13,6 @@ export function o13SheetMixin(baseSheet) {
 			super(options);
 
 			if (CONFIG.debug.o13.dialogues) console.log(this);
-			
-			//custom Hooks
-			this._externalUserUpdateRender = Hooks.on("updateUser", async (user, changes, options, userId) => {
-				if (this.rendered) {
-					const rerender = await this._onUpdateUser(user, changes, options, userId);
-					if (rerender) this.render({force : false, window : {focus : false}});
-				}
-			});
-			
-			this._externalItemUpdateRender = Hooks.on("updateItem", async (item, changes, options, userId) => {
-				if (this.rendered) {
-					const rerender = await this._onUpdateItem(item, changes, options, userId);
-					if (rerender) this.render({force : false, window : {focus : false}});
-				}
-			});
-			
-			this._externalItemCreateRender = Hooks.on("createItem", async (item, options, userId) => {
-				if (this.rendered) {
-					const rerender = await this._onUpdateItem(item, {create : true}, options, userId);
-					if (rerender) this.render({force : false, window : {focus : false}});
-				}
-			});
-			
-			this._externalItemDeleteRender = Hooks.on("deleteItem", async (item, options, userId) => {
-				if (this.rendered) {
-					const rerender = await this._onUpdateItem(item, {delete : true}, options, userId);
-					if (rerender) this.render({force : false, window : {focus : false}});
-				}
-			});
-		
-			this._externalActorUpdateRender = Hooks.on("updateActor", async (actor, changes, options, userId) => {
-				if (this.rendered) {
-					const rerender = await this._onUpdateActor(actor, changes, options, userId);
-					if (rerender) this.render({force : false, window : {focus : false}});
-				}
-			});
 		}
 		
 		static get DEFAULT_OPTIONS() {
@@ -107,8 +71,15 @@ export function o13SheetMixin(baseSheet) {
 				this.close();
 			}
 			else {
-				super.render(options, _options);
+				return super.render(options, _options);
 			}
+		}
+
+		_onFirstRender(context, options) {
+			super._onFirstRender(context, options);
+
+			this._disableExternalRenderHooks();
+			this._registerExternalRenderHooks();
 		}
 		
 		async _prepareContext(options) {
@@ -274,6 +245,44 @@ export function o13SheetMixin(baseSheet) {
 				},
 				uuid: this.document.uuid
 			}).render(true);
+		}
+
+		_registerExternalRenderHooks() {
+			//custom Hooks
+			this._externalUserUpdateRender = Hooks.on("updateUser", async (user, changes, options, userId) => {
+				if (this.rendered) {
+					const rerender = await this._onUpdateUser(user, changes, options, userId);
+					if (rerender) this.render({force : false, window : {focus : false}});
+				}
+			});
+
+			this._externalItemUpdateRender = Hooks.on("updateItem", async (item, changes, options, userId) => {
+				if (this.rendered) {
+					const rerender = await this._onUpdateItem(item, changes, options, userId);
+					if (rerender) this.render({force : false, window : {focus : false}});
+				}
+			});
+
+			this._externalItemCreateRender = Hooks.on("createItem", async (item, options, userId) => {
+				if (this.rendered) {
+					const rerender = await this._onUpdateItem(item, {create : true}, options, userId);
+					if (rerender) this.render({force : false, window : {focus : false}});
+				}
+			});
+
+			this._externalItemDeleteRender = Hooks.on("deleteItem", async (item, options, userId) => {
+				if (this.rendered) {
+					const rerender = await this._onUpdateItem(item, {delete : true}, options, userId);
+					if (rerender) this.render({force : false, window : {focus : false}});
+				}
+			});
+
+			this._externalActorUpdateRender = Hooks.on("updateActor", async (actor, changes, options, userId) => {
+				if (this.rendered) {
+					const rerender = await this._onUpdateActor(actor, changes, options, userId);
+					if (rerender) this.render({force : false, window : {focus : false}});
+				}
+			});
 		}
 		
 		_disableExternalRenderHooks() {

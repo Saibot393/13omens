@@ -279,7 +279,7 @@ export function o13storyActorMixin(base) {
 		
 		async addPC(actor) {
 			if (Array.isArray(actor)) {
-				const actors = actor.filter(a => a.isPC);
+				const actors = actor.filter(actor => actor.isPC && !actor.storyActor);
 				
 				if (actors.length) {
 					await this.update({system : {pcs : [...this.system.pcs, ...actors.map(a => ({id : a.id}))]}});
