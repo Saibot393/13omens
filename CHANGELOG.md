@@ -1,3 +1,8 @@
+## v1.10.5
+- Added missing translation string
+- Fixed edge case logic bug
+- Fixed doubled sheet options bug
+
 ## v1.10.4
 - Several small improvements for render stability
 

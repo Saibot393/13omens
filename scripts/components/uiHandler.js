@@ -6,17 +6,15 @@ export function o13uiHandlerMixin(base) {
             this._boundonAction = this._onAction.bind(this);
         }
 
-        static get DEFAULT_OPTIONS() {
-            return foundry.utils.mergeObject(foundry.utils.deepClone(super.DEFAULT_OPTIONS ?? {}), {
-                tag: "form",
-                form: {
-                    closeOnSubmit: false,
-                    submitOnChange: true
-                },
-                window: {
-                    resizable: true
-                }
-            });
+        static DEFAULT_OPTIONS = {
+            tag: "form",
+            form: {
+                closeOnSubmit: false,
+                submitOnChange: true
+            },
+            window: {
+                resizable: true
+            }
         }
 
         async _onRender(context, options) {
