@@ -12,6 +12,11 @@
 			"gear" : "Gear"
 		}
 	},
+
+	"13OMENS" : {
+		"ItemSheet" : "13 Omens - Item Sheet",
+		"ActorSheet" : "13 Omens - Actor Sheet"
+	},
 	
 	"13omens" : {
 		"13omens" : "13 Omens",

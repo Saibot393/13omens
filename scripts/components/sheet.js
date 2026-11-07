@@ -15,20 +15,18 @@ export function o13SheetMixin(baseSheet) {
 			if (CONFIG.debug.o13.dialogues) console.log(this);
 		}
 		
-		static get DEFAULT_OPTIONS() {
-			return foundry.utils.mergeObject(foundry.utils.deepClone(super.DEFAULT_OPTIONS ?? {}), {
-				tag: "form",
-				form: {
-					closeOnSubmit: false,
-					submitOnChange: true
-				},
-				window: {
-					resizable: true
-				},
-				actions: {
-				}
-			});
-		}
+		static DEFAULT_OPTIONS = {
+			tag: "form",
+			form: {
+				closeOnSubmit: false,
+				submitOnChange: true
+			},
+			window: {
+				resizable: true
+			},
+			actions: {
+			}
+		};
 		
 		get isVisible() {
 			if (this.document?.freeView) {
