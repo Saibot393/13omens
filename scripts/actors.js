@@ -155,7 +155,7 @@ export class o13Actor extends Actor {
 }
 
 export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(ActorSheetV2)) {
-	static DEFAULT_OPTIONS = foundry.utils.mergeObject(super.DEFAULT_OPTIONS, {
+	static DEFAULT_OPTIONS = {
 		classes: ["13omens", "actor-sheet"],
 		position: {
 			width: 600,
@@ -163,7 +163,7 @@ export class o13ActorSheet extends o13SheetMixin(HandlebarsApplicationMixin(Acto
 		},
 		actions: {
 		}
-	});
+	};
 
 	_prepareSubmitData(event, form, formData, updateData) {
 		if (this.actor?.isStory && formData?.object) {

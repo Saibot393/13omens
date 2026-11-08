@@ -31,14 +31,14 @@ export class o13Item extends Item {
 }
 
 export class o13ItemSheet extends o13SheetMixin(HandlebarsApplicationMixin(ItemSheetV2)) {
-	static DEFAULT_OPTIONS = foundry.utils.mergeObject(super.DEFAULT_OPTIONS, {
+	static DEFAULT_OPTIONS = {
 		classes: ["13omens", "item-sheet"],		position: {
 			width: 600,
 			height: 600
 		},
 		actions: {
 		}
-	});
+	}
 
 	async _processSubmitData(event, form, formData) {
         if (this.item.hasParentAchetype && !this.item.parent) {
