@@ -132,6 +132,15 @@ export class o13Actor extends Actor {
 
 		return owners[0];
 	}
+
+	get primePlayer() {
+		const owners = Array.from(game.users).filter(user => this.testUserPermission(user, 3)).filter(user => !user.isGM);
+
+		const characterOwner = owners.find(user => user.character == this);
+		if (characterOwner?.active) return characterOwner;
+
+		return owners[0];
+	}
   
 	get inventory() {
 		return [...this.items].filter(item => item.type == "gear");

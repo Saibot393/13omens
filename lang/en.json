@@ -322,6 +322,18 @@
 				"descrp" : "A custom message to show when a omen die is added to a story. You may use the following place holders : {story}, {act}, {user}"
 			}
 		},
+
+		"credits" : {
+			"youplayed" : "You played",
+			"paizoGame" : "- A Paizo Game -",
+			"thanks" : "Thank you for playing",
+			"writtenBy" : "Written by",
+			"hostedBy" : "Hosted by",
+			"starring" : "Staring",
+			"host" : "Host",
+			"contentBy" : "Using content from:",
+			"thanksTo" : "Special thanks to:"
+		},
 		
 		"DSN" : {
 			"safeDice" : "Safe dice",

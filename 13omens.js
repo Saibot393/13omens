@@ -21,6 +21,7 @@ import {registerEnrichments} from "./scripts/components/enrichments.js";
 import {initNews, o13News} from "./scripts/meta/news.js";
 
 import {showBanner} from "./scripts/components/banner.js";
+import {showCredits} from "./scripts/components/credits.js";
 import {setScreenBorder} from "./scripts/components/screenBorder.js";
 
 import {o13tokenCreator} from "./scripts/dialogues/tokenCreator.js";
@@ -101,6 +102,7 @@ Hooks.once("init", async () => {
 		o13Roll,
 		utils,
 		showBanner,
+		showCredits,
 		setScreenBorder,
 		o13News,
 		o13tokenCreator,

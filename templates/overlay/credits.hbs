@@ -1,0 +1,34 @@
+<div class="o13-credits">
+    <div class="o13-credits-content">
+        <span>{{{localize "13omens.credits.youplayed"}}}</span>
+        <h1 class="o13-credits-omen-title">{{{title}}}</h1>
+
+        <div class="o13-credits-spacer large"></div>
+
+        {{#each blocks as |block|}}
+            <h4>{{{block.title}}}</h4>
+            <div class="o13-credits-spacer small"></div>
+            {{#each block.entries as |entry|}}
+                {{#if (and entry.name entry.title)}}
+                    <div class="o13-credits-entry">
+                        <span class="o13-name">{{{entry.name}}}</span>
+                        <span class="o13-seperator">-</span>
+                        <span class="o13-title">{{{entry.title}}}</span>
+                    </div>
+                {{else}}
+                    <span>{{{entry}}}</span>
+                {{/if}}
+            {{/each}}
+            <div class="o13-credits-spacer medium"></div>
+        {{/each}}
+
+        <div class="o13-credits-spacer large"></div>
+
+        <h1 class="o13-credits-omen-title">{{{localize "13omens.13omens"}}}</h1>
+        <h4>{{{localize "13omens.credits.paizoGame"}}}</h4>
+
+        <div class="o13-credits-spacer medium"></div>
+
+        <span>{{{localize "13omens.credits.thanks"}}}</span>
+    </div>
+</div>
