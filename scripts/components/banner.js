@@ -3,7 +3,7 @@ export async function showBanner(data = {content : {title : "", text : ""}, dura
 	
 	const duration = (data.duration ?? 3.5);
 	
-	const content = await foundry.applications.handlebars.renderTemplate("systems/13omens/templates/banner/banner.hbs", data.content);
+	const content = await foundry.applications.handlebars.renderTemplate("systems/13omens/templates/overlay/banner.hbs", data.content);
 
 	document.querySelector(".o13-banner")?.remove();
 	
