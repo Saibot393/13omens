@@ -263,6 +263,10 @@
 		},
 		
 		"settings" : {
+			"houseRules" : {
+				"name" : "House rules",
+				"descrp" : "Menu to configure some predefined house rules. Requests to support additional house rules can be submitted on GitHub."
+			},
 			"showActBanner" : {
 				"name" : "Show act banner",
 				"descrp" : "Show a banner to all users when a storie's act is changed"
@@ -320,6 +324,10 @@
 			"omenDieCustomMessage" : {
 				"name" : "Custom omen die added message",
 				"descrp" : "A custom message to show when a omen die is added to a story. You may use the following place holders : {story}, {act}, {user}"
+			},
+			"HR_edgeIgnoredDicenoWounds" : {
+				"name" : "Edge ignored dice cause no wounds",
+				"descrp" : "Dice that are not used for the check result due to being added by an edge cause no wounds or strains"
 			}
 		},
 		

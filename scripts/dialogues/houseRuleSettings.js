@@ -1,9 +1,8 @@
 import {o13uiHandlerMixin} from "../components/uiHandler.js";
-import {o13WaitMixIn} from "../components/wait.js";
 
 const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
 
-export class o13houseRuleSettings extends o13WaitMixIn(o13uiHandlerMixin(HandlebarsApplicationMixin(ApplicationV2))) {
+export class o13houseRuleSettings extends o13uiHandlerMixin(HandlebarsApplicationMixin(ApplicationV2)) {
     constructor (baseStory) {
         super();
 
@@ -50,7 +49,8 @@ export class o13houseRuleSettings extends o13WaitMixIn(o13uiHandlerMixin(Handleb
 
         for (const key of keys) {
             settings[key] = foundry.utils.deepClone(game.settings.settings.get(key));
-            settings[key].value = game.settings.get(key.split(".")[0], key.split(".")[1])
+            settings[key].value = game.settings.get(key.split(".")[0], key.split(".")[1]);
+            settings[key].type = settings[key].type.name;
         }
 
         return settings;
@@ -65,19 +65,21 @@ export class o13houseRuleSettings extends o13WaitMixIn(o13uiHandlerMixin(Handleb
     }
 
     static async _onSubmitForm(event, form, formData) {
+        console.log(formData);
         for (const key of Object.keys(formData.object)) {
-            foundry.utils.setProperty(this, `_ruleSettings.${key}.${value}`, formData.object[key]);
+            this._ruleSettings[key].value = formData.object[key];
         }
 
         this.render(true);
     }
 
     async accept(event, target) {
-        await this.applySettings();
-        this._resolveWait(this.value, true);
+        await await this.applySettings();
+
+        this.close(true);
     }
 
     async cancel(event, target) {
-        this._resolveWait(undefined, true);
+        this.close(true);
     }
 }
