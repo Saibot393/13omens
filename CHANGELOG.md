@@ -1,3 +1,8 @@
+## v1.11.0
+- Added closing credits
+  - Credits can be started by the GM below the story act title when act 3 is reached or all players are dead
+  - Under Story > Credits the duration and the content (writers, artists, special thanks) can be set
+
 ## v1.10.5
 - Added missing translation string
 - Fixed edge case logic bug

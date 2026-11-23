@@ -33,6 +33,8 @@
 			"pc" : "Player character",
 			"story" : "Story",
 			"game" : "Game",
+
+			"duration" : "Duration[s]",
 			
 			"ischaracter" : "User character",
 			"character" : "Character",
