@@ -282,6 +282,7 @@ range-picker.o13-input input {
 	margin : 0px;
 	margin-bottom : 5px;
 }
+
 .o13-table,
 .o13-table tr,
 .o13-table tbody tr,
@@ -308,8 +309,6 @@ range-picker.o13-input input {
 .o13-header-label .o13-clickable:hover {
 	color: var(--o13-dark-smoke-grey);
 }
-
-
 
 .o13-selected{
 	background-color: var(--o13-ink-grey);

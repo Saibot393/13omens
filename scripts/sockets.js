@@ -1,11 +1,13 @@
 import {utils} from "./utils.js";
 
 import {showBanner} from "./components/banner.js";
+import {showCredits} from "./components/credits.js";
 import {o13rollConfig} from "./roll.js";
 import {inventoryActor} from "./actors/inventoryActor.js";
 
 const ACTIONS = {
 	showBanner,
+	showCredits,
 	updateRemoteRollConfig : o13rollConfig.updateRemote,
 	handleGearTransfer : inventoryActor.handleGearTransfer,
 	handleTrade : inventoryActor.handleTrade

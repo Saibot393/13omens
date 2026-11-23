@@ -8,7 +8,7 @@
     font-family: "Cinzel", "Times New Roman", Georgia, serif;
     text-align: center;
     align-content: center;
-    pointer-events: none;
+    pointer-events: auto;
     z-index: 13000;
 
     opacity: 0;
@@ -127,4 +127,12 @@
 
 .o13-credits-entry .o13-title {
     text-align: left;
+}
+
+.o13-credit-close-button {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+
+    color: var(--o13-antique-gold);
 }

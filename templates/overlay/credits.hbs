@@ -1,6 +1,7 @@
 <div class="o13-credits">
+    <i class="fa-solid fa-xmark o13-credit-close-button o13-clickable"></i>
     <div class="o13-credits-content">
-        <span>{{{localize "13omens.credits.youplayed"}}}</span>
+        <span>{{{localize "13omens.credits.youPlayed"}}}</span>
         <h1 class="o13-credits-omen-title">{{{title}}}</h1>
 
         <div class="o13-credits-spacer large"></div>
@@ -16,7 +17,9 @@
                         <span class="o13-title">{{{entry.title}}}</span>
                     </div>
                 {{else}}
-                    <span>{{{entry}}}</span>
+                    <div>
+                        <span>{{{entry}}}</span>
+                    </div>
                 {{/if}}
             {{/each}}
             <div class="o13-credits-spacer medium"></div>
@@ -29,6 +32,6 @@
 
         <div class="o13-credits-spacer medium"></div>
 
-        <span>{{{localize "13omens.credits.thanks"}}}</span>
+        <span>{{{localize "13omens.credits.thankYou"}}}</span>
     </div>
 </div>

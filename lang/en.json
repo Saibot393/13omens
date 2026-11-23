@@ -80,6 +80,8 @@
 				"2" : "Act II",
 				"3" : "Act III"
 			},
+
+			"credits" : "Credits",
 			
 			"autoProgressActs" : "Auto progress",
 			"addOmenDiceonActStart" : "Add die on act start",
@@ -174,7 +176,10 @@
 			"activeStory" : "Active Story",
 			"noActiveStory" : "No Active Story yet",
 
-			"showIconOnPCSheet" : "Show on PC sheets"
+			"showIconOnPCSheet" : "Show on PC sheets",
+
+			"testCredits" : "Test credits",
+			"showCredits" : "Show credits"
 		},
 		
 		"actions" : {
@@ -215,7 +220,8 @@
 			"makeActiveStory" : "Make active story: <br> •Sets PCs as user characters <br> •Shows story to players",
 			"isActiveStory" : "This is the currently active story",
 			"synchFromArchetype" : "Synch from archetype",
-			"tradeGear" : "Trade gear"
+			"tradeGear" : "Trade gear",
+			"credits" : "Here you can configure the credits for the story.\n In the fields below you may credit contributors.\n Use one line per person, you can use a &quot; - &quot; to separate name and title or function."
 		},
 		
 		"chats" : {
@@ -232,7 +238,8 @@
 			"confirmAdvanceAct" : "Do you want to advance to {act}?",
 			"confirmResettoPrologue" : "Do you want to reset the story to the prologue? This will also reset all players characters to the prologue state",
 			"transferGearQuery" : "Transfer {gear} from {sourceActor} to {targetActor}:",
-			"selectTradePartnerfor" : "Choose recipient FOR {gearName}:"
+			"selectTradePartnerfor" : "Choose recipient FOR {gearName}:",
+			"showCredits" : "Do you want to start the credit scroll for you and your players?"
 		},
 		
 		"infos" : {
@@ -324,15 +331,15 @@
 		},
 
 		"credits" : {
-			"youplayed" : "You played",
-			"paizoGame" : "- A Paizo Game -",
-			"thanks" : "Thank you for playing",
-			"writtenBy" : "Written by",
+			"youPlayed" : "You played",
+			"paizoGame" : "- A Paizo Roleplaying Game -",
+			"thankYou" : "Thank you for playing",
+			"writers" : "Written by",
 			"hostedBy" : "Hosted by",
-			"starring" : "Staring",
+			"starring" : "Starring",
 			"host" : "Host",
-			"contentBy" : "Using content from:",
-			"thanksTo" : "Special thanks to:"
+			"artists" : "Using content from",
+			"thanks" : "Special thanks to"
 		},
 		
 		"DSN" : {
