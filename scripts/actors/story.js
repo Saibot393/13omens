@@ -3,6 +3,7 @@ const { HTMLField, NumberField, SchemaField, StringField, ArrayField, EmbeddedDo
 import {utils} from "../utils.js";
 
 import {showBanner} from "../components/banner.js";
+import {showCredits} from "../components/credits.js";
 
 import {o13prepState} from "../dialogues/prepState.js";
 import {o13confirmQuery} from "../dialogues/confirmQuery.js";
@@ -524,6 +525,44 @@ export function o13storyActorMixin(base) {
 				return this.update({system : {hostomendice : this.system.hostomendice + diceRemove}});
 			}
 		}
+
+		//Credits
+		get creditDuration() {
+			return this.system.story.credits.duration;
+		}
+
+		get creditData() {
+			const raw = this.system.story.credits.blocks;
+
+			const data = {};
+
+			for (const blockKey of Object.keys(raw)) {
+				data[blockKey] = raw[blockKey].entries.split("\n");
+
+				if (!data[blockKey].find(entry => entry)) delete data[blockKey];
+			}
+
+			return data;
+		}
+
+		testCredits() {
+			this.showCredits(true)
+		}
+
+		async showCredits(skipSocketCall = false) {
+			const shouldShowCredits = skipSocketCall || await (new o13confirmQuery({
+				window : {
+					title : game.i18n.localize("13omens.titles.showCredits")
+				},
+				query : game.i18n.format("13omens.dialogues.showCredits")
+			}).wait(true));
+
+			if (shouldShowCredits) showCredits({story : this, skipSocketCall : skipSocketCall});
+		}
+
+		get canShowCredits() {
+			return game.user.isGM && (this.activeAct == 3 || this.pcliveCount == 0);
+		}
 		
 		//Data prep/handling
 		get enrichables() {
@@ -595,7 +634,22 @@ export class storyDataModel extends foundry.abstract.TypeDataModel {
 				acts : new ArrayField(new SchemaField({
 					notes : new StringField({ required: true, initial: "" }),
 					story : new HTMLField({ required: true, initial: ""})
-				}), { initial : () => Array.from({length : 4}, (_, index) => ({notes : "", story : ""}))})
+				}), { initial : () => Array.from({length : 4}, (_, index) => ({notes : "", story : ""}))}),
+
+				credits: new SchemaField({
+					duration : new NumberField({ required: true, integer: true, nullable: false, initial: 30, min: 0 }),
+					blocks : new SchemaField({
+						writers: new SchemaField({
+							entries: new StringField({required: true, initial: ""})
+						}),
+						artists: new SchemaField({
+							entries: new StringField({required: true, initial: ""})
+						}),
+						thanks: new SchemaField({
+							entries: new StringField({required: true, initial: ""})
+						})
+					})
+				})
 			}),
 			
 			autoprogressacts : new BooleanField({ required : true, initial : true}),

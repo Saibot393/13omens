@@ -12,6 +12,7 @@
 	"styles/13omens.css",
 	"styles/dice.css",
 	"styles/banner.css",
+    "styles/credits.css",
 	"styles/screenBorder.css",
 	"styles/tokenCreator.css"
   ],

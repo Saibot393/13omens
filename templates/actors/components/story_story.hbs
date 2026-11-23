@@ -2,6 +2,8 @@
 	{{#each actor.system.story.acts}}
 		<a data-group="story" nav-tab="{{@key}}" {{#if (eqLoose ../actor.activeAct @key)}}style="color:var(--o13-omen-red)"{{/if}}>{{localize (concat "13omens.titles.actNames." @key)}}</a>
 	{{/each}}
+
+    <a data-group="story" nav-tab="credits">{{localize (concat "13omens.titles.credits")}}</a>
 </nav>
 
 {{#each actor.system.story.acts}}
@@ -19,3 +21,27 @@
 		</div>
 	</section>
 {{/each}}
+
+<section class="o13-tab o13-scrollable flexcol" nav-group="story" nav-tab="credits" scroll-id="story_credits" style="padding-right:5px;">
+    <div class="flexcol">
+        <div class="flexrow">
+            <div class="flexrow">
+                <label class="o13-label" style="flex:0.25"><b>{{localize "13omens.titles.name"}}:</b></label>
+                <input class="o13-input o13-underline" type="number" name="system.story.credits.duration" value="{{actor.system.story.credits.duration}}" />
+            </div>
+            <div class="o13-flex-grow"></div>
+            <span class="o13-label o13-button o13-clickable" style="text-align:center" data-action="testCredits">
+                {{{localize "13omens.titles.testCredits"}}}
+            </span>
+            <div class="o13-flex-grow"></div>
+            <i class="fa-regular fa-circle-question o13-icon o13-label" data-tooltip="{{{localize "13omens.tooltips.credits"}}}"></i>
+        </div>
+    </div>
+
+    {{#each actor.system.story.credits.blocks as |block|}}
+        <div class="o13-notes flexcol" style="flex:0.1">
+            <label class="o13-label"><b>{{localize (concat "13omens.credits." @key)}}:</b></label>
+            <textarea  class="o13-input o13-textarea o13-bordered o13-scrollable" name="system.story.credits.blocks.{{@key}}.entries" rows=8" scroll-id="story_credits_{{@key}}" style="flex:none;">{{lookup (lookup ../actor.system.story.credits.blocks @key) "entries"}}</textarea>
+        </div>
+    {{/each}}
+</section>

@@ -6,10 +6,10 @@
                 enriched=enriched
             }}
             {{#if (and actor.isHostView actor.isPrologue)}}
-            <div class="flexcol o13-bordered o13-hover-div" style="margin:auto;margin-bottom: 5px">
-                <label class="o13-label">{{localize "13omens.titles.showIconOnPCSheet"}}:</label>
-                <input class="o13-checkbox" type="checkbox" name="system.showicononpcsheet" {{checked actor.showIcononPCSheet}}/>
-            </div>
+                <div class="flexcol o13-bordered o13-hover-div" style="margin:auto;margin-bottom: 5px">
+                    <label class="o13-label">{{localize "13omens.titles.showIconOnPCSheet"}}:</label>
+                    <input class="o13-checkbox" type="checkbox" name="system.showicononpcsheet" {{checked actor.showIcononPCSheet}}/>
+                </div>
             {{/if}}
         </div>
 		
@@ -66,6 +66,13 @@
 					</div>
 				{{/if}}
 			{{/if}}
+            {{#if actor.canShowCredits}}
+                <div class="flexcol" style="margin:auto;margin-bottom: 5px">
+                    <span class="o13-label o13-button o13-clickable" style="text-align:center" data-action="showCredits">
+                        {{{localize "13omens.titles.showCredits"}}}
+                    </span>
+                </div>
+            {{/if}}
 		</div>
 	</header>
 	
