@@ -335,7 +335,7 @@
 				"descrp" : "A custom message to show when a omen die is added to a story. You may use the following place holders : {story}, {act}, {user}"
 			},
 			"HR_edgeIgnoredDicenoWounds" : {
-				"name" : "Edge ignored dice cause no wounds",
+				"name" : "Edge ignored dice do not cause wounds",
 				"descrp" : "Dice that are not used for the check result due to being added by an edge cause no wounds or strains"
 			}
 		},
