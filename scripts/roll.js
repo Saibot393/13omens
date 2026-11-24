@@ -194,7 +194,7 @@ export class o13Roll extends Roll {
 	}
 	
 	get FERollMod() {
-		return this.FEDifference == 0 ? "" : this.FEDifference > 0 ? (this.rollBehaviour.flawhnl ? "klh" : "kh2") : (this.rollBehaviour.flawhnl ? "klh" : "kl2");
+		return this.FEDifference == 0 ? "" : this.FEDifference > 0 ? (this.rollBehaviour.edgehnl ? "klh" : "kh2") : (this.rollBehaviour.flawhnl ? "klh" : "kl2");
 	}	
 	
 	get FEDescription() {
@@ -306,7 +306,12 @@ export class o13Roll extends Roll {
 	}
 	
 	get hasWound() {
-		return this.actor && this.taskRisk != "harmless" && this.diceResults.find(dice => dice.face <= this.woundThreshold && dice.type == "omen");
+		return this.actor && this.taskRisk != "harmless" && this.diceResults.find(dice => {
+			const faceMatches = dice.face <= this.woundThreshold && dice.type == "omen";
+			const woundIgnored = this.houseRules.edgeIgnoredDicenoWounds && this.FEDifference > 0 && dice.crossed; //HR
+
+			return faceMatches && !woundIgnored;
+		});
 	}
 	
 	get hasStrain() {
@@ -534,7 +539,13 @@ export class o13Roll extends Roll {
 	get show3d() {//DSN
 		return !this.canValiantSacrifice;
 	}
-	
+
+	get houseRules() {
+		return {
+			edgeIgnoredDicenoWounds : game.settings.get("13omens", "HR_edgeIgnoredDicenoWounds")
+		}
+	}
+
 	toMessage(messageData = {}, options = {}) { //DSN
 		messageData.flags ??= {};
 		messageData.flags["dice-so-nice"] ??= {};
