@@ -1,0 +1,22 @@
+<div class="standard-form">
+    <div class="flexcol">
+        {{#each ruleSettings as |rule|}}
+            <div class="form-group">
+                <label>{{{localize rule.name}}}</label>
+                <div class="form-fields">
+                    {{#if (eqLoose rule.type "Boolean")}}
+                        <input type="checkbox" name="{{rule.id}}" {{#if rule.value}}checked{{/if}}>
+                    {{/if}}
+                </div>
+                <p class="hint">
+                    {{{localize rule.hint}}}
+                </p>
+            </div>
+        {{/each}}
+    </div>
+
+    <div class="flexrow" style="gap:5px">
+        <button class="o13-button o13-clickable" type="button" data-action="accept">{{localize "13omens.actions.accept"}} <i class="fa-solid fa-check"></i> </button>
+        <button class="o13-button o13-clickable" type="button" data-action="cancel">{{localize "13omens.actions.cancel"}} <i class="fa-solid fa-x"></i> </button>
+    </div>
+</div>

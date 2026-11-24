@@ -1,7 +1,17 @@
 import {syncScreenBordertoSettings} from "./components/screenBorder.js";
 import {utils} from "./utils.js";
+import {o13houseRuleSettings} from "./dialogues/houseRuleSettings.js";
 
 export function registerSettings() {
+	game.settings.registerMenu("13omens", "houseRules", {
+		name: "13omens.settings.houseRules.name",
+		label: "13omens.settings.houseRules.name",
+		hint: "13omens.settings.houseRules.descrp",
+		icon: "fa-solid fa-gavel",
+		type: o13houseRuleSettings,
+		restricted: true
+	})
+
 	game.settings.register("13omens", "showActBanner", {
 		name: "13omens.settings.showActBanner.name",
 		hint: "13omens.settings.showActBanner.descrp",
@@ -169,5 +179,15 @@ export function registerSettings() {
 				game.settings.set("13omens", "tokenTargetDirectory", `worlds/${game.world.id}/${CONFIG["13OMENS"].DEFAULTTOKENDIRECTORY}`);
 			}
 		}
+	})
+
+	//house rules
+	game.settings.register("13omens", "HR_edgeIgnoredDicenoWounds", {
+		name: "13omens.settings.HR_edgeIgnoredDicenoWounds.name",
+		hint: "13omens.settings.HR_edgeIgnoredDicenoWounds.descrp",
+		scope: "world",
+		config: false,
+		type: Boolean,
+		default: false
 	})
 }
