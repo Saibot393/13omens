@@ -6,8 +6,6 @@ export class o13houseRuleSettings extends o13uiHandlerMixin(HandlebarsApplicatio
     constructor (baseStory) {
         super();
 
-        console.log(this)
-
         this._ruleSettings = o13houseRuleSettings.currentHouseRuleSettingsCopy;
     }
 
@@ -28,6 +26,10 @@ export class o13houseRuleSettings extends o13uiHandlerMixin(HandlebarsApplicatio
                 template: `systems/13omens/templates/${"dialogues"}/${"houseRuleSettings"}.hbs`
             }
         };
+    }
+
+    get title() {
+        return game.i18n.localize("13omens.settings.houseRules.name");
     }
 
     get ruleSettings() {
@@ -65,7 +67,6 @@ export class o13houseRuleSettings extends o13uiHandlerMixin(HandlebarsApplicatio
     }
 
     static async _onSubmitForm(event, form, formData) {
-        console.log(formData);
         for (const key of Object.keys(formData.object)) {
             this._ruleSettings[key].value = formData.object[key];
         }
