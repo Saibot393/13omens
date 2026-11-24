@@ -78,6 +78,8 @@ export async function showCredits(data = {content : {title : ""}, story : undefi
     //music
     if (data.music) {
         try {
+            utils.pauseAllSound();
+
             const music = await game.audio.play(data.music, {loop : false});
 
             credits.addEventListener("creditsClosed", () => {music.stop()})
