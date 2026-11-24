@@ -563,6 +563,30 @@ export function o13storyActorMixin(base) {
 		get canShowCredits() {
 			return game.user.isGM && (this.activeAct == 3 || this.pcliveCount == 0);
 		}
+
+		chooseCreditsMusic() {
+			const picker = new foundry.applications.apps.FilePicker.implementation({
+				type: "audio",
+				current: this.system.story.credits.music,
+				callback: async (path) => {
+					await this.update({system : {story : {credits : {music : path}}}});
+
+					const synchCreditsDuration = await (new o13confirmQuery({
+						query : game.i18n.format("13omens.dialogues.synchCreditsDuration")
+					}).wait(true));
+
+					if (synchCreditsDuration) {
+						const musicDuration = await utils.audioDuration(path);
+
+						if (!isNaN(musicDuration)) await this.update({system : {story : {credits : {duration : Math.ceil(musicDuration)}}}});
+					}
+				}
+			}).render(true);
+		}
+
+		get creditsMusic() {
+			return this.system.story.credits.music;
+		}
 		
 		//Data prep/handling
 		get enrichables() {
@@ -638,6 +662,7 @@ export class storyDataModel extends foundry.abstract.TypeDataModel {
 
 				credits: new SchemaField({
 					duration : new NumberField({ required: true, integer: true, nullable: false, initial: 30, min: 0 }),
+					music : new FilePathField({required : false, nullable: true, initial: null, categories: ["AUDIO"]}),
 					blocks : new SchemaField({
 						writers: new SchemaField({
 							entries: new StringField({required: true, initial: ""})

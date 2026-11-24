@@ -48,17 +48,19 @@ function creditBlocksfromStory(story) {
 }
 
 export async function showCredits(data = {content : {title : ""}, story : undefined, duration : null}) {
+    //prep
     data.content = data.content || {};
     data.content.blocks = data.content?.blocks || creditBlocksfromStory(data.story);
     data.content.title = data.content?.title || data.story?.name;
     data.duration = data.duration || data.story?.creditDuration || 30;
-
-    console.log(data.content);
+    data.music = data.music || data.story?.creditsMusic || "";
 
     if (!data.content.blocks) return false;
 
+    //call
     if (!data.skipSocketCall) game.system.callSocket("showCredits", {...data, skipSocketCall : true});
 
+    //create
     const duration = (data.duration);
 
     const content = await foundry.applications.handlebars.renderTemplate("systems/13omens/templates/overlay/credits.hbs", data.content);
@@ -71,13 +73,36 @@ export async function showCredits(data = {content : {title : ""}, story : undefi
 
     credits.style.setProperty("--credits-duration", `${duration}s`);
 
-    credits.querySelector(".o13-credit-close-button")?.addEventListener("click", () => {credits.remove();})
+    credits.querySelector(".o13-credit-close-button")?.addEventListener("click", () => {credits.remove();});
+
+    //music
+    if (data.music) {
+        try {
+            const music = await game.audio.play(data.music, {loop : false});
+
+            credits.addEventListener("creditsClosed", () => {music.stop()})
+        }
+        catch (error) {
+            console.error("Failed to play credits music:", error);
+        }
+    }
+
+    //connect
+    const observer = new MutationObserver(() => {
+        if (!credits.isConnected) {
+            console.info("Credits were closed");
+
+            credits.dispatchEvent(new CustomEvent("creditsClosed"));
+
+            observer.disconnect();
+        }
+    })
 
     document.body.appendChild(credits);
 
+    observer.observe(credits.parentNode, {childList: true});
+
     credits.addEventListener("animationend", (event) => {
-        console.log(credits);
-        console.log(event);
         if (event.target === credits && event.animationName == "creditsScreenFadeOut") {
             credits.remove();
         }

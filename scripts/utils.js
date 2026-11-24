@@ -222,6 +222,17 @@ export class utils {
 			return JSON.parse(cleaned);
 		}
 	}
+
+	static async audioDuration(path) {
+		const audio = new Audio(path);
+
+		await new Promise((resolve, reject) => {
+			audio.addEventListener('loadedmetadata', resolve, {once : true});
+			audio.addEventListener('error', reject, {once : true});
+		})
+
+		return audio.duration;
+	}
 	
 	static currentActor(type = "pc") {
 		//controlled token

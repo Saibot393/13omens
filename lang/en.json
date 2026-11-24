@@ -181,7 +181,9 @@
 			"showIconOnPCSheet" : "Show on PC sheets",
 
 			"testCredits" : "Test credits",
-			"showCredits" : "Show credits"
+			"showCredits" : "Show credits",
+
+			"music" : "Music"
 		},
 		
 		"actions" : {
@@ -223,7 +225,8 @@
 			"isActiveStory" : "This is the currently active story",
 			"synchFromArchetype" : "Synch from archetype",
 			"tradeGear" : "Trade gear",
-			"credits" : "Here you can configure the credits for the story.\n In the fields below you may credit contributors.\n Use one line per person, you can use a &quot; - &quot; to separate name and title or function."
+			"credits" : "Here you can configure the credits for the story.\n In the fields below you may credit contributors.\n Use one line per person, you can use a &quot; - &quot; to separate name and title or function.",
+			"chooseMusic" : "Choose music"
 		},
 		
 		"chats" : {
@@ -241,7 +244,8 @@
 			"confirmResettoPrologue" : "Do you want to reset the story to the prologue? This will also reset all players characters to the prologue state",
 			"transferGearQuery" : "Transfer {gear} from {sourceActor} to {targetActor}:",
 			"selectTradePartnerfor" : "Choose recipient FOR {gearName}:",
-			"showCredits" : "Do you want to start the credit scroll for you and your players?"
+			"showCredits" : "Do you want to start the credit scroll for you and your players?",
+			"synchCreditsDuration" : "Do you want to sync the credits duration to the chosen music?"
 		},
 		
 		"infos" : {
