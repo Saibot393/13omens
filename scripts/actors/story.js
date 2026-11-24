@@ -584,6 +584,19 @@ export function o13storyActorMixin(base) {
 			}).render(true);
 		}
 
+		async preloadCreditsMusic() {
+			const musicPath = this.creditsMusic;
+
+			if (musicPath) {
+				try {
+					await game.audio.preload(musicPath)
+				}
+				catch (error) {
+					console.error("Failed to preload audio file:", error);
+				}
+			}
+		}
+
 		get creditsMusic() {
 			return this.system.story.credits.music;
 		}

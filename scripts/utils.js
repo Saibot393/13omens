@@ -233,6 +233,10 @@ export class utils {
 
 		return audio.duration;
 	}
+
+	static pauseAllSound() {
+		game.audio.playing.forEach(audio => {if (audio.playing) audio.pause()});
+	}
 	
 	static currentActor(type = "pc") {
 		//controlled token
