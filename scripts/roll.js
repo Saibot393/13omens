@@ -37,7 +37,7 @@ export class o13Roll extends Roll {
 		this._formula = this.formula;
 		this.terms = this.constructor.parse(this.formula, this.data);
 		
-		if (CONFIG.debug.o13?.rolls) console.log(this);
+		if (CONFIG.debug.o13?.rolls) console.info(this);
 	}
 
 	get rollData() {
@@ -576,7 +576,7 @@ export class o13rollConfig extends o13WaitMixIn(HandlebarsApplicationMixin(Appli
 		this._secondaryView = options.isSecondary;
 		this._closed = false;
 		
-		if (CONFIG.debug.o13?.rolls) console.log(this);
+		if (CONFIG.debug.o13?.rolls) console.info(this);
 		
 		if (options.quickRoll) o13rollConfig.roll.call(this)
 		else if (!this._secondaryView) this._applyUpdate(false, true);

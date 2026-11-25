@@ -253,7 +253,7 @@ export class o13tokenCreator extends o13WaitMixIn(o13uiHandlerMixin(HandlebarsAp
 				
 				const response = await foundry.applications.apps.FilePicker.implementation.upload("data", directory, file);
 				path = response?.path;
-				console.log("Saved token file to:", path);
+				console.info("Saved token file to:", path);
 				ui.notifications.info(game.i18n.format("13omens.infos.tokenSaved", {path : path}));
 			} catch (err) {
 				console.error("Failed to upload token file:", err);

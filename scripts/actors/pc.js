@@ -364,12 +364,12 @@ export function o13pcActorMixin(base) {
 		}
 
 		async synchFromArchetype() {
-			const updateChoices = await new o13checkQuery({query : game.i18n.localize("13omens.titles.synch"), checks : {
+			const updateChoices = await new o13checkQuery({window : {title : game.i18n.localize("13omens.titles.synchCharatcer")}, query : game.i18n.localize("13omens.titles.synch"), checks : {
 				portrait : {name : game.i18n.localize("13omens.titles.portrait")},
 				items : {name : game.i18n.localize("13omens.titles.perksandgear")},
 				background : {name : game.i18n.localize("13omens.titles.background")}
 			}}).wait(true);
-			console.log(updateChoices);
+
 			if (updateChoices.portrait?.checked) await this.synchArchetypePortrait();
 			if (updateChoices.items?.checked) await this.updateArchetypeItems({removeold : true, restorechoices : true});
 			if (updateChoices.background?.checked) await this.synctoArchetypeBackground();
@@ -557,12 +557,14 @@ export function o13pcActorMixin(base) {
 				const possiblePartners = this.siblingCharacters.filter(actor => actor.primeActiveOwner);
 
 				const chosenID = await new o13selectQuery({
+					window : {
+						title : game.i18n.localize("13omens.titles.tradeGear")
+					},
 					query : game.i18n.format("13omens.dialogues.selectTradePartnerfor", {gearName : gear.name}),
 					emptyOption : true,
 					options : Object.fromEntries(possiblePartners.map(actor => [actor.id, {name : `${actor.name}[${actor.primeActiveOwner?.name}]`}]))
 				}).wait(true);
 
-				console.log(chosenID);
 				const chosen = possiblePartners.find(actor => actor.id == chosenID);
 
 				if (chosen) this.startTrade(gear, chosen);

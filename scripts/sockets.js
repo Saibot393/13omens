@@ -41,7 +41,7 @@ export function callSocket(action, data, recipients = {onlyPrimeGM : false, whit
 
 export function onO13Sockets() {
 	Hooks.once("ready", () => {
-		console.log("13OMENS SOCKETS ON");
+		console.info("13OMENS SOCKETS ON");
 		game.socket.on("system.13omens", data => {
 			if (CONFIG.debug.o13?.sockets) console.warn(`13 Omens socket call received:`, data);
 			

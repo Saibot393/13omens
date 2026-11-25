@@ -65,6 +65,7 @@
 			
 			"gears" : "Gear",
 			"gear" : "Gear",
+			"tradeGear" : "Trade gear",
 			
 			"guaranteedGear" : "Guaranteed Gear",
 			"selectableGear" : "Selectable Gear",
@@ -183,7 +184,10 @@
 			"testCredits" : "Test credits",
 			"showCredits" : "Show credits",
 
-			"music" : "Music"
+			"music" : "Music",
+
+			"populatePlayers" : "Populate players",
+			"synchCharatcer" : "Sync character"
 		},
 		
 		"actions" : {
@@ -243,7 +247,7 @@
 			"confirmAdvanceAct" : "Do you want to advance to {act}?",
 			"confirmResettoPrologue" : "Do you want to reset the story to the prologue? This will also reset all players characters to the prologue state",
 			"transferGearQuery" : "Transfer {gear} from {sourceActor} to {targetActor}:",
-			"selectTradePartnerfor" : "Choose recipient FOR {gearName}:",
+			"selectTradePartnerfor" : "Choose recipient for {gearName}:",
 			"showCredits" : "Do you want to start the credit scroll for you and your players?",
 			"synchCreditsDuration" : "Do you want to sync the credits duration to the chosen music?"
 		},

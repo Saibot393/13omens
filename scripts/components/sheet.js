@@ -12,7 +12,7 @@ export function o13SheetMixin(baseSheet) {
 		constructor(options = {}) {
 			super(options);
 
-			if (CONFIG.debug.o13.dialogues) console.log(this);
+			if (CONFIG.debug.o13.dialogues) console.info(this);
 		}
 		
 		static DEFAULT_OPTIONS = {

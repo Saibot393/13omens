@@ -2,8 +2,12 @@
 - Added closing credits
   - Credits can be started by the GM below the story act title when act 3 is reached or all players are dead
   - Under Story > Credits the duration and the content (writers, artists, special thanks) can be set
+  - Background music can be chosen and the credits duration synched to the music duration
 - Added house rule settings menu
   - Added house rule "Edge ignored dice do not cause wounds"
+- Improved query dialogue ui
+- Fixed small logic bugs
+- Removed some unnecessary console logs and marked the rest as info
 
 ## v1.10.5
 - Added missing translation string

@@ -9,6 +9,10 @@ import {o13prepState} from "../dialogues/prepState.js";
 import {o13confirmQuery} from "../dialogues/confirmQuery.js";
 import {o13checkQuery} from "../dialogues/checkQuery.js";
 
+export function prepareActiveStory() {
+	game.actors.find(actor => actor.isStory && actor.isActiveStory)?.prepareasActiveStory();
+}
+
 export function o13storyActorMixin(base) {
 	return class o13storyActor extends base {
 		//Updates % Create
@@ -91,6 +95,12 @@ export function o13storyActorMixin(base) {
 		}
 
 		//Active story
+		async prepareasActiveStory() {
+			if (this.isActiveStory) {
+				await this.preloadCreditsMusic();
+			}
+		}
+
 		get isActiveStory() {
 			return game.settings.get("13omens", "activeStory") == this.id;
 		}
@@ -315,7 +325,7 @@ export function o13storyActorMixin(base) {
 				}]
 			}));
 
-			const chosenData = await new o13checkQuery({query : game.i18n.localize("13omens.titles.addCharacter"), checks : checkData}).wait(true);
+			const chosenData = await new o13checkQuery({window : {title : game.i18n.localize("13omens.titles.populatePlayers")}, query : game.i18n.localize("13omens.titles.addCharacter"), checks : checkData}).wait(true);
 			const chosenUsers = possibleUsers.filter(user => !currentUsers.includes(user) && chosenData[user.id].checked);
 
 			const actors = [];
@@ -589,7 +599,9 @@ export function o13storyActorMixin(base) {
 
 			if (musicPath) {
 				try {
-					await game.audio.preload(musicPath)
+					game.audio.preload(musicPath);
+
+					console.info("Preloaded credits music")
 				}
 				catch (error) {
 					console.error("Failed to preload audio file:", error);

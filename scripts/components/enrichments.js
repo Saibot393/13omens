@@ -34,7 +34,7 @@ export const enrichments = {
 		},
 		onclick : (event, enrichedElement, dataAction) => {
 			const original = enrichedElement.dataset.original;
-			console.log(`Clicked 13 Omens enriched check: ${original}`)
+			console.info(`Clicked 13 Omens enriched check: ${original}`)
 			const aspect = enrichedElement.dataset.aspect;
 			const rollConfigString = enrichedElement.dataset.rollConfig;
 			

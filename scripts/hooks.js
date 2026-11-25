@@ -1,9 +1,13 @@
 import {o13Roll} from "./roll.js";
 import {utils} from "./utils.js";
 
+import {prepareActiveStory} from "./actors/story.js";
+
 export function onO13Hooks() {
 	Hooks.once("ready", async () => {
 		game.user.character?.syncScreenBorder();
+
+		prepareActiveStory();
 	});
 	
 	Hooks.on("updateUser", async (user, change, options) => {
@@ -39,6 +43,10 @@ export function onO13Hooks() {
 			}
 		}
 	});
+
+	Hooks.on("13omensChangeActiveStory", () => {
+		prepareActiveStory();
+	})
 	
 	Hooks.once("diceSoNiceReady", (dice3d) => {
 		dice3d.addColorset({
