@@ -148,8 +148,14 @@ export class o13Roll extends Roll {
 	get flaws() {
 		return this._rollData.flaws;
 	}
+
+	get ignoreAllFlaws() {
+		if (!isNaN(this.rollBehaviour?.flawignorethreshold)) return this.actor.maxWounds - this.actor?.woundDiceCount?.omen <= this.rollBehaviour.flawignorethreshold;
+	}
 	
 	get flawsCount() {
+		if (this.ignoreAllFlaws) return 0;
+
 		return this._rollData.flaws.filter(flaw => !flaw?.ignored).length + (this.useStrain ? 1 : 0);
 	}
 	
@@ -964,6 +970,8 @@ Hooks.on("getChatMessageContextOptions", (app, menuItems) => {
 			const relevantRoll =  rolls?.find(roll => roll instanceof o13Roll);
 
 			if (relevantRoll) {
+				console.info("Inspected roll:", relevantRoll);
+
 				new o13rollConfig(undefined, relevantRoll.rollData, {auxiliaryData : relevantRoll.auxiliaryData});
 			}
 		},

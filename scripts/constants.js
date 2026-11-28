@@ -33,7 +33,21 @@ const MINTD = -2;
 
 const TASKRISKS = ["risky", "normal", "harmless"];
 
-const DEFAULTROLLOPTIONS = {dicePermut : [], flaws : [], edges : [], ignoredFlaws : 0, ignoredEdges : 0, strain : null, ignoreStrain : false, targetNumber : null, taskDifficulty : 0, taskRisk : "normal", woundThreshold : null, strainThreshold : null, rollbehaviour : {}};
+const DEFAULTROLLOPTIONS = {
+	dicePermut : [],
+	flaws : [],
+	edges : [],
+	ignoredFlaws : 0,
+	ignoredEdges : 0,
+	strain : null,
+	ignoreStrain : false,
+	targetNumber : null,
+	taskDifficulty : 0,
+	taskRisk : "normal",
+	woundThreshold : null,
+	strainThreshold : null,
+	rollbehaviour : {}
+};
 
 const DEFAULTROLLMODIFIERS = {
 	addflaws : [],
@@ -47,7 +61,8 @@ const DEFAULTROLLMODIFIERS = {
 		redrawomendice : 0,
 		rerolls : 0,
 		flawhnl : false, //use highest and lowest dice when rolling with flaw
-		edgehnl : false //use highest and lowest dice when rolling with edge
+		edgehnl : false, //use highest and lowest dice when rolling with edge
+		flawignorethreshold : -1 //ignore flaws if number of unfilled wounds is at maximum this
 	}
 }
 

@@ -157,7 +157,8 @@ export class utils {
 				redrawomendice : combine.rollbehaviour.redrawomendice + modifier.rollbehaviour.redrawomendice,
 				rerolls : combine.rollbehaviour.rerolls + modifier.rollbehaviour.rerolls,
 				flawhnl : combine.rollbehaviour.flawhnl || modifier.rollbehaviour.flawhnl,//use highest and lowest dice when rolling with flaw
-				edgehnl : combine.rollbehaviour.edgehnl || modifier.rollbehaviour.edgehnl//use highest and lowest dice when rolling with edge
+				edgehnl : combine.rollbehaviour.edgehnl || modifier.rollbehaviour.edgehnl,//use highest and lowest dice when rolling with edge
+				flawignorethreshold : Math.max(combine.rollbehaviour.flawignorethreshold, modifier.rollbehaviour.flawignorethreshold) //ignore flaws if number of unfilled wounds is at maximum this
 			}
 		}
 		

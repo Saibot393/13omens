@@ -6,8 +6,10 @@
 - Added house rule settings menu
   - Added house rule "Edge ignored dice do not cause wounds"
 - Improved query dialogue ui
-- Fixed small logic bugs
 - Removed some unnecessary console logs and marked the rest as info
+- Added active effect roll behaviour flag `flawignorethreshold`, if number of open wounds is at or below this value, all flaws get ignored
+- Inspected rolls are now also printed into the console for more detailed inspection
+- Fixed small logic bugs
 
 ## v1.10.5
 - Added missing translation string
